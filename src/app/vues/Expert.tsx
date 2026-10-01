@@ -1,6 +1,7 @@
 import { useDeferredValue, useMemo, useState } from 'react';
 import type { EquilibreAnnee, ResultatAnnee, ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
+import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
 import { Curseur } from '../composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
@@ -169,7 +170,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                 format={(v) => pct(v)}
               />
               <Courbes titre="Pension relative (y c. capitalisation)" sousTitre="Pension moyenne / revenu d’activité moyen" series={compare('prel', (r) => r.pensionRelativeTotale)} format={(v) => pct(v, 0)} />
-              <Courbes titre="Âge moyen de départ" sousTitre="Années" {...avecHistorique(historique, 'ageMoyenDepart', compare('age', (r) => r.ageMoyenDepart))} format={dec(1)} />
+              <GraphiqueAges simulation={scenario} reference={reference} historique={historique} hauteur={320} />
               <Courbes titre="Cotisants par retraité" {...avecHistorique(historique, 'ratioCotisantsRetraites', compare('ratio', (r) => r.ratioCotisantsRetraites))} format={dec(2)} />
               <Courbes titre="Dette cumulée du système" sousTitre="% du PIB" series={compare('dette', (r) => r.detteCumuleePctPib)} format={(v) => pct(v, 0)} zero />
               {p.capitalisationTaux > 0 && (

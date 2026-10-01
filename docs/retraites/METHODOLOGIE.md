@@ -64,7 +64,9 @@ Les tests (`npm test`) verrouillent ces écarts pour détecter toute dérive.
 1. **Pension relative 2070 trop basse de ~3 pts** : le modèle compte un peu moins de retraités par
    cotisant que le COR en fin de période et compense par une pension plus basse. Effet : les
    leviers jouant sur le niveau des pensions sont légèrement sous-estimés en fin de période.
-2. **Espérance de vie 2070 = 91 ans** : paramètre de calage. La mortalité simplifiée (sexes
+2. **Espérance de vie 2070 = 91 ans** : paramètre de calage. Conséquence visible sur le graphique
+   « Âge de départ et espérance de vie » : l'espérance de vie à 60 ans passe de 25,7 ans en 2025
+   (conforme à l'INSEE) à ≈ 32,7 ans en 2070, contre ≈ 30 ans dans les projections de l'INSEE. La mortalité simplifiée (sexes
    confondus) ne reproduit le vieillissement du COR qu'avec une espérance de vie supérieure à celle
    des projections INSEE (≈ 88-89 ans). À corriger avec les tables INSEE par sexe.
 3. **Pyramide 2025 reconstituée**, non officielle.

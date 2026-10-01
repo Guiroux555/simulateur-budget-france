@@ -86,6 +86,21 @@ export const HISTORIQUE = {
     ],
     source: 'DREES ; 62 ans et 9 mois fin 2023, +2 ans et 3 mois depuis 2010, −1 mois entre 2004 et 2010',
   },
+  /** Espérance de vie à 60 ans, moyenne hommes-femmes (INSEE). */
+  esperanceVie60: {
+    points: [
+      [1995, 22.3],
+      [2000, 23.0],
+      [2005, 23.9],
+      [2010, 24.8],
+      [2015, 25.3],
+      [2019, 25.7],
+      [2020, 25.1],
+      [2022, 25.4],
+      [2024, 25.7],
+    ],
+    source: 'INSEE, bilans démographiques (moyenne simple des espérances de vie à 60 ans des hommes et des femmes)',
+  },
   /** Âge légal d'ouverture des droits (régime général), par année civile. */
   ageLegal: {
     points: [

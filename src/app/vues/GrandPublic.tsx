@@ -1,13 +1,14 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import type { EquilibreAnnee, ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
+import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
 import { Choix, Curseur, Encadre, Tuile } from '../composants';
 import { ans, effortFinancement, milliards, pct, pctSigne, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { REFORMES } from '../../engine/donnees/historique';
-import { avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
+import { avecHistorique } from '../historique';
 import { fourchette } from '../sensibilite';
 import { Sensibilite } from './Sensibilite';
 
@@ -147,32 +148,20 @@ function Comprendre({ reference, historique }: Props) {
           zero
           hauteur={250}
         />
-        <Courbes
-          titre="Âge de départ à la retraite"
-          sousTitre="Âge légal et âge moyen effectif de départ"
-          series={[
-            ...(historique ? [serieObservee('ageMoyenDepart', 'Âge moyen observé')] : []),
-            {
-              id: 'legal',
-              nom: 'Âge légal',
-              couleur: 'var(--series-2)',
-              valeurs: [...(historique ? serieObservee('ageLegal').valeurs : []), ...serie(reference, (x) => x.ageLegal)],
-              pointille: true,
-            },
-            { id: 'moyen', nom: 'Âge moyen projeté', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ageMoyenDepart) },
-          ]}
-          {...(historique ? { separation: 2025, reformes: REPERES_REFORMES } : {})}
-          format={(v) => v.toFixed(0)}
-          domaine={[60, 65]}
-          hauteur={250}
-        />
+        <GraphiqueAges simulation={reference} historique={historique} />
       </div>
       {historique && (
         <p className="note">
-          Observé : points d’ancrage approximatifs (COR, DREES) reliés entre eux, à remplacer par les séries officielles
-          annuelles. Les définitions diffèrent légèrement de celles du modèle, d’où de petites marches en 2025.
+          Observé : points d’ancrage approximatifs (COR, DREES, INSEE) reliés entre eux, à remplacer par les séries
+          officielles annuelles. Les définitions diffèrent légèrement de celles du modèle, d’où de petites marches en 2025.
         </p>
       )}
+
+      <p className="note">
+        Espérance de vie : 25,7 ans à 60 ans en 2025 (INSEE). Le modèle simplifié projette ensuite une hausse plus rapide
+        que les projections de l’INSEE (≈ 32,7 ans en 2070 contre ≈ 30 ans) : c’est un paramètre de calage, documenté dans la
+        note de méthode, qui sera corrigé avec les tables de mortalité officielles.
+      </p>
 
       <Encadre titre="Trente ans de réformes">
         <ol className="frise">

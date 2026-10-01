@@ -101,6 +101,8 @@ export interface ResultatAnnee {
   pensionRelative: number;
   /** Pension d'un nouveau retraité de l'année / revenu d'activité moyen (répartition seule). */
   pensionLiquidationRelative: number;
+  /** Espérance de vie à 60 ans (table de l'année). */
+  esperanceVie60: number;
   /** Espérance de vie à l'âge moyen de départ (table de l'année) : durée de retraite attendue. */
   esperanceVieADepart: number;
   /** Idem, en incluant la rente de capitalisation éventuelle. */

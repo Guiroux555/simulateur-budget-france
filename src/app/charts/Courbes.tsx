@@ -27,6 +27,8 @@ export interface Bande {
   couleur: string;
   bas: ReadonlyArray<{ x: number; y: number }>;
   haut: ReadonlyArray<{ x: number; y: number }>;
+  /** Texte de l'info-bulle (par défaut : « bas à haut »). */
+  formatValeur?: (bas: number, haut: number) => string;
 }
 
 interface Props {
@@ -35,6 +37,8 @@ interface Props {
   sousTitre?: string;
   series: Serie[];
   format: (v: number) => string;
+  /** Format des graduations de l'axe vertical (par défaut : `format`). */
+  formatAxe?: (v: number) => string;
   /** Inclure zéro dans l'échelle et tracer la ligne de zéro. */
   zero?: boolean;
   /** Valeurs supplémentaires à inclure dans l'échelle. */
@@ -87,7 +91,7 @@ function placerEtiquettes(reformes: RepereReforme[], sx: (x: number) => number, 
 }
 
 /** Graphique en courbes avec réticule et info-bulle au survol (une seule échelle verticale). */
-export function Courbes({ titre, sousTitre, series, bande, format, zero, domaine, hauteur = 220, reperes = [], reformes = [], separation }: Props) {
+export function Courbes({ titre, sousTitre, series, bande, format, formatAxe, zero, domaine, hauteur = 220, reperes = [], reformes = [], separation }: Props) {
   const [ref, largeur] = useLargeur<HTMLDivElement>();
   const [survol, setSurvol] = useState<number | null>(null);
   const idTitre = useId();
@@ -109,7 +113,7 @@ export function Courbes({ titre, sousTitre, series, bande, format, zero, domaine
     yMin = Math.min(yMin, domaine[0]);
     yMax = Math.max(yMax, domaine[1]);
   }
-  const ticks = graduations(yMin, yMax, 4);
+  const ticks = graduations(yMin, yMax, Math.max(4, Math.floor((hauteur - 60) / 40)));
   const y0 = ticks[0];
   const y1 = ticks[ticks.length - 1];
 
@@ -171,7 +175,7 @@ export function Courbes({ titre, sousTitre, series, bande, format, zero, domaine
             <g key={t}>
               <line x1={MARGE.gauche} x2={largeur - MARGE.droite} y1={sy(t)} y2={sy(t)} className={zero && t === 0 ? 'axe-zero' : 'grille'} />
               <text x={MARGE.gauche - 8} y={sy(t)} className="etiquette-axe" textAnchor="end" dominantBaseline="middle">
-                {format(t)}
+                {(formatAxe ?? format)(t)}
               </text>
             </g>
           ))}
@@ -260,7 +264,7 @@ export function Courbes({ titre, sousTitre, series, bande, format, zero, domaine
                     <span className="pastille carree" style={{ background: bande.couleur, opacity: 0.3 }} />
                     <span className="bulle-nom">{bande.nom}</span>
                     <span className="bulle-valeur">
-                      {format(Math.min(b, h))} à {format(Math.max(b, h))}
+                      {bande.formatValeur ? bande.formatValeur(b, h) : `${format(Math.min(b, h))} à ${format(Math.max(b, h))}`}
                     </span>
                   </div>
                 );
