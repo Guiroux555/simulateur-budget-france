@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { BoutonAide } from '../aideContexte';
 import { ratioActifsInactifs, type EtatPyramide } from '../pyramidesHistoriques';
 import { graduations, useLargeur } from '../../../../commun/charts/useLargeur';
 
@@ -49,7 +50,10 @@ export function Pyramide({ resultat: r, reference, hauteur = 320 }: Props) {
   return (
     <figure className="graphique" aria-labelledby={idTitre}>
       <figcaption id={idTitre}>
-        <span className="graphique-titre">Population par âge en {r.annee}</span>
+        <span className="graphique-titre">
+          Population par âge en {r.annee}
+          <BoutonAide cle="pyramide" />
+        </span>
         <span className="graphique-sous-titre">
           Effectifs par âge simple, sexes confondus{r.reconstitue ? ' — année passée reconstituée (ordres de grandeur)' : ''}
         </span>

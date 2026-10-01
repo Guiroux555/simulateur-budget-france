@@ -108,6 +108,7 @@ export function GraphiqueAges({ simulation, reference, historique, hauteur = 400
   return (
     <Courbes
       titre="Vie active, départ et espérance de vie"
+      cleAide="ages"
       sousTitre="Zones colorées : vie active (de l’âge moyen d’entrée à l’âge moyen de départ, indicatif : générations différentes), durée moyenne de retraite (jusqu’à l’âge atteint en moyenne par les personnes de 60 ans), dont années sans incapacité (DREES)"
       series={series}
       bande={[

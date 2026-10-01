@@ -255,3 +255,10 @@ hypothèse de stabilité à 22 ans. Les mesures diffèrent selon les sources (pr
 année complète validée). La zone « vie active » (de l'entrée au départ) est indicative : à une même
 date, elle rapproche des générations différentes. Cette série est descriptive : le modèle utilise
 des taux d'activité par âge, pas cet âge moyen.
+
+## 11. Aide des indicateurs
+
+En mode expert, chaque réglage et chaque graphique porte une icône « ? » qui ouvre la page d'aide
+(`src/modules/retraites/app/aide.ts`) : définition, effets dans la vie réelle, traitement par le simulateur et repère
+chiffré. Les montants cités (pension moyenne d'environ 1 600 € bruts, 13 Md€ par point de
+cotisation, environ 30 Md€ par point de PIB) sont des ordres de grandeur.

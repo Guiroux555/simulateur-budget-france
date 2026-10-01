@@ -83,6 +83,7 @@ export function SoldeProductivite({ children: solde, productivite, soldeTendance
       })}
       <Courbes
         titre="Gains de productivité du travail"
+        cleAide="productivite"
         sousTitre="Croissance annuelle — moteur des salaires, donc des cotisations ; les pensions, elles, suivent les prix"
         series={series}
         bande={
