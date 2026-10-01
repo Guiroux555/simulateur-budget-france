@@ -1,8 +1,12 @@
 import { Component, type ReactNode } from 'react';
 
 /** Affiche l'erreur (au lieu d'un écran vide) si une vue plante, avec un bouton pour repartir. */
-export class Garde extends Component<{ children: ReactNode; cle?: string }, { erreur: Error | null }> {
-  state: { erreur: Error | null } = { erreur: null };
+export class Garde extends Component<{ children: ReactNode; cle?: string }, { erreur: Error | null; pile?: string }> {
+  state: { erreur: Error | null; pile?: string } = { erreur: null };
+
+  componentDidCatch(_: Error, info: { componentStack?: string | null }) {
+    this.setState({ pile: info.componentStack ?? undefined });
+  }
 
   static getDerivedStateFromError(erreur: Error) {
     return { erreur };
@@ -20,7 +24,13 @@ export class Garde extends Component<{ children: ReactNode; cle?: string }, { er
       <div className="encadre erreur" role="alert">
         <h3>Cet affichage a rencontré une erreur</h3>
         <p>Le reste du simulateur fonctionne. Merci de signaler ce message :</p>
-        <pre>{erreur.message}</pre>
+        <pre>
+          {erreur.message}
+          {'\n'}
+          {(erreur.stack ?? '').split('\n').slice(0, 6).join('\n')}
+          {this.state.pile ? `\n${this.state.pile.trim().split('\n').slice(0, 8).join('\n')}` : ''}
+          {`\n${navigator.userAgent}`}
+        </pre>
         <button type="button" className="bouton principal" onClick={() => this.setState({ erreur: null })}>
           Réessayer
         </button>{' '}

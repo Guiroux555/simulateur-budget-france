@@ -6,5 +6,6 @@ import { viteSingleFile } from 'vite-plugin-singlefile';
 export default defineConfig(({ mode }) => ({
   base: './',
   plugins: [react(), ...(mode === 'fichier-unique' ? [viteSingleFile()] : [])],
-  build: { outDir: mode === 'fichier-unique' ? 'dist-fichier-unique' : 'dist' },
+  // Fichier unique non minifié : les messages d'erreur gardent les vrais noms de fonctions.
+  build: { outDir: mode === 'fichier-unique' ? 'dist-fichier-unique' : 'dist', minify: mode !== 'fichier-unique' },
 }));
