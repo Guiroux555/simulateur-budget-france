@@ -215,3 +215,10 @@ Un sélecteur « Période » (boutons − / +, années de début et de fin, pré
 « 40 ans + projection », « Projection seule », « Court terme ») règle la période affichée par tous
 les graphiques en courbes, la pyramide animée et l'onglet « Dans le temps » des régimes. Elle est
 conservée dans le lien permanent (paramètre `f`).
+
+Dans l'onglet « Dans le temps », les retraités, cotisants, taux de couverture et montants moyens par
+régime sont aussi tracés en courbes. Ils sont dérivés des valeurs 2024 de chaque régime : retraités
+= valeur 2024 × évolution de la part du régime dans les dépenses × évolution du nombre total de
+retraités ; cotisants = cotisants par retraité × retraités ; couverture suivant le solde pour les
+régimes autonomes (Agirc-Arrco, CNRACL, libéraux) ou le nombre de cotisants (régimes spéciaux,
+exploitants agricoles), constante sinon ; montants en € de 2025 à partir du PIB en volume.

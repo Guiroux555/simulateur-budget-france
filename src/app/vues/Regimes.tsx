@@ -48,6 +48,15 @@ export function Regimes({ integre = false, reference }: { integre?: boolean; ref
   const [selection, setSelection] = useState<string | null>(null);
   const [convention, setConvention] = useState<Convention>('comptable');
   const choisir = (id: string) => setSelection((s) => (s === id ? null : id));
+  const voirEvolution = () => {
+    setOnglet('temps');
+    setTimeout(() => document.getElementById('evolution-regimes')?.scrollIntoView({ behavior: 'smooth' }), 50);
+  };
+  const lienEvolution = reference && (
+    <button type="button" className="bouton lien" onClick={voirEvolution}>
+      Voir l’historique et la projection en courbes →
+    </button>
+  );
   const parDepenses = [...REGIMES].sort((a, b) => b.depenses - a.depenses);
   const pensionsParRetraite = REGIMES.reduce((t, r) => t + (r.retraites ?? 0), 0) / TOTAUX_2024.retraites;
   const avecCotisations = parDepenses.filter((r) => r.cotisations !== null && r.cotisants !== null && r.retraites !== null);
@@ -249,6 +258,8 @@ export function Regimes({ integre = false, reference }: { integre?: boolean; ref
           onSelect={choisir}
         />
 
+        {lienEvolution}
+
         <h3>Ce que chaque régime encaisse et verse</h3>
         <p className="note">
           Pour comparer les régimes sur une base commune : combien cotise en moyenne un actif, combien est versé en moyenne à
@@ -317,6 +328,7 @@ export function Regimes({ integre = false, reference }: { integre?: boolean; ref
           incomplètes et réversions comprises) et non des cas individuels. Sources : {SOURCES_COTISATIONS}. Cotisations et
           cotisants en partie estimés (ordres de grandeur).
         </p>
+        {lienEvolution}
         </>
       )}
 

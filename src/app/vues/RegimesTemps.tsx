@@ -52,7 +52,10 @@ export function RegimesTemps({ reference, couleur, selection, onSelect }: Props)
 
   return (
     <div className="regimes-temps">
-      <p className="note avertissement">{STATUT_REGIMES_TEMPS} Projection : législation actuelle, hypothèses du COR.</p>
+      <p className="note avertissement">
+        {STATUT_REGIMES_TEMPS} Projection : législation actuelle, hypothèses du COR. Retraités, cotisants et montants
+        moyens par régime sont dérivés des valeurs 2024 et de l’évolution d’ensemble (estimations).
+      </p>
 
       <div className="controle-annee grand">
         <button type="button" className="bouton secondaire" onClick={() => (annee >= max && setAnnee(min), setLecture(!lecture))}>
@@ -115,11 +118,47 @@ export function RegimesTemps({ reference, couleur, selection, onSelect }: Props)
         onSelect={onSelect}
       />
 
-      <h3>Évolution {Math.max(ANNEE_DEBUT_REGIMES, fenetre.debut)}-{max}</h3>
+      <h3 id="evolution-regimes">Évolution {Math.max(ANNEE_DEBUT_REGIMES, fenetre.debut)}-{max}</h3>
       <div className="grille-2">
         <Courbes titre="Dépenses par régime" sousTitre="% du PIB" series={courbes((l) => l.depensesPctPib)} format={pctPibSimple} {...axe} hauteur={300} />
         <Courbes titre="Solde par régime" sousTitre="% du PIB ; le régime général porte l’essentiel du déficit projeté" series={courbes((l) => l.soldePctPib)} format={pctPib} formatAxe={pctPibSimple} zero {...axe} hauteur={300} />
         <Courbes titre="Cotisants pour un retraité" sousTitre="Régimes spéciaux fermés aux nouveaux embauchés : extinction progressive" series={courbes((l) => l.ratio)} format={(v) => virgule(v, 2)} {...axe} hauteur={300} />
+        <Courbes titre="Cotisants par régime" sousTitre="Millions de cotisants" series={courbes((l) => l.cotisants)} format={(v) => `${virgule(v, 1)} M`} {...axe} hauteur={300} />
+        <Courbes
+          titre="Retraités par régime"
+          sousTitre="Millions de retraités de droit direct (une même personne peut relever de plusieurs régimes)"
+          series={courbes((l) => l.retraites)}
+          format={(v) => `${virgule(v, 1)} M`}
+          {...axe}
+          hauteur={300}
+        />
+        <Courbes
+          titre="Part des pensions couverte par les cotisations"
+          sousTitre="Cotisations / pensions ; sous 100 % : impôts, transferts ou subventions"
+          series={courbes((l) => l.couverture)}
+          format={(v) => `${virgule(v * 100, 0)} %`}
+          domaine={[0, 1.1]}
+          {...axe}
+          hauteur={300}
+        />
+        <Courbes
+          titre="Cotisation moyenne par actif"
+          sousTitre="Salarié + employeur (État employeur compris), € de 2025 par an"
+          series={courbes((l) => l.cotisationMoyenne)}
+          format={euros}
+          formatAxe={(v) => `${virgule(v / 1000, 0)} k€`}
+          {...axe}
+          hauteur={300}
+        />
+        <Courbes
+          titre="Pension moyenne versée par retraité"
+          sousTitre="Montant versé par ce régime à chacun de ses retraités, € de 2025 par an"
+          series={courbes((l) => l.pensionMoyenne)}
+          format={euros}
+          formatAxe={(v) => `${virgule(v / 1000, 0)} k€`}
+          {...axe}
+          hauteur={300}
+        />
         <Courbes
           titre="Contributions d’équilibre de l’État et des employeurs publics"
           sousTitre="Fonction publique et régimes spéciaux, % du PIB (COR 2026)"
@@ -134,4 +173,5 @@ export function RegimesTemps({ reference, couleur, selection, onSelect }: Props)
 }
 
 type SerieAnnee = ReturnType<typeof regimesDansLeTemps>['regimes'][number]['annees'][number];
+const euros = (v: number) => `${(Math.round(v / 100) * 100).toLocaleString('fr-FR')} €`;
 const pctPibSimple = (v: number) => `${virgule(v * 100, 1)} %`;
