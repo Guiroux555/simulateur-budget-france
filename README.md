@@ -1,6 +1,44 @@
 # Simulateur budget France
 
-Outils de simulation ouverts pour éclairer le débat public sur les finances publiques françaises.
+Outils de simulation ouverts et politiquement neutres pour éclairer le débat public sur les
+finances publiques françaises.
 
-Premier module envisagé : **simulateur de financement des retraites** en vue de la présidentielle 2027.
-Voir le document d'idéation : [`docs/retraites/IDEATION.md`](docs/retraites/IDEATION.md).
+## Module retraites (présidentielle 2027)
+
+Projection 2025-2070 de l'équilibre du système de retraite (tous régimes), calibrée sur le
+scénario de référence du Conseil d'orientation des retraites (juin 2026), avec leviers réglables :
+âge légal, durée de cotisation, taux de cotisation, recettes externes, indexation / gel des
+pensions, niveau des pensions, emploi des seniors, capitalisation (additionnelle, substitutive,
+fonds de réserve).
+
+- Idéation et décisions de cadrage : [`docs/retraites/IDEATION.md`](docs/retraites/IDEATION.md)
+- Note de méthode et calibrage : [`docs/retraites/METHODOLOGIE.md`](docs/retraites/METHODOLOGIE.md)
+
+Interface web : deux présentations sur le même moteur — **Découvrir** (parcours guidé en
+3 étapes : comprendre, choisir ses mesures, qui paie ?) et **Mode expert** (toutes les hypothèses
+et leviers, effort d'équilibre par levier, tableau, export CSV). L'état du scénario est encodé
+dans l'URL (lien partageable).
+
+```bash
+npm install
+npm run dev           # interface web sur http://localhost:5173
+npm run build         # site statique dans dist/ (hébergeable sur GitHub Pages)
+npm run build:fichier-unique   # un seul fichier HTML autonome
+npm test              # tests unitaires et de calibrage
+npm run calibration   # compare le modèle aux chiffres du COR
+npm run typecheck
+```
+
+Exemple d'utilisation du moteur :
+
+```ts
+import { simuler, equilibre, scenarioReference, LEVIERS_NEUTRES, type Scenario } from './src/engine';
+
+const scenario: Scenario = {
+  ...scenarioReference(),
+  leviers: { ...LEVIERS_NEUTRES, ageLegal: [[2027, 62.75], [2035, 65]] },
+};
+const resultat = simuler(scenario);
+console.log(resultat.annees.at(-1)?.soldePctPib);
+console.log(equilibre(resultat).at(-1)?.ageDepartNecessaire);
+```
