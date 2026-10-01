@@ -53,18 +53,6 @@ export function GrandPublic(props: Props) {
       {etape === 0 && <Comprendre {...props} />}
       {etape === 1 && <Choisir {...props} />}
       {etape === 2 && <QuiPaie {...props} />}
-      <div className="navigation-etapes">
-        {etape > 0 && (
-          <button type="button" className="bouton secondaire" onClick={() => setEtape(etape - 1)}>
-            ← {ETAPES[etape - 1]}
-          </button>
-        )}
-        {etape < ETAPES.length - 1 && (
-          <button type="button" className="bouton principal" onClick={() => setEtape(etape + 1)}>
-            {ETAPES[etape + 1]} →
-          </button>
-        )}
-      </div>
     </div>
   );
 }

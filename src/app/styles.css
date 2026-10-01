@@ -139,8 +139,6 @@ section { background: var(--surface-1); border: 1px solid var(--bordure); border
 .etapes button.actif { border-color: var(--accent); color: var(--text-primary); font-weight: 600; }
 .etape-num { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: var(--surface-2); font-weight: 700; font-size: 0.85rem; }
 .etapes button.actif .etape-num { background: var(--accent); color: var(--accent-texte); }
-.navigation-etapes { display: flex; justify-content: space-between; margin-top: 16px; gap: 8px; }
-.navigation-etapes .principal { margin-left: auto; }
 
 .tuiles { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 8px; margin: 10px 0 6px; }
 .tuile { border: 1px solid var(--bordure); border-left: 3px solid var(--bordure); border-radius: 6px; padding: 6px 10px; background: transparent; }
