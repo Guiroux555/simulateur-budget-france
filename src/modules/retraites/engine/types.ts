@@ -9,7 +9,9 @@
  *   la valeur étant constante avant le premier point et après le dernier.
  */
 
-export type Trajectoire = ReadonlyArray<readonly [annee: number, valeur: number]>;
+import type { Trajectoire } from '../../../socle/trajectoire';
+
+export type { Trajectoire };
 
 /** Hypothèses sur « le monde » : démographie et économie. */
 export interface Hypotheses {

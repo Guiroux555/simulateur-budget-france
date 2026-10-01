@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { esperanceVieA, sommeAges, tableMortalite } from '../src/engine/demographie';
-import { CIBLES_2025, pyramide2025 } from '../src/engine/donnees/population2025';
-import { valeurA } from '../src/engine/trajectoire';
+import { esperanceVieA, sommeAges, tableMortalite } from '../src/socle/demographie';
+import { CIBLES_2025, pyramide2025 } from '../src/socle/donnees/population2025';
+import { valeurA } from '../src/socle/trajectoire';
 
 describe('trajectoires', () => {
   it('interpole linéairement et reste constante aux bords', () => {
@@ -42,7 +42,7 @@ describe('pyramide 2025', () => {
 
 describe('pyramides reconstituées 1945-2024', () => {
   it('couvrent 80 ans, sans effectif négatif, avec une population croissante', async () => {
-    const { pyramidesHistoriques } = await import('../src/engine/donnees/population2025');
+    const { pyramidesHistoriques } = await import('../src/socle/donnees/population2025');
     const h = pyramidesHistoriques();
     expect(h.size).toBe(80);
     let precedente = 0;

@@ -3,9 +3,9 @@
  * Usage : npm run calibration
  */
 import cor from '../data/cor-2026-reference.json';
-import { equilibre } from '../src/engine/equilibre';
-import { simuler } from '../src/engine/modele';
-import { scenarioReference } from '../src/engine/reference';
+import { equilibre } from '../src/modules/retraites/engine/equilibre';
+import { simuler } from '../src/modules/retraites/engine/modele';
+import { scenarioReference } from '../src/modules/retraites/engine/reference';
 
 const sim = simuler(scenarioReference());
 const eq = equilibre(sim);

@@ -6,9 +6,9 @@
  */
 import type { ResultatAnnee } from '../engine';
 import { HISTORIQUE } from '../engine/donnees/historique';
-import { pyramidesHistoriques } from '../engine/donnees/population2025';
+import { pyramidesHistoriques } from '../../../socle/donnees/population2025';
 import { effectifs } from '../engine/modele';
-import { valeurA } from '../engine/trajectoire';
+import { valeurA } from '../../../socle/trajectoire';
 
 export type EtatPyramide = Pick<
   ResultatAnnee,

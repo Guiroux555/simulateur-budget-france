@@ -1,15 +1,15 @@
 import { useDeferredValue, useMemo, useState } from 'react';
 import { simuler, type EquilibreAnnee, type ResultatAnnee, type ResultatSimulation } from '../../engine';
-import { Courbes } from '../charts/Courbes';
+import { Courbes } from '../../../../commun/charts/Courbes';
 import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
 import { SoldeProductivite } from '../charts/SoldeProductivite';
-import { Curseur } from '../composants';
+import { Curseur } from '../../../../commun/composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, versScenario, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
-import { useFenetre } from '../fenetre';
+import { useFenetre } from '../../../../commun/fenetre';
 import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { avecTendanceObservee, LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { PARAMETRES_REFERENCE } from '../src/app/parametres';
-import { fourchette, HYPOTHESES, variantes } from '../src/app/sensibilite';
+import { PARAMETRES_REFERENCE } from '../src/modules/retraites/app/parametres';
+import { fourchette, HYPOTHESES, variantes } from '../src/modules/retraites/app/sensibilite';
 
 const solde = (s: { annees: { annee: number; soldePctPib: number }[] }, a: number) => s.annees.find((r) => r.annee === a)!.soldePctPib;
 
@@ -27,9 +27,9 @@ describe('sensibilité aux hypothèses', () => {
 
 describe('trajectoire de productivité « tendance observée »', () => {
   it('part du niveau observé en 2024 et rejoint la moyenne 2010-2024 en 2030', async () => {
-    const { TENDANCE_OBSERVEE } = await import('../src/app/productivite');
-    const { simuler } = await import('../src/engine/modele');
-    const { versScenario } = await import('../src/app/parametres');
+    const { TENDANCE_OBSERVEE } = await import('../src/modules/retraites/app/productivite');
+    const { simuler } = await import('../src/modules/retraites/engine/modele');
+    const { versScenario } = await import('../src/modules/retraites/app/parametres');
     expect(TENDANCE_OBSERVEE.longTerme).toBeGreaterThan(0.3);
     expect(TENDANCE_OBSERVEE.longTerme).toBeLessThan(0.7);
     const s = simuler(

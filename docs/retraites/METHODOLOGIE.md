@@ -1,6 +1,6 @@
 # Note de méthode — moteur de projection v0
 
-Le moteur (`src/engine/`) projette chaque année, de 2025 à 2070, l'équilibre financier du
+Le moteur (`src/modules/retraites/engine/`, qui s'appuie sur le socle commun `src/socle/`) projette chaque année, de 2025 à 2070, l'équilibre financier du
 système de retraite français **pris dans son ensemble** (tous régimes, base + complémentaires).
 Il est volontairement simple, lisible et rapide (calcul complet en quelques millisecondes dans le
 navigateur), et **calibré pour reproduire le scénario de référence du COR (rapport de juin 2026)**.
@@ -11,7 +11,7 @@ rendre leurs mécanismes manipulables.
 
 | Étape | Méthode | Fichier |
 |---|---|---|
-| Démographie | Projection par composantes, âge simple 0-105 ans, sexes confondus. Mortalité de Gompertz-Makeham ajustée sur l'espérance de vie visée ; fécondité = ICF × calendrier gaussien (âge moyen 31 ans) ; solde migratoire réparti selon un profil par âge centré sur 26 ans. | `demographie.ts` |
+| Démographie | Projection par composantes, âge simple 0-105 ans, sexes confondus. Mortalité de Gompertz-Makeham ajustée sur l'espérance de vie visée ; fécondité = ICF × calendrier gaussien (âge moyen 31 ans) ; solde migratoire réparti selon un profil par âge centré sur 26 ans. | `src/socle/demographie.ts` |
 | Pyramide 2025 | **Provisoire** : reconstruite à partir de l'historique des naissances, d'une mortalité historique et des migrations, puis recalée sur les effectifs 0-19 / 20-64 / 65+ (voir §4). | `donnees/population2025.ts` |
 | Départs à la retraite | Part des retraités à chaque âge = loi logistique autour de l'âge moyen effectif de départ **de la génération** (un relèvement n'affecte que les générations qui n'ont pas encore liquidé). | `modele.ts` |
 | Âge effectif | Âge légal de référence (suspension LFSS 2026 puis reprise du calendrier décalé d'un trimestre) + écart calibré ; un an d'âge légal en plus → +0,6 an d'âge effectif ; un an de durée requise en plus → +0,5 an. | `modele.ts`, `reference.ts` |
@@ -82,13 +82,13 @@ Les tests (`npm test`) verrouillent ces écarts pour détecter toute dérive.
 ## 4. Données et sources
 
 - `data/cor-2026-reference.json` : hypothèses et cibles du scénario de référence COR 2026, avec sources.
-- `src/engine/donnees/population2025.ts` : pyramide provisoire et cibles de recalage.
+- `src/socle/donnees/population2025.ts` : pyramide provisoire et cibles de recalage.
 - Prochaine étape « données » : importer la pyramide INSEE au 1er janvier 2025 par sexe et âge
   détaillé, les quotients de mortalité projetés de l'INSEE et les séries détaillées du COR.
 
 ## 5. Historique 1945-2024 et réformes
 
-`src/engine/donnees/historique.ts` contient, pour la mise en perspective, des **points d'ancrage
+`src/modules/retraites/engine/donnees/historique.ts` contient, pour la mise en perspective, des **points d'ancrage
 approximatifs** (dépenses et solde en % du PIB, cotisants par retraité, âge moyen conjoncturel de
 départ, espérance de vie à 60 ans, âge légal) et la liste des réformes depuis 1982 (retraite à
 60 ans, indexation sur les prix, Balladur, Juppé, FRR, Fillon, régimes spéciaux, Woerth, Touraine,
@@ -101,7 +101,7 @@ définitions diffèrent légèrement de celles du modèle, d'où de petites marc
 ## 6. Sensibilité aux hypothèses
 
 L'interface simule le scénario choisi sous plusieurs hypothèses, toutes choses égales par ailleurs
-(`src/app/sensibilite.ts`) :
+(`src/modules/retraites/app/sensibilite.ts`) :
 
 | Hypothèse | Valeurs testées | Référence COR |
 |---|---|---|
@@ -153,7 +153,7 @@ partir de 2025.
 
 ## 7. Les régimes
 
-La section « Les régimes » (`src/engine/donnees/regimes.ts`) décrit les grands régimes (régime
+La section « Les régimes » (`src/modules/retraites/engine/donnees/regimes.ts`) décrit les grands régimes (régime
 général, Agirc-Arrco, fonctionnaires de l'État, CNRACL, régimes spéciaux, exploitants agricoles,
 professions libérales, autres complémentaires) : dépenses 2024, solde, cotisants par retraité,
 subventions de l'État, règles de calcul, avantages et contreparties. Les montants sont des ordres
@@ -186,8 +186,8 @@ calcul à partir des effectifs par régime). Les « parcours types » sont des r
 d'une pension entre régimes, à visée pédagogique, et non des statistiques.
 
 **Régimes dans le temps (onglet « Dans le temps »).** Faute de séries officielles par régime, les
-trajectoires 2000-2070 sont des estimations (`src/engine/donnees/regimesTemps.ts`,
-`src/app/regimesTemps.ts`) : parts des dépenses par régime interpolées entre 2000, 2024 et 2070
+trajectoires 2000-2070 sont des estimations (`src/modules/retraites/engine/donnees/regimesTemps.ts`,
+`src/modules/retraites/app/regimesTemps.ts`) : parts des dépenses par régime interpolées entre 2000, 2024 et 2070
 puis normalisées et appliquées aux dépenses totales (historique puis modèle) ; soldes des régimes
 autres que le régime général interpolés entre points d'ancrage (CNRACL excédentaire jusqu'en 2017
 puis déficitaire, Agirc-Arrco proche de l'équilibre, régimes de la fonction publique et spéciaux
@@ -225,7 +225,7 @@ exploitants agricoles), constante sinon ; montants en € de 2025 à partir du P
 
 ### Crises économiques
 
-Les graphiques historiques représentent en bandes colorées les grandes crises (`src/engine/donnees/evenements.ts`) :
+Les graphiques historiques représentent en bandes colorées les grandes crises (`src/socle/donnees/evenements.ts`) :
 premier (1973-1975) et second (1979-1980) chocs pétroliers, récession de 1993, crise financière
 (2008-2009), crise des dettes souveraines (2011-2012), Covid-19 (2020-2021), choc d'inflation
 (2022-2023). Le survol d'une année affiche la crise et son impact (ordres de grandeur INSEE). Une
@@ -235,7 +235,7 @@ case « Crises économiques » dans la barre « Période » permet de les masque
 
 Le mode interactif est proposé en mode expert, dans l'onglet « Régimes ».
 
-Dans l'onglet « Dans le temps », le mode interactif (`src/app/interactif.ts`) recalcule toutes les
+Dans l'onglet « Dans le temps », le mode interactif (`src/modules/retraites/app/interactif.ts`) recalcule toutes les
 séries par régime avec des critères réglables : productivité, chômage, taux d'activité des 20-64 ans
 (nouveau levier du moteur, `hausseActivite`, qui agit sur le rapport actifs/inactifs), âge légal,
 natalité, et deux leviers des régimes par points (Agirc-Arrco, professions libérales, autres

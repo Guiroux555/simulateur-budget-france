@@ -10,10 +10,10 @@
  *     retraités entrent avec une pension calculée sur leurs revenus d'activité passés ;
  *  5. PIB proportionnel à la masse des revenus d'activité ; ressources en % du PIB.
  */
-import { avancerPopulation, esperanceVieA, NB_AGES, sommeAges, tableMortalite } from './demographie';
-import { pyramide2025 } from './donnees/population2025';
+import { avancerPopulation, esperanceVieA, NB_AGES, sommeAges, tableMortalite } from '../../../socle/demographie';
+import { pyramide2025 } from '../../../socle/donnees/population2025';
 import { AGE_LEGAL_REFERENCE, ANNEE_BASE, CALIBRAGE } from './reference';
-import { valeurA } from './trajectoire';
+import { valeurA } from '../../../socle/trajectoire';
 import type { Hypotheses, Leviers, ResultatAnnee, ResultatSimulation, Scenario } from './types';
 
 const AGE_PIVOT_GENERATION = 63;

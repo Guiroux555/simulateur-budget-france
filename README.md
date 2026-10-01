@@ -5,6 +5,10 @@ finances publiques françaises.
 
 - Extension de la méthode à l'ensemble du budget (idéation) : [`docs/budget/IDEATION.md`](docs/budget/IDEATION.md)
 
+Organisation : un **socle** commun (`src/socle/` : démographie, trajectoires, crises, contrat de
+module), des **composants d'interface** partagés (`src/commun/`) et des **modules indépendants**
+(`src/modules/<sujet>/`), dont les résultats seront rassemblés par une page de synthèse.
+
 ## Module retraites (présidentielle 2027)
 
 Projection 2025-2070 de l'équilibre du système de retraite (tous régimes), calibrée sur le
@@ -34,7 +38,7 @@ npm run typecheck
 Exemple d'utilisation du moteur :
 
 ```ts
-import { simuler, equilibre, scenarioReference, LEVIERS_NEUTRES, type Scenario } from './src/engine';
+import { simuler, equilibre, scenarioReference, LEVIERS_NEUTRES, type Scenario } from './src/modules/retraites/engine';
 
 const scenario: Scenario = {
   ...scenarioReference(),

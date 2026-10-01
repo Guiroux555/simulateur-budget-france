@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { ratioActifsInactifs, type EtatPyramide } from '../pyramidesHistoriques';
-import { graduations, useLargeur } from './useLargeur';
+import { graduations, useLargeur } from '../../../../commun/charts/useLargeur';
 
 interface Props {
   resultat: EtatPyramide;

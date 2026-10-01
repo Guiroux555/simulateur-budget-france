@@ -1,5 +1,5 @@
 import { useDeferredValue, useMemo } from 'react';
-import { Courbes } from '../charts/Courbes';
+import { Courbes } from '../../../../commun/charts/Courbes';
 import { avecHistorique } from '../historique';
 import { ans, pct, pctSigne } from '../format';
 import type { ParametresUI } from '../parametres';

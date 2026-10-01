@@ -2,7 +2,7 @@ import type { ResultatSimulation } from '../../engine';
 import { AGE_ENTREE_VIE_ACTIVE_PROJETE, HISTORIQUE, PART_SANS_INCAPACITE_65 } from '../../engine/donnees/historique';
 import { ans } from '../format';
 import { ANNEE_DEBUT_HISTORIQUE, ANNEE_PROJECTION, REPERES_REFORMES, serieObservee } from '../historique';
-import { Courbes, type Serie } from './Courbes';
+import { Courbes, type Serie } from '../../../../commun/charts/Courbes';
 
 interface Props {
   /** Scénario affiché. */

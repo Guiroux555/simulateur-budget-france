@@ -3,9 +3,9 @@
  * productivité, âge…) et non recopiée d'un rapport : chaque indicateur est modifié seul et l'on
  * suit toute la chaîne de calcul jusqu'au solde. `npm run verification`.
  */
-import { simuler, valeurA, CALIBRAGE } from '../src/engine';
-import { PARAMETRES_REFERENCE, versScenario, type ParametresUI } from '../src/app/parametres';
-import { simulerInteractif, criteresDepuis, soldeTotal } from '../src/app/interactif';
+import { simuler, valeurA, CALIBRAGE } from '../src/modules/retraites/engine';
+import { PARAMETRES_REFERENCE, versScenario, type ParametresUI } from '../src/modules/retraites/app/parametres';
+import { simulerInteractif, criteresDepuis, soldeTotal } from '../src/modules/retraites/app/interactif';
 
 const A = 2070;
 const f = (v: number, d = 2) => v.toFixed(d).padStart(7);

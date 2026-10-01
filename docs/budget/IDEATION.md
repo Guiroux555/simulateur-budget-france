@@ -1,6 +1,6 @@
 # Étendre la méthode « retraites » à tout le budget — Idéation
 
-> Statut : **idéation validée** — décisions de cadrage en §0 ; une question reste ouverte (§9).
+> Statut : **idéation validée** — décisions de cadrage en §0 ; phase A (socle et contrat de module) faite.
 > Point de départ : le module retraites (voir [`../retraites/IDEATION.md`](../retraites/IDEATION.md)
 > et [`../retraites/METHODOLOGIE.md`](../retraites/METHODOLOGIE.md)). Objectif : dégager de ce
 > module une **méthode reproductible**, puis l'appliquer aux autres grands postes des finances
@@ -16,7 +16,7 @@
 | Ambition | **Une série de modules indépendants** (un par sujet, chacun utilisable seul), et **une page de synthèse** qui rassemble les résultats des scénarios choisis dans chaque module (effet sur le solde public et la dette). |
 | Ordre des modules | **Dette et solde public**, puis **santé**. |
 | Horizon de projection | **Propre à chaque sujet** : 2070 pour les sujets démographiques (retraites, santé, autonomie, éducation), un horizon plus court pour les sujets budgétaires (dette, fiscalité, défense), fixé dans la fiche de chaque module. La page de synthèse affiche la période commune. |
-| Niveau de détail fiscal | **Ouvert** (voir §9). |
+| Niveau de détail fiscal | **Approche d'ensemble d'abord**, avec des liens vers OpenFisca / LexImpact pour les effets par foyer (voir §9). |
 | Identité | **Le « Simulateur des retraites » devient un module du « Simulateur du budget »**, avec une adresse par module. |
 
 ---
@@ -230,11 +230,19 @@ aligner. Les effets d'un module sur un autre (retraites → chômage / invalidit
 fécondité) sont calculés et affichés **dans la page de synthèse**, comme des effets explicites et
 désactivables. Pas de bouclage caché.
 
-**Réorganisation du code** (à faire avant le deuxième module) :
-`src/engine/demographie.ts` et les données historiques communes vers `src/socle/` ; le reste vers
-`src/modules/retraites/` ; composants graphiques (`Courbes`, `Pyramide`, `Barres`, fenêtre,
-crises) dans `src/app/commun/`. Les tests de calibrage retraites garantissent que la réorganisation
-ne change aucun résultat.
+**Organisation du code** (phase A, faite) :
+
+| Dossier | Contenu |
+|---|---|
+| `src/socle/` | Démographie, trajectoires, pyramide 2025, crises économiques, contrat de module (`module.ts`). |
+| `src/commun/` | Composants d'interface génériques : graphiques en courbes et en barres, fenêtre de temps, écran d'erreur, styles. |
+| `src/modules/<module>/` | `engine/` (moteur et données du sujet), `app/` (interface), `module.ts` (implémentation du contrat). |
+| `src/modules/index.ts` | Liste des modules lue par la page de synthèse. |
+
+Deux tests verrouillent cette organisation : `tests/architecture.test.ts` (le socle et les
+composants communs n'importent aucun module ; un module n'en importe pas un autre) et
+`tests/module.test.ts` (contrat respecté par chaque module). La réorganisation n'a changé aucun
+résultat : sorties de `npm run calibration` et `npm run verification` identiques.
 
 ## 5. Présentation : des modules indépendants, une page de synthèse
 
@@ -277,7 +285,7 @@ pour disposer avant le premier tour (avril 2027) de trois modules démographique
 
 | Phase | Contenu | Échéance |
 |---|---|---|
-| A | Extraction du socle, contrat de module, réorganisation sans changement de résultat | Octobre 2026 |
+| A | Extraction du socle, contrat de module, réorganisation sans changement de résultat | Octobre 2026 — **faite** |
 | B | Module dette + page de synthèse + page « Où vont 100 € » | Novembre 2026 |
 | C | Module santé (calibrage LFSS / Ageing Report) | Décembre 2026 – janvier 2027 |
 | D | Module autonomie | Février 2027 |
@@ -302,7 +310,7 @@ pour disposer avant le premier tour (avril 2027) de trois modules démographique
 - **Données** : la limite « cibles reprises de la presse » du module retraites se reproduira ;
   prévoir dès la phase A un dossier `data/` par source avec date et licence.
 
-## 9. Question restant ouverte : le niveau de détail de la fiscalité
+## 9. Le niveau de détail de la fiscalité
 
 Deux façons de simuler les impôts, à choisir au moment du module fiscalité (pas avant mi-2027) :
 
@@ -313,8 +321,8 @@ Deux façons de simuler les impôts, à choisir au moment du module fiscalité (
 | Effort | Faible, même démarche que les autres modules. | Élevé, données individuelles nécessaires. |
 | Outils existants | — | OpenFisca (moteur ouvert des règles socio-fiscales françaises), LexImpact (interface de l'Assemblée nationale fondée sur OpenFisca), Ines (INSEE-DREES). |
 
-**Proposition** : commencer par l'approche d'ensemble, suffisante pour la page de synthèse, et
-renvoyer vers LexImpact / OpenFisca pour les effets par foyer, sans les refaire. À rediscuter
+**Décision** : commencer par l'approche d'ensemble, suffisante pour la page de synthèse, et
+renvoyer vers LexImpact / OpenFisca pour les effets par foyer, sans les refaire. À réexaminer
 quand le module sera engagé.
 
 ## 10. Sources de référence (par domaine)

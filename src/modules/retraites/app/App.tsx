@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useState } from 'react';
 import { equilibre, simuler } from '../engine';
 import { depuisUrl, PARAMETRES_REFERENCE, versScenario, versUrl, type ParametresUI } from './parametres';
-import { ANNEE_PROJECTION, ControleFenetre, FENETRE_DEFAUT, FENETRE_MAX, FENETRE_MIN, FenetreContext, type Fenetre } from './fenetre';
+import { ANNEE_PROJECTION, ControleFenetre, FENETRE_DEFAUT, FENETRE_MAX, FENETRE_MIN, FenetreContext, type Fenetre } from '../../../commun/fenetre';
 import { Expert } from './vues/Expert';
 import { GrandPublic } from './vues/GrandPublic';
-import { Garde } from './Garde';
+import { Garde } from '../../../commun/Garde';
 
 type Mode = 'decouvrir' | 'expert';
 

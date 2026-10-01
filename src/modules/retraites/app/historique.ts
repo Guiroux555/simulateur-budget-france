@@ -1,6 +1,6 @@
 import { HISTORIQUE, REFORMES, RESSOURCES_HISTORIQUES } from '../engine/donnees/historique';
 import type { ResultatAnnee, ResultatSimulation } from '../engine';
-import type { RepereReforme, Serie } from './charts/Courbes';
+import type { RepereReforme, Serie } from '../../../commun/charts/Courbes';
 
 export const ANNEE_DEBUT_HISTORIQUE = 1945;
 export const ANNEE_PROJECTION = 2025;

@@ -1,4 +1,8 @@
-import type { Trajectoire } from './types';
+/**
+ * Une « trajectoire » est une liste de points [année, valeur] interpolés linéairement,
+ * la valeur étant constante avant le premier point et après le dernier.
+ */
+export type Trajectoire = ReadonlyArray<readonly [annee: number, valeur: number]>;
 
 /** Valeur d'une trajectoire à une année donnée (interpolation linéaire, constante aux bords). */
 export function valeurA(t: Trajectoire, annee: number): number {

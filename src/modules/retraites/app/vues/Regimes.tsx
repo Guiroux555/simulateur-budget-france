@@ -12,9 +12,9 @@ import {
 } from '../../engine/donnees/regimes';
 import type { ResultatSimulation } from '../../engine';
 import type { ParametresUI } from '../parametres';
-import { Barres } from '../charts/Barres';
+import { Barres } from '../../../../commun/charts/Barres';
 import { RegimesTemps } from './RegimesTemps';
-import { Encadre, Tuile } from '../composants';
+import { Encadre, Tuile } from '../../../../commun/composants';
 
 /**
  * Une couleur fixe par régime, la même dans tous les graphiques et sur les fiches

@@ -6,7 +6,7 @@ import { HISTORIQUE, type Point } from '../engine/donnees/historique';
 import { REGIMES } from '../engine/donnees/regimes';
 import { etatsPyramidesHistoriques } from './pyramidesHistoriques';
 import { TRAJECTOIRES_REGIMES } from '../engine/donnees/regimesTemps';
-import { valeurA } from '../engine/trajectoire';
+import { valeurA } from '../../../socle/trajectoire';
 
 export const ANNEE_DEBUT_REGIMES = 2000;
 export const ANNEE_FIN_REGIMES = 2070;

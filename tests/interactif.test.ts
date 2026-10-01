@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { criteresDepuis, poidsCriteres, simulerInteractif, soldeTotal, actifsInactifs } from '../src/app/interactif';
-import { PARAMETRES_REFERENCE } from '../src/app/parametres';
+import { criteresDepuis, poidsCriteres, simulerInteractif, soldeTotal, actifsInactifs } from '../src/modules/retraites/app/interactif';
+import { PARAMETRES_REFERENCE } from '../src/modules/retraites/app/parametres';
 
 const depart = criteresDepuis(PARAMETRES_REFERENCE);
 

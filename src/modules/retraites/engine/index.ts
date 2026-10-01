@@ -1,5 +1,5 @@
 export * from './types';
-export { valeurA } from './trajectoire';
+export { valeurA } from '../../../socle/trajectoire';
 export { simuler, ageLegal, ageMoyenDepart } from './modele';
 export { equilibre, type EquilibreAnnee } from './equilibre';
 export {

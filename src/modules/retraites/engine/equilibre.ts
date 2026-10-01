@@ -4,7 +4,7 @@
  * Même démarche que les « abaques » du COR, qui mesurent l'effort à fournir sur un seul levier.
  */
 import { effectifs, partMasseSalariale } from './modele';
-import { valeurA } from './trajectoire';
+import { valeurA } from '../../../socle/trajectoire';
 import type { ResultatAnnee, ResultatSimulation } from './types';
 
 export interface EquilibreAnnee {

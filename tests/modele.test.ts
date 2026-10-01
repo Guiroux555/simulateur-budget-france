@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import cor from '../data/cor-2026-reference.json';
-import { equilibre } from '../src/engine/equilibre';
-import { simuler } from '../src/engine/modele';
-import { LEVIERS_NEUTRES, scenarioReference, VARIANTES_PRODUCTIVITE } from '../src/engine/reference';
-import type { Leviers, ResultatSimulation } from '../src/engine/types';
+import { equilibre } from '../src/modules/retraites/engine/equilibre';
+import { simuler } from '../src/modules/retraites/engine/modele';
+import { LEVIERS_NEUTRES, scenarioReference, VARIANTES_PRODUCTIVITE } from '../src/modules/retraites/engine/reference';
+import type { Leviers, ResultatSimulation } from '../src/modules/retraites/engine/types';
 
 const reference = simuler(scenarioReference());
 const annee = (s: ResultatSimulation, a: number) => s.annees.find((r) => r.annee === a)!;

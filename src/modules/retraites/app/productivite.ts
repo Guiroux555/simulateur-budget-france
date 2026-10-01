@@ -2,7 +2,7 @@
  * Hypothèses de productivité : sources et trajectoire « tendance observée ».
  */
 import { HISTORIQUE } from '../engine/donnees/historique';
-import { valeurA } from '../engine/trajectoire';
+import { valeurA } from '../../../socle/trajectoire';
 import type { ParametresUI } from './parametres';
 
 const PERIODE_TENDANCE: [number, number] = [2010, 2024];

@@ -3,7 +3,7 @@
  * Voir docs/retraites/METHODOLOGIE.md.
  */
 import type { Hypotheses, Leviers, Scenario, Trajectoire } from './types';
-import { constante, nulle } from './trajectoire';
+import { constante, nulle } from '../../../socle/trajectoire';
 
 export const ANNEE_BASE = 2025;
 export const ANNEE_FIN = 2070;

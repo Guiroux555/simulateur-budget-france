@@ -1,6 +1,6 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { Barres } from '../charts/Barres';
-import { Curseur, Tuile } from '../composants';
+import { Barres } from '../../../../commun/charts/Barres';
+import { Curseur, Tuile } from '../../../../commun/composants';
 import { actifsInactifs, criteresDepuis, LIBELLES_CRITERES, poidsCriteres, simulerInteractif, soldeTotal, type CriteresInteractifs } from '../interactif';
 import type { ParametresUI } from '../parametres';
 

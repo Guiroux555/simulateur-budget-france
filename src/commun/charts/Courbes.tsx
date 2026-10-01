@@ -1,6 +1,6 @@
 import { useId, useState } from 'react';
 import { useFenetre } from '../fenetre';
-import { EVENEMENTS } from '../../engine/donnees/evenements';
+import { EVENEMENTS } from '../../socle/donnees/evenements';
 import { graduations, useLargeur } from './useLargeur';
 
 export interface Serie {

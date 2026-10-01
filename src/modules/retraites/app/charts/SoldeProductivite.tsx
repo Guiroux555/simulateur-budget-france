@@ -2,7 +2,7 @@ import { cloneElement, useState, type ComponentProps, type ReactElement } from '
 import type { ResultatSimulation } from '../../engine';
 import { ANNEE_DEBUT_HISTORIQUE, serieObservee } from '../historique';
 import { LIBELLE_TENDANCE, SOURCES_PRODUCTIVITE, TENDANCE_OBSERVEE } from '../productivite';
-import { Courbes, type Serie } from './Courbes';
+import { Courbes, type Serie } from '../../../../commun/charts/Courbes';
 
 type PropsCourbes = ComponentProps<typeof Courbes>;
 
