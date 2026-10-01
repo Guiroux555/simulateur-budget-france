@@ -207,6 +207,7 @@ export function simuler(scenario: Scenario): ResultatSimulation {
       cotisants,
       retraites,
       ratioCotisantsRetraites: cotisants / retraites,
+      productivite: valeurA(hyp.productivite, t),
       revenuActiviteMoyen: revenu,
       pensionMoyenne,
       pensionRelative: pensionMoyenne / revenu,

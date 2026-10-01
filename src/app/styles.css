@@ -256,3 +256,4 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
   section { padding: 16px; }
   .tuile-valeur { font-size: 1.5rem; }
 }
+.solde-productivite { display: flex; flex-direction: column; gap: 4px; min-width: 0; }

@@ -3,6 +3,7 @@ import type { EquilibreAnnee, ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
 import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
+import { SoldeProductivite } from '../charts/SoldeProductivite';
 import { Choix, Curseur, Encadre, Tuile } from '../composants';
 import { ans, effortFinancement, milliards, pct, pctSigne, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../parametres';
@@ -140,16 +141,18 @@ function Comprendre({ reference, historique }: Props) {
       </div>
 
       <div className="grille-2">
-        <Courbes
-          titre="Solde du système de retraite"
-          sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
-          {...avecHistorique(historique, 'soldePctPib', [
-            { id: 'ref', nom: 'Projection (législation actuelle)', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.soldePctPib) },
-          ])}
-          format={(v) => pct(v)}
-          zero
-          hauteur={250}
-        />
+        <SoldeProductivite historique={historique} productivite={[{ nom: 'Législation actuelle', simulation: reference, couleur: 'var(--series-1)' }]}>
+          <Courbes
+            titre="Solde du système de retraite"
+            sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
+            {...avecHistorique(historique, 'soldePctPib', [
+              { id: 'ref', nom: 'Projection (législation actuelle)', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.soldePctPib) },
+            ])}
+            format={(v) => pct(v)}
+            zero
+            hauteur={250}
+          />
+        </SoldeProductivite>
         <GraphiqueAges simulation={reference} historique={historique} />
       </div>
       {historique && (
@@ -347,23 +350,32 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
               );
             })}
           </div>
-          <Courbes
-            titre="Solde du système de retraite"
-            sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
-            {...avecHistorique(historique, 'soldePctPib', [
-              { id: 'ref', nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, (x) => x.soldePctPib), pointille: true },
-              { id: 'moi', nom: 'Mon scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, (x) => x.soldePctPib) },
-            ])}
-            bande={{
-              nom: 'Mon scénario, hypothèses défavorables à favorables',
-              couleur: 'var(--series-1)',
-              bas: serie(pessimiste, (x) => x.soldePctPib),
-              haut: serie(optimiste, (x) => x.soldePctPib),
-            }}
-            format={(v) => pct(v)}
-            zero
-            reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]}
-          />
+          <SoldeProductivite
+            historique={historique}
+            productivite={[
+              { nom: 'Mon scénario', simulation: scenario, couleur: 'var(--series-1)' },
+              { nom: 'Législation actuelle', simulation: reference, couleur: 'var(--ref)', pointille: true },
+            ]}
+            fourchette={{ nom: 'Hypothèses testées', bas: pessimiste, haut: optimiste }}
+          >
+            <Courbes
+              titre="Solde du système de retraite"
+              sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
+              {...avecHistorique(historique, 'soldePctPib', [
+                { id: 'ref', nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, (x) => x.soldePctPib), pointille: true },
+                { id: 'moi', nom: 'Mon scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, (x) => x.soldePctPib) },
+              ])}
+              bande={{
+                nom: 'Mon scénario, hypothèses défavorables à favorables',
+                couleur: 'var(--series-1)',
+                bas: serie(pessimiste, (x) => x.soldePctPib),
+                haut: serie(optimiste, (x) => x.soldePctPib),
+              }}
+              format={(v) => pct(v)}
+              zero
+              reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]}
+            />
+          </SoldeProductivite>
           <Encadre titre="Ce qu’il resterait à faire pour équilibrer">
             <table className="tableau compact">
               <thead>

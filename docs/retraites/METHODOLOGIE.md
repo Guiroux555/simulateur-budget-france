@@ -125,6 +125,11 @@ puis le nombre d'actifs est recalé sur le rapport cotisants / retraités observ
 reconstituée : 57,8 M (INSEE : ≈ 56,5 M), dont 12,5 % de 65 ans et plus. À remplacer par les
 pyramides INSEE annuelles.
 
+La croissance de la productivité observée (moyenne glissante sur 5 ans, pour lisser 2009 et 2020)
+est affichée sous le solde, dans un panneau aligné sur le même axe des années (pas de double axe :
+les unités diffèrent). Elle passe d'environ 2 %/an au milieu des années 1980 à environ 0 sur
+2019-2024 ; l'hypothèse de référence du COR (0,7 %/an à long terme) suppose donc un redressement.
+
 Le solde avant 2002 (date de début de la série du COR) et la pension relative historique sont des
 ordres de grandeur. La dette cumulée n'a pas d'historique : elle est par construction cumulée à
 partir de 2025.

@@ -79,6 +79,23 @@ export const HISTORIQUE = {
     ],
     source: 'COR (rapports annuels) ; progression liée à l’arrivée de générations aux carrières plus complètes (effet noria) ; ordres de grandeur',
   },
+  /** Croissance de la productivité apparente du travail (moyenne glissante sur 5 ans). */
+  productivite: {
+    points: [
+      [1985, 0.02],
+      [1990, 0.018],
+      [1995, 0.015],
+      [2000, 0.013],
+      [2005, 0.01],
+      [2010, 0.006],
+      [2015, 0.008],
+      [2019, 0.007],
+      [2022, 0.001],
+      [2024, 0.0],
+    ],
+    source:
+      'INSEE (comptes nationaux), COR ; moyenne glissante pour lisser les crises (2009, 2020) ; recul de la productivité depuis 2019 ; ordres de grandeur',
+  },
   /** Nombre de cotisants pour un retraité. */
   ratioCotisantsRetraites: {
     points: [

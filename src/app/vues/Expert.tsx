@@ -3,6 +3,7 @@ import type { EquilibreAnnee, ResultatAnnee, ResultatSimulation } from '../../en
 import { Courbes } from '../charts/Courbes';
 import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
+import { SoldeProductivite } from '../charts/SoldeProductivite';
 import { Curseur } from '../composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, type ParametresUI } from '../parametres';
@@ -152,17 +153,26 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
         {vue === 'graphiques' && (
           <>
             <div className="grille-graphiques">
-              <Courbes
-                titre="Solde"
-                sousTitre="% du PIB"
-                {...avecHistorique(historique, 'soldePctPib', compare('solde', (r) => r.soldePctPib))}
-                bande={{
-                  nom: 'Fourchette d’hypothèses',
-                  couleur: 'var(--series-1)',
-                  bas: serie(pessimiste, (r) => r.soldePctPib),
-                  haut: serie(optimiste, (r) => r.soldePctPib),
-                }}
-                format={(v) => pct(v)} zero reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]} />
+              <SoldeProductivite
+                historique={historique}
+                productivite={[
+                  { nom: 'Scénario', simulation: scenario, couleur: 'var(--series-1)' },
+                  { nom: 'Législation actuelle', simulation: reference, couleur: 'var(--ref)', pointille: true },
+                ]}
+                fourchette={{ nom: 'Hypothèses testées', bas: pessimiste, haut: optimiste }}
+              >
+                <Courbes
+                  titre="Solde"
+                  sousTitre="% du PIB"
+                  {...avecHistorique(historique, 'soldePctPib', compare('solde', (r) => r.soldePctPib))}
+                  bande={{
+                    nom: 'Fourchette d’hypothèses',
+                    couleur: 'var(--series-1)',
+                    bas: serie(pessimiste, (r) => r.soldePctPib),
+                    haut: serie(optimiste, (r) => r.soldePctPib),
+                  }}
+                  format={(v) => pct(v)} zero reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]} />
+              </SoldeProductivite>
               <Courbes
                 titre="Dépenses et ressources du scénario"
                 sousTitre="% du PIB"

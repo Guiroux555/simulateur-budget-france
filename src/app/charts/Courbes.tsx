@@ -31,7 +31,7 @@ export interface Bande {
   formatValeur?: (bas: number, haut: number) => string;
 }
 
-interface Props {
+export interface Props {
   titre: string;
   bande?: Bande;
   sousTitre?: string;
@@ -50,6 +50,11 @@ interface Props {
   reformes?: RepereReforme[];
   /** Année séparant l'observé (fond grisé) de la projection. */
   separation?: number;
+  /** Bornes horizontales imposées (pour aligner plusieurs graphiques). */
+  domaineX?: [number, number];
+  /** Survol partagé entre graphiques alignés (mode contrôlé). */
+  survol?: number | null;
+  onSurvol?: (annee: number | null) => void;
 }
 
 const MARGE = { haut: 12, droite: 16, bas: 26, gauche: 52 };
@@ -91,14 +96,32 @@ function placerEtiquettes(reformes: RepereReforme[], sx: (x: number) => number, 
 }
 
 /** Graphique en courbes avec réticule et info-bulle au survol (une seule échelle verticale). */
-export function Courbes({ titre, sousTitre, series, bande, format, formatAxe, zero, domaine, hauteur = 220, reperes = [], reformes = [], separation }: Props) {
+export function Courbes({
+  titre,
+  sousTitre,
+  series,
+  bande,
+  format,
+  formatAxe,
+  zero,
+  domaine,
+  hauteur = 220,
+  reperes = [],
+  reformes = [],
+  separation,
+  domaineX,
+  survol: survolControle,
+  onSurvol,
+}: Props) {
   const [ref, largeur] = useLargeur<HTMLDivElement>();
-  const [survol, setSurvol] = useState<number | null>(null);
+  const [survolLocal, setSurvolLocal] = useState<number | null>(null);
+  const survol = survolControle !== undefined ? survolControle : survolLocal;
+  const setSurvol = (x: number | null) => (onSurvol ? onSurvol(x) : setSurvolLocal(x));
   const idTitre = useId();
 
   const tousX = series.flatMap((s) => s.valeurs.map((v) => v.x));
-  const xMin = Math.min(...tousX);
-  const xMax = Math.max(...tousX);
+  const xMin = domaineX?.[0] ?? Math.min(...tousX);
+  const xMax = domaineX?.[1] ?? Math.max(...tousX);
   const reformesVisibles = reformes.filter((r) => r.annee >= xMin && r.annee <= xMax);
   const haut = MARGE.haut + (reformesVisibles.length ? HAUTEUR_REFORMES : 0);
 

@@ -93,6 +93,8 @@ export interface ResultatAnnee {
   retraites: number;
   /** Nombre de cotisants pour un retraité. */
   ratioCotisantsRetraites: number;
+  /** Croissance de la productivité du travail retenue pour l'année (hypothèse). */
+  productivite: number;
   /** Revenu d'activité moyen (€ 2025 / an). */
   revenuActiviteMoyen: number;
   /** Pension moyenne par répartition (€ 2025 / an). */
