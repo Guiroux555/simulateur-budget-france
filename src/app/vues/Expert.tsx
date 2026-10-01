@@ -6,6 +6,7 @@ import { Curseur } from '../composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
+import { avecHistorique, serieObservee } from '../historique';
 
 interface Props {
   parametres: ParametresUI;
@@ -13,12 +14,13 @@ interface Props {
   reference: ResultatSimulation;
   scenario: ResultatSimulation;
   equilibreScenario: EquilibreAnnee[];
+  historique: boolean;
 }
 
 const serie = (s: ResultatSimulation, f: (r: ResultatAnnee) => number) => s.annees.map((r) => ({ x: r.annee, y: f(r) }));
 const dec = (d: number) => (v: number) => v.toFixed(d).replace('.', ',');
 
-export function Expert({ parametres: p, setParametres, reference, scenario, equilibreScenario }: Props) {
+export function Expert({ parametres: p, setParametres, reference, scenario, equilibreScenario, historique }: Props) {
   const maj = (m: Partial<ParametresUI>) => setParametres({ ...p, ...m });
   const [anneePyramide, setAnneePyramide] = useState(2050);
   const [vueTableau, setVueTableau] = useState(false);
@@ -136,19 +138,20 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
         ) : (
           <>
             <div className="grille-graphiques">
-              <Courbes titre="Solde" sousTitre="% du PIB" series={compare('solde', (r) => r.soldePctPib)} format={(v) => pct(v)} zero reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]} />
+              <Courbes titre="Solde" sousTitre="% du PIB" {...avecHistorique(historique, 'soldePctPib', compare('solde', (r) => r.soldePctPib))} format={(v) => pct(v)} zero reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]} />
               <Courbes
                 titre="Dépenses et ressources du scénario"
                 sousTitre="% du PIB"
-                series={[
+                {...avecHistorique(historique, null, [
+                  ...(historique ? [serieObservee('depensesPctPib', 'Dépenses observées')] : []),
                   { id: 'dep', nom: 'Dépenses', couleur: 'var(--series-2)', valeurs: serie(scenario, (r) => r.depensesPctPib) },
                   { id: 'res', nom: 'Ressources', couleur: 'var(--series-1)', valeurs: serie(scenario, (r) => r.ressourcesPctPib) },
-                ]}
+                ])}
                 format={(v) => pct(v)}
               />
               <Courbes titre="Pension relative (y c. capitalisation)" sousTitre="Pension moyenne / revenu d’activité moyen" series={compare('prel', (r) => r.pensionRelativeTotale)} format={(v) => pct(v, 0)} />
-              <Courbes titre="Âge moyen de départ" sousTitre="Années" series={compare('age', (r) => r.ageMoyenDepart)} format={dec(1)} />
-              <Courbes titre="Cotisants par retraité" series={compare('ratio', (r) => r.ratioCotisantsRetraites)} format={dec(2)} />
+              <Courbes titre="Âge moyen de départ" sousTitre="Années" {...avecHistorique(historique, 'ageMoyenDepart', compare('age', (r) => r.ageMoyenDepart))} format={dec(1)} />
+              <Courbes titre="Cotisants par retraité" {...avecHistorique(historique, 'ratioCotisantsRetraites', compare('ratio', (r) => r.ratioCotisantsRetraites))} format={dec(2)} />
               <Courbes titre="Dette cumulée du système" sousTitre="% du PIB" series={compare('dette', (r) => r.detteCumuleePctPib)} format={(v) => pct(v, 0)} zero />
               {p.capitalisationTaux > 0 && (
                 <Courbes

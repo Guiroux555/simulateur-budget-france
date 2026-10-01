@@ -6,6 +6,8 @@ import { Choix, Curseur, Encadre, Tuile } from '../composants';
 import { ans, effortFinancement, milliards, pct, pctSigne, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
+import { REFORMES } from '../../engine/donnees/historique';
+import { avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
 
 interface Props {
   parametres: ParametresUI;
@@ -13,6 +15,8 @@ interface Props {
   reference: ResultatSimulation;
   scenario: ResultatSimulation;
   equilibreScenario: EquilibreAnnee[];
+  historique: boolean;
+  setHistorique: (v: boolean) => void;
 }
 
 const ETAPES = ['Comprendre', 'Choisir mes mesures', 'Qui paie ?'] as const;
@@ -54,7 +58,7 @@ export function GrandPublic(props: Props) {
   );
 }
 
-function Comprendre({ reference }: Props) {
+function Comprendre({ reference, historique }: Props) {
   const [annee, setAnnee] = useState(2025);
   const [lecture, setLecture] = useState(false);
   useEffect(() => {
@@ -116,7 +120,9 @@ function Comprendre({ reference }: Props) {
           <Courbes
             titre="Cotisants pour un retraité"
             sousTitre="Nombre de personnes en emploi pour une personne retraitée"
-            series={[{ id: 'ref', nom: 'Législation actuelle', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ratioCotisantsRetraites) }]}
+            {...avecHistorique(historique, 'ratioCotisantsRetraites', [
+              { id: 'ref', nom: 'Projection (législation actuelle)', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ratioCotisantsRetraites) },
+            ])}
             format={(v) => v.toFixed(1).replace('.', ',')}
             domaine={[1, 1.8]}
           />
@@ -127,6 +133,62 @@ function Comprendre({ reference }: Props) {
           </p>
         </div>
       </div>
+
+      <div className="grille-2">
+        <Courbes
+          titre="Solde du système de retraite"
+          sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
+          {...avecHistorique(historique, 'soldePctPib', [
+            { id: 'ref', nom: 'Projection (législation actuelle)', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.soldePctPib) },
+          ])}
+          format={(v) => pct(v)}
+          zero
+          hauteur={250}
+        />
+        <Courbes
+          titre="Âge de départ à la retraite"
+          sousTitre="Âge légal et âge moyen effectif de départ"
+          series={[
+            ...(historique ? [serieObservee('ageMoyenDepart', 'Âge moyen observé')] : []),
+            {
+              id: 'legal',
+              nom: 'Âge légal',
+              couleur: 'var(--series-2)',
+              valeurs: [...(historique ? serieObservee('ageLegal').valeurs : []), ...serie(reference, (x) => x.ageLegal)],
+              pointille: true,
+            },
+            { id: 'moyen', nom: 'Âge moyen projeté', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ageMoyenDepart) },
+          ]}
+          {...(historique ? { separation: 2025, reformes: REPERES_REFORMES } : {})}
+          format={(v) => v.toFixed(0)}
+          domaine={[60, 65]}
+          hauteur={250}
+        />
+      </div>
+      {historique && (
+        <p className="note">
+          Observé : points d’ancrage approximatifs (COR, DREES) reliés entre eux, à remplacer par les séries officielles
+          annuelles. Les définitions diffèrent légèrement de celles du modèle, d’où de petites marches en 2025.
+        </p>
+      )}
+
+      <Encadre titre="Trente ans de réformes">
+        <ol className="frise">
+          {REFORMES.map((r) => (
+            <li key={r.annee}>
+              <span className="frise-annee">{r.annee}</span>
+              <div>
+                <span className="frise-nom">{r.nom}</span>
+                <ul>
+                  {r.mesures.map((m) => (
+                    <li key={m}>{m}</li>
+                  ))}
+                </ul>
+              </div>
+            </li>
+          ))}
+        </ol>
+      </Encadre>
 
       <Encadre titre="L’équation de l’équilibre">
         <p className="equation">
@@ -148,7 +210,7 @@ function Comprendre({ reference }: Props) {
   );
 }
 
-function Choisir({ parametres: p, setParametres, reference, scenario, equilibreScenario }: Props) {
+function Choisir({ parametres: p, setParametres, reference, scenario, equilibreScenario, historique }: Props) {
   const maj = (m: Partial<ParametresUI>) => setParametres({ ...p, ...m });
   const presetActif = PRESETS.find((x) => JSON.stringify(appliquerPreset(x)) === JSON.stringify(p))?.id;
   const eq = (a: number) => equilibreScenario.find((e) => e.annee === a)!;
@@ -266,10 +328,10 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
           <Courbes
             titre="Solde du système de retraite"
             sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
-            series={[
+            {...avecHistorique(historique, 'soldePctPib', [
               { id: 'ref', nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, (x) => x.soldePctPib), pointille: true },
               { id: 'moi', nom: 'Mon scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, (x) => x.soldePctPib) },
-            ]}
+            ])}
             format={(v) => pct(v)}
             zero
             reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]}

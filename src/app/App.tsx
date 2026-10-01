@@ -6,10 +6,11 @@ import { GrandPublic } from './vues/GrandPublic';
 
 type Mode = 'decouvrir' | 'expert';
 
-function lireUrl(): { mode: Mode; parametres: ParametresUI } {
+function lireUrl(): { mode: Mode; parametres: ParametresUI; historique: boolean } {
   const h = new URLSearchParams(window.location.hash.slice(1));
   return {
     mode: h.get('mode') === 'expert' ? 'expert' : 'decouvrir',
+    historique: h.get('historique') !== '0',
     parametres: { ...PARAMETRES_REFERENCE, ...depuisUrl(h.get('s') ?? '') },
   };
 }
@@ -19,6 +20,7 @@ export function App() {
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [parametres, setParametres] = useState<ParametresUI>(initial.parametres);
   const [copie, setCopie] = useState(false);
+  const [historique, setHistorique] = useState(initial.historique);
 
   const reference = useMemo(() => simuler(versScenario(PARAMETRES_REFERENCE)), []);
   const scenario = useMemo(() => simuler(versScenario(parametres)), [parametres]);
@@ -26,13 +28,13 @@ export function App() {
 
   useEffect(() => {
     const s = versUrl(parametres);
-    const hash = `mode=${mode}${s ? `&s=${s}` : ''}`;
+    const hash = `mode=${mode}${historique ? '' : '&historique=0'}${s ? `&s=${s}` : ''}`;
     try {
       history.replaceState(null, '', `#${hash}`);
     } catch {
       /* environnement sans historique (aperçu) */
     }
-  }, [mode, parametres]);
+  }, [mode, parametres, historique]);
 
   const copierLien = async () => {
     try {
@@ -44,7 +46,7 @@ export function App() {
     }
   };
 
-  const props = { parametres, setParametres, reference, scenario, equilibreScenario };
+  const props = { parametres, setParametres, reference, scenario, equilibreScenario, historique, setHistorique };
 
   return (
     <div className="app">
@@ -62,6 +64,10 @@ export function App() {
               Mode expert
             </button>
           </div>
+          <label className="case">
+            <input type="checkbox" checked={historique} onChange={(e) => setHistorique(e.target.checked)} />
+            Afficher 1995-2024 et les réformes
+          </label>
           <button type="button" className="bouton secondaire" onClick={copierLien}>
             {copie ? 'Lien copié ✓' : 'Copier le lien du scénario'}
           </button>

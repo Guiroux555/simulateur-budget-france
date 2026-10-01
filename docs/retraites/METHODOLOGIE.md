@@ -83,3 +83,13 @@ Les tests (`npm test`) verrouillent ces écarts pour détecter toute dérive.
 - `src/engine/donnees/population2025.ts` : pyramide provisoire et cibles de recalage.
 - Prochaine étape « données » : importer la pyramide INSEE au 1er janvier 2025 par sexe et âge
   détaillé, les quotients de mortalité projetés de l'INSEE et les séries détaillées du COR.
+
+## 5. Historique 1995-2024 et réformes
+
+`src/engine/donnees/historique.ts` contient, pour la mise en perspective, des **points d'ancrage
+approximatifs** (dépenses et solde en % du PIB, cotisants par retraité, âge moyen conjoncturel de
+départ, âge légal) et la liste des réformes depuis 1993 (Balladur, Juppé, Fillon, régimes spéciaux,
+Woerth, Touraine, Agirc-Arrco, 2023, suspension LFSS 2026). Les graphiques relient ces points ;
+ils ne sont pas utilisés par le modèle. À remplacer par les séries annuelles officielles (base de
+données du rapport annuel du COR, Panorama DREES « Les retraités et les retraites »). Les
+définitions diffèrent légèrement de celles du modèle, d'où de petites marches entre 2024 et 2025.
