@@ -231,7 +231,7 @@ function Comprendre({ reference, historique }: Props) {
         </p>
       </Encadre>
 
-      <Regimes integre />
+      <Regimes integre reference={reference} />
     </section>
   );
 }

@@ -26,6 +26,8 @@ interface Props {
   selection?: string | null;
   onSelect?: (id: string) => void;
   legende?: Array<{ libelle: string; couleur: string; motif?: boolean; clair?: boolean }>;
+  /** Place réservée à droite pour les étiquettes (px). */
+  margeDroite?: number;
 }
 
 const HAUTEUR_BARRE = 26;
@@ -33,7 +35,7 @@ const ECART = 8;
 const MARGE = { haut: 8, droite: 70, bas: 24 };
 
 /** Barres horizontales (valeurs positives et négatives), avec étiquettes directes et sélection. */
-export function Barres({ titre, sousTitre, barres, format, repere, selection, onSelect, legende }: Props) {
+export function Barres({ titre, sousTitre, barres, format, repere, selection, onSelect, legende, margeDroite }: Props) {
   const [ref, largeur] = useLargeur<HTMLDivElement>();
   const [survol, setSurvol] = useState<string | null>(null);
   const idTitre = useId();
@@ -52,7 +54,7 @@ export function Barres({ titre, sousTitre, barres, format, repere, selection, on
   const x0 = ticks[0];
   const x1 = ticks[ticks.length - 1];
   // Place pour les étiquettes en bout de barre (plus longues avec la mesure secondaire).
-  const droite = avecSecondaire ? 170 : MARGE.droite;
+  const droite = margeDroite ?? (avecSecondaire ? 170 : MARGE.droite);
   const l = largeur - gauche - droite;
   const sx = (v: number) => gauche + ((v - x0) / (x1 - x0 || 1)) * l;
   const idMotif = `motif-${idTitre.replace(/:/g, '')}`;

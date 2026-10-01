@@ -184,3 +184,15 @@ moins deux régimes de base (1,3 pension de base en moyenne, DREES) et presque t
 en plus une complémentaire (≈ 1,9 pension par retraité en comptant les principales complémentaires,
 calcul à partir des effectifs par régime). Les « parcours types » sont des répartitions indicatives
 d'une pension entre régimes, à visée pédagogique, et non des statistiques.
+
+**Régimes dans le temps (onglet « Dans le temps »).** Faute de séries officielles par régime, les
+trajectoires 2000-2070 sont des estimations (`src/engine/donnees/regimesTemps.ts`,
+`src/app/regimesTemps.ts`) : parts des dépenses par régime interpolées entre 2000, 2024 et 2070
+puis normalisées et appliquées aux dépenses totales (historique puis modèle) ; soldes des régimes
+autres que le régime général interpolés entre points d'ancrage (CNRACL excédentaire jusqu'en 2017
+puis déficitaire, Agirc-Arrco proche de l'équilibre, régimes de la fonction publique et spéciaux
+équilibrés par construction) ; solde du régime général = solde total − autres régimes (≈ −2,1 % du
+PIB en 2070, cohérent avec le COR 2026 : ≈ −2 %). Cotisants par retraité : points publiés (CNRACL
+4,53 au début des années 1980, 1,54 en 2020, 1,44 en 2022), puis évolution d'ensemble du modèle ;
+régimes spéciaux en extinction (fermés aux nouveaux embauchés). Contributions d'équilibre de l'État
+et des employeurs publics : 1,9 % du PIB en 2025, 1,1 % en 2070 (COR 2026).
