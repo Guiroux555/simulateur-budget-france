@@ -45,6 +45,8 @@ export interface Regime {
   contreparties: string[];
   /** Mode d'équilibre financier. */
   equilibre: string;
+  /** Pourquoi ce régime existe à part du régime général (contexte historique). */
+  histoire?: string;
   statut?: string;
   sources: string;
   estime?: boolean;
@@ -113,6 +115,8 @@ export const REGIMES: Regime[] = [
       'Coefficient de solidarité temporaire (−10 % pendant 3 ans) en cas de départ dès le taux plein, supprimé en 2023',
     ],
     equilibre: 'Autonome : cotisations et réserves, sans subvention publique ; excédentaire',
+    histoire:
+      'Les complémentaires ont été créées par les partenaires sociaux (Agirc pour les cadres en 1947, Arrco en 1961, fusion en 2019) pour compléter une pension de base jugée trop faible ; elles restent gérées paritairement, hors du budget de l’État.',
     sources: 'Agirc-Arrco, comptes 2024 (pensions 98,1 Md€, excédent 1,6 Md€) ; IFRAP (réserves) ; ratio estimé',
   },
   {
@@ -141,6 +145,8 @@ export const REGIMES: Regime[] = [
     ],
     equilibre:
       'Équilibré par construction : l’État employeur verse une contribution dont le taux s’ajuste (78,28 % du traitement pour les civils, 126,07 % pour les militaires en 2025, 82,28 % pour les civils en 2026)',
+    histoire:
+      'Le régime des fonctionnaires de l’État date de 1853, bien avant la Sécurité sociale (1945), qui n’a pas absorbé les régimes existants. Juridiquement, la pension y est une rémunération différée versée par l’État, prolongement du traitement, et non une assurance : d’où le calcul sur le dernier traitement et l’équilibre assuré par l’État employeur. Rien n’impose pour autant un régime séparé : d’autres pays ont intégré leurs fonctionnaires au régime commun, et les réformes de 2003 et 2010 ont déjà aligné durée de cotisation et âge légal.',
     sources: 'Sénat, PLF 2025-2026 (CAS « Pensions » ≈ 68 Md€ y compris invalidité et anciens combattants) ; décret n° 2025-61 ; montant des pensions de retraite estimé',
     estime: true,
   },
@@ -168,6 +174,8 @@ export const REGIMES: Regime[] = [
       'Démographie en dégradation rapide (contractuels plus nombreux, départs massifs) : hausse de 12 points des cotisations employeurs de 2025 à 2028',
     ],
     equilibre: 'Cotisations des agents et des employeurs publics locaux (taux employeur porté de 31,65 % en 2024 à 43,65 % en 2028) ; déficit structurel',
+    histoire:
+      'Créée en 1945 pour les agents des collectivités locales et des hôpitaux, sur le modèle du régime des fonctionnaires de l’État ; c’est une caisse autonome, gérée par la Caisse des dépôts, financée par les cotisations des agents et de leurs employeurs.',
     sources: 'CNRACL, rapport annuel 2024 (déficit ≈ 3 Md€) ; décret n° 2025-86 ; ratio : ordre de grandeur',
     estime: true,
   },
@@ -197,6 +205,8 @@ export const REGIMES: Regime[] = [
     equilibre:
       'Subventions d’équilibre de l’État (2025 : SNCF 3,3 Md€, mines 0,9, RATP 0,9, marins 0,8) ; les IEG sont adossées au régime général et à l’Agirc-Arrco',
     statut: 'En extinction',
+    histoire:
+      'Régimes d’entreprises ou de professions antérieurs à 1945 (mines, marins depuis le XVIIᵉ siècle, chemins de fer, gaz et électricité…), maintenus lorsque la Sécurité sociale a été créée. Leur fermeture aux nouveaux embauchés (2020 pour la SNCF, 2023 pour la RATP et les IEG) organise leur extinction progressive.',
     sources:
       'Sénat, PLF 2025-2026 (subventions représentant 63 % des ressources des régimes spéciaux) ; rapports démographiques 2024 : SNCF ≈ 0,5, RATP 0,72, IEG 0,73, marins 0,30, mines ≈ 0',
     estime: true,
@@ -222,6 +232,8 @@ export const REGIMES: Regime[] = [
     contreparties: ['Cotisations historiquement faibles, donc pensions parmi les plus basses', 'Très fort déséquilibre démographique'],
     equilibre:
       'Financement majoritairement extérieur : impôts affectés et compensation démographique versée par les autres régimes ; équilibré par intégration financière',
+    histoire:
+      'Les agriculteurs ont refusé en 1945 d’être rattachés au régime général et ont obtenu leur propre protection sociale, gérée par la Mutualité sociale agricole, avec des cotisations adaptées à des revenus faibles et irréguliers.',
     sources: 'MSA ; Sénat ; montant et ratio en ordre de grandeur',
     estime: true,
   },
@@ -248,6 +260,8 @@ export const REGIMES: Regime[] = [
       'Montants très variables selon la profession',
     ],
     equilibre: 'Autonome, excédentaire ; verse la compensation démographique',
+    histoire:
+      'Les professions libérales ont refusé l’intégration au régime général en 1945 puis créé leurs caisses en 1948, gérées par chaque profession ; elles conservent une démographie favorable et des réserves importantes.',
     sources: 'Ordres de grandeur ; à compléter par les comptes de la CNAVPL et de la CNBF',
     estime: true,
   },
@@ -301,6 +315,14 @@ export const TOTAUX_2024 = {
  */
 export const SOURCES_COTISATIONS =
   'Agirc-Arrco (résultats 2024), CNRACL/IGAS (2023-2024), taux légaux de cotisation et masse salariale pour la CNAV, CAS « Pensions » pour l’État ; les autres montants sont des ordres de grandeur';
+
+/** Pourquoi le système compte plusieurs régimes (encadré de tête de section). */
+export const POURQUOI_PLUSIEURS_REGIMES = [
+  'Histoire : de nombreux régimes (fonctionnaires, marins, mineurs, cheminots…) existaient avant la création de la Sécurité sociale en 1945. Le régime général devait devenir universel, mais les professions déjà couvertes, souvent mieux, ont obtenu de garder leur régime ; agriculteurs, artisans, commerçants et professions libérales ont aussi refusé l’intégration et créé leurs caisses.',
+  'Statut : pour les fonctionnaires, la pension est juridiquement une rémunération différée versée par l’employeur public, et non une assurance ; elle est calculée sur le traitement des 6 derniers mois et équilibrée par l’État.',
+  'Gestion : les complémentaires des salariés (Agirc-Arrco) sont gérées par les syndicats et le patronat, hors du budget de l’État ; les caisses des professions libérales sont gérées par chaque profession.',
+  'Convergence : les réformes de 1993 à 2023 ont progressivement rapproché les règles (durée de cotisation, âge légal, fermeture des régimes spéciaux) ; un système universel par points a été proposé en 2019 puis abandonné en 2020. Les principales différences restantes portent sur le mode de calcul (traitement des 6 derniers mois hors primes, ou 25 meilleures années primes comprises) et sur le financement.',
+];
 
 export const COMPENSATION_DEMOGRAPHIQUE =
   'La compensation démographique transfère chaque année plusieurs milliards d’euros des régimes à la démographie favorable (régime général, professions libérales, fonction publique territoriale) vers ceux qui comptent peu de cotisants par retraité (exploitants agricoles, régimes en extinction).';

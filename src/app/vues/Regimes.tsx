@@ -4,6 +4,7 @@ import {
   LIBELLES_FAMILLES,
   PARCOURS_TYPES,
   POLYPENSION,
+  POURQUOI_PLUSIEURS_REGIMES,
   REGIMES,
   SOURCES_COTISATIONS,
   TOTAUX_2024,
@@ -65,6 +66,15 @@ export function Regimes({ integre = false, reference }: { integre?: boolean; ref
         couvre les deux étages. Les règles, la démographie et le mode de financement diffèrent fortement d’un régime à
         l’autre.
       </p>
+
+      <details className="encadre pourquoi-regimes">
+        <summary>Pourquoi plusieurs régimes ? Pourquoi les fonctionnaires ont-ils un régime à part ?</summary>
+        <ul>
+          {POURQUOI_PLUSIEURS_REGIMES.map((t) => (
+            <li key={t}>{t}</li>
+          ))}
+        </ul>
+      </details>
 
       <div className="onglets-regimes" role="tablist" aria-label="Période">
         {(
@@ -381,6 +391,11 @@ export function Regimes({ integre = false, reference }: { integre?: boolean; ref
             <p>
               <strong>Financement :</strong> {r.equilibre}
             </p>
+            {r.histoire && (
+              <p className="fiche-histoire">
+                <strong>Pourquoi un régime à part ?</strong> {r.histoire}
+              </p>
+            )}
             <p className="note">
               {r.estime ? 'Montants en ordre de grandeur, en partie estimés. ' : ''}Sources : {r.sources}.
             </p>
