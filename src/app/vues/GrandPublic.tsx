@@ -16,6 +16,7 @@ import { fourchette } from '../sensibilite';
 import { avecTendanceObservee, LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
 import { Regimes } from './Regimes';
+import { PanneauInteractif, ResultatsInteractifs, useModeInteractif } from './PanneauInteractif';
 
 interface Props {
   parametres: ParametresUI;
@@ -68,6 +69,10 @@ export function GrandPublic(props: Props) {
 
 function Comprendre({ reference, historique }: Props) {
   const referenceTendance = useMemo(() => simuler(versScenario(avecTendanceObservee(PARAMETRES_REFERENCE))), []);
+  const interactif = useModeInteractif(PARAMETRES_REFERENCE);
+  // En mode interactif, toute la page suit les curseurs ; la législation actuelle reste en pointillés.
+  const sim = interactif.resultat?.simulation ?? reference;
+  const comparer = interactif.resultat !== null && interactif.modifie;
   const fenetre = useFenetre();
   const debutPyramide = Math.max(ANNEE_DEBUT_HISTORIQUE, fenetre.debut);
   const finPyramide = fenetre.fin;
@@ -79,12 +84,15 @@ function Comprendre({ reference, historique }: Props) {
     const t = setInterval(() => setAnnee((a) => (a >= finPyramide ? (setLecture(false), finPyramide) : Math.max(a, debutPyramide) + 1)), 160);
     return () => clearInterval(t);
   }, [lecture, debutPyramide, finPyramide]);
-  const r = annee < 2025 ? etatsPyramidesHistoriques().get(annee)! : an(reference, annee);
-  const debut = reference.annees[0];
-  const fin = an(reference, 2070);
+  const r = annee < 2025 ? etatsPyramidesHistoriques().get(annee)! : an(sim, annee);
+  const debut = sim.annees[0];
+  const fin = an(sim, 2070);
+  /** Courbe de la législation actuelle, ajoutée en pointillés quand les critères ont bougé. */
+  const actuelle = (id: string, f: (x: ResultatSimulation['annees'][number]) => number, couleur = 'var(--ref)') =>
+    comparer ? [{ id: `${id}-actuel`, nom: 'Législation actuelle (COR)', couleur, valeurs: serie(reference, f), pointille: true, epaisseur: 1.5 }] : [];
 
   return (
-    <section>
+    <section className={interactif.actif ? 'avec-tiroir' : undefined}>
       <h2>Comment fonctionne le système ?</h2>
       <p className="chapeau">
         En France, les retraites sont financées par <strong>répartition</strong> : les cotisations des actifs
@@ -97,28 +105,41 @@ function Comprendre({ reference, historique }: Props) {
         </button>
       </p>
 
-      <div className="tuiles">
-        {ANNEES_CLES.map((a) => {
-          const x = an(reference, a);
-          return (
-            <Tuile
-              key={a}
-              libelle={`Solde en ${a}`}
-              valeur={pctSigne(x.soldePctPib)}
-              detail={<>du PIB, soit {milliards(x.solde)} (euros 2025)</>}
-              ton={x.soldePctPib < -0.0005 ? 'deficit' : 'neutre'}
-            />
-          );
-        })}
-      </div>
-      <p className="note">
-        Projection à législation actuelle, hypothèses du Conseil d’orientation des retraites (COR, juin 2026) :
-        productivité +0,7 %/an, chômage 7 %, 1,45 enfant par femme, solde migratoire +150 000/an.
-      </p>
+      <PanneauInteractif
+        mode={interactif}
+        annee={annee}
+        portee="page"
+        descriptionFerme="Toute la page se recalcule : productivité, chômage, taux d’activité, âge de départ, natalité, valeur et rendement du point… et le poids de chacun sur le solde."
+      />
+
+      {interactif.actif ? (
+        <ResultatsInteractifs mode={interactif} libelleTuile="Solde en" />
+      ) : (
+        <>
+          <div className="tuiles">
+            {ANNEES_CLES.map((a) => {
+              const x = an(reference, a);
+              return (
+                <Tuile
+                  key={a}
+                  libelle={`Solde en ${a}`}
+                  valeur={pctSigne(x.soldePctPib)}
+                  detail={<>du PIB, soit {milliards(x.solde)} (euros 2025)</>}
+                  ton={x.soldePctPib < -0.0005 ? 'deficit' : 'neutre'}
+                />
+              );
+            })}
+          </div>
+          <p className="note">
+            Projection à législation actuelle, hypothèses du Conseil d’orientation des retraites (COR, juin 2026) :
+            productivité +0,7 %/an, chômage 7 %, 1,45 enfant par femme, solde migratoire +150 000/an.
+          </p>
+        </>
+      )}
 
       <div className="grille-2">
         <div>
-          <Pyramide resultat={r} />
+          <Pyramide resultat={r} reference={comparer && annee >= 2025 ? an(reference, annee) : undefined} />
           <div className="controle-annee">
             <button type="button" className="bouton secondaire" onClick={() => (annee >= finPyramide && setAnnee(debutPyramide), setLecture(!lecture))}>
               {lecture ? '❚❚ Pause' : '▶ Animer'}
@@ -139,13 +160,15 @@ function Comprendre({ reference, historique }: Props) {
             titre="Actifs en emploi pour un retraité et pour un inactif"
             sousTitre="Inactifs : toutes les personnes sans emploi (retraités, jeunes, chômeurs, autres inactifs)"
             {...avecHistorique(historique, 'ratioCotisantsRetraites', [
-              { id: 'ref', nom: 'Pour un retraité', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ratioCotisantsRetraites) },
+              { id: 'ref', nom: 'Pour un retraité', couleur: 'var(--series-1)', valeurs: serie(sim, (x) => x.ratioCotisantsRetraites) },
               {
                 id: 'inactifs',
                 nom: 'Pour un inactif',
                 couleur: 'var(--series-3)',
-                valeurs: [...(historique ? serieActifsInactifsHistorique() : []), ...serie(reference, (x) => ratioActifsInactifs(x))],
+                valeurs: [...(historique ? serieActifsInactifsHistorique() : []), ...serie(sim, (x) => ratioActifsInactifs(x))],
               },
+              ...actuelle('retraite', (x) => x.ratioCotisantsRetraites, 'var(--series-1)').map((x) => ({ ...x, nom: 'Législation actuelle (retraité)' })),
+              ...actuelle('inactif', (x) => ratioActifsInactifs(x), 'var(--series-3)').map((x) => ({ ...x, nom: 'Législation actuelle (inactif)' })),
             ])}
             format={(v) => v.toFixed(2).replace('.', ',')}
             formatAxe={(v) => v.toFixed(1).replace('.', ',')}
@@ -154,7 +177,8 @@ function Comprendre({ reference, historique }: Props) {
           />
           <p className="explication">
             On passerait de <strong>{debut.ratioCotisantsRetraites.toFixed(2).replace('.', ',')}</strong> cotisant par retraité
-            en 2025 à <strong>{fin.ratioCotisantsRetraites.toFixed(2).replace('.', ',')}</strong> en 2070 : les générations
+            en 2025 à <strong>{fin.ratioCotisantsRetraites.toFixed(2).replace('.', ',')}</strong> en 2070
+            {comparer ? <> (législation actuelle : {an(reference, 2070).ratioCotisantsRetraites.toFixed(2).replace('.', ',')})</> : null} : les générations
             nombreuses du baby-boom partent à la retraite, l’espérance de vie progresse et les naissances reculent.
           </p>
           <p className="explication">
@@ -169,21 +193,34 @@ function Comprendre({ reference, historique }: Props) {
       <div className="grille-2">
         <SoldeProductivite
           historique={historique}
-          productivite={[{ nom: 'Hypothèse du COR (0,7 % à long terme)', simulation: reference, couleur: 'var(--series-1)' }]}
-          soldeTendance={referenceTendance}
+          productivite={
+            comparer
+              ? [
+                  { nom: 'Mode interactif', simulation: sim, couleur: 'var(--series-1)' },
+                  { nom: 'Hypothèse du COR', simulation: reference, couleur: 'var(--ref)', pointille: true },
+                ]
+              : [{ nom: 'Hypothèse du COR (0,7 % à long terme)', simulation: reference, couleur: 'var(--series-1)' }]
+          }
+          soldeTendance={interactif.actif ? undefined : referenceTendance}
         >
           <Courbes
             titre="Solde du système de retraite"
             sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
             {...avecHistorique(historique, 'soldePctPib', [
-              { id: 'ref', nom: 'Projection (législation actuelle)', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.soldePctPib) },
+              ...actuelle('solde', (x) => x.soldePctPib),
+              {
+                id: 'ref',
+                nom: comparer ? 'Mode interactif' : 'Projection (législation actuelle)',
+                couleur: 'var(--series-1)',
+                valeurs: serie(sim, (x) => x.soldePctPib),
+              },
             ])}
             format={(v) => pct(v)}
             zero
             hauteur={250}
           />
         </SoldeProductivite>
-        <GraphiqueAges simulation={reference} historique={historique} />
+        <GraphiqueAges simulation={sim} reference={comparer ? reference : undefined} historique={historique} />
       </div>
       {historique && (
         <p className="note">
@@ -235,7 +272,7 @@ function Comprendre({ reference, historique }: Props) {
         </p>
       </Encadre>
 
-      <Regimes integre reference={reference} />
+      <Regimes integre reference={reference} parametres={PARAMETRES_REFERENCE} modePage={interactif} />
     </section>
   );
 }

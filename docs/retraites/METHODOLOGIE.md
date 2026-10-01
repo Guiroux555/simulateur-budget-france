@@ -231,7 +231,13 @@ premier (1973-1975) et second (1979-1980) chocs pétroliers, récession de 1993,
 (2022-2023). Le survol d'une année affiche la crise et son impact (ordres de grandeur INSEE). Une
 case « Crises économiques » dans la barre « Période » permet de les masquer.
 
-## 8. Mode interactif des régimes
+## 8. Mode interactif
+
+Sur la page « Comprendre », le mode interactif s'applique à toute la page : un tiroir de curseurs
+fixé en bas de l'écran pilote les soldes clés, la pyramide (années projetées), le rapport
+actifs/retraité et actifs/inactif, le solde, l'âge de départ et l'onglet « Dans le temps » des
+régimes ; la législation actuelle reste tracée en pointillés. L'onglet « À date » (chiffres constatés
+2024) n'est pas modifié. En mode expert, le mode interactif reste propre à l'onglet des régimes.
 
 Dans l'onglet « Dans le temps », le mode interactif (`src/app/interactif.ts`) recalcule toutes les
 séries par régime avec des critères réglables : productivité, chômage, taux d'activité des 20-64 ans

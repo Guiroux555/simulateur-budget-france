@@ -14,6 +14,7 @@ import type { ResultatSimulation } from '../../engine';
 import type { ParametresUI } from '../parametres';
 import { Barres } from '../charts/Barres';
 import { RegimesTemps } from './RegimesTemps';
+import type { ModeInteractif } from './PanneauInteractif';
 import { Encadre, Tuile } from '../composants';
 
 /**
@@ -44,7 +45,17 @@ const pensionMoyenne = (r: Regime) =>
   r.retraites === null ? '—' : `≈ ${(Math.round((r.depenses * 1e9) / (r.retraites * 1e6) / 12 / 10) * 10).toLocaleString('fr-FR')} €`;
 
 /** Section « Les régimes » : poids, solde, démographie et règles de chaque grand régime. */
-export function Regimes({ integre = false, reference, parametres }: { integre?: boolean; reference?: ResultatSimulation; parametres?: ParametresUI }) {
+export function Regimes({
+  integre = false,
+  reference,
+  parametres,
+  modePage,
+}: {
+  integre?: boolean;
+  reference?: ResultatSimulation;
+  parametres?: ParametresUI;
+  modePage?: ModeInteractif;
+}) {
   const [onglet, setOnglet] = useState<'date' | 'temps'>('date');
   const [selection, setSelection] = useState<string | null>(null);
   const [convention, setConvention] = useState<Convention>('comptable');
@@ -99,9 +110,17 @@ export function Regimes({ integre = false, reference, parametres }: { integre?: 
         ))}
       </div>
 
-      {onglet === 'temps' && reference && <RegimesTemps reference={reference} parametres={parametres} couleur={(id) => COULEURS_REGIMES[id] ?? 'var(--ref)'} selection={selection} onSelect={choisir} />}
+      {onglet === 'temps' && reference && <RegimesTemps reference={reference} parametres={parametres} modePage={modePage} couleur={(id) => COULEURS_REGIMES[id] ?? 'var(--ref)'} selection={selection} onSelect={choisir} />}
       {onglet === 'date' && (
         <>
+        {modePage?.actif && (
+          <p className="note interactif-actif">
+            Mode interactif : cet onglet présente les chiffres constatés de 2024, que les critères ne modifient pas.{' '}
+            <button type="button" className="bouton lien" onClick={() => setOnglet('temps')}>
+              Voir l’effet des critères par régime (onglet « Dans le temps ») →
+            </button>
+          </p>
+        )}
         <div className="tuiles">
           <Tuile libelle="Dépenses de retraite 2024" valeur={`${TOTAUX_2024.depenses} Md€`} detail="tous régimes, base et complémentaires" />
           <Tuile
