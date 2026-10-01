@@ -23,3 +23,6 @@ Décisions dans `.planning/notes/branchement-modules-synthese.md`.
   de la Commission ; ajouter l'écart de PIB au contrat (`resume()`).
 - §4 (couplages) : préciser que l'effet sur la croissance est mécanique seulement et affiché à part.
 - §8 : ajouter les deux limites (compatibilité COR / Commission ; plein emploi des actifs supplémentaires).
+- §4 : ajouter la règle du dénominateur (écart de solde en % du PIB de la référence) et celle du
+  reste du budget (constant en % du PIB, seul le dénominateur de la dette profite d'un PIB plus
+  élevé) ; reprendre le tableau de calcul de la synthèse de la note.
