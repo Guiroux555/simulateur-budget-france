@@ -4,6 +4,7 @@
  */
 import { equilibre, simuler, type ResultatSimulation } from '../engine';
 import { versScenario, type ParametresUI } from './parametres';
+import { LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from './productivite';
 
 export type CleHypothese = 'productivite' | 'chomage' | 'fecondite';
 
@@ -66,16 +67,30 @@ export interface Variante {
   libelle: string;
   retenue: boolean;
   simulation: ResultatSimulation;
+  /** Variante hors gamme ordonnée (ex. tendance observée), tracée à part. */
+  speciale?: boolean;
 }
 
 /** Le scénario sous chaque valeur d'une hypothèse (les autres paramètres inchangés). */
 export function variantes(p: ParametresUI, def: DefinitionHypothese): Variante[] {
-  return def.valeurs.map((valeur) => ({
+  const productivite = def.cle === 'productivite';
+  const base = def.valeurs.map((valeur) => ({
     valeur,
     libelle: def.format(valeur) + (valeur === def.reference ? ' (COR)' : ''),
-    retenue: Math.abs(p[def.cle] - valeur) < 1e-9,
-    simulation: simuler(versScenario({ ...p, [def.cle]: valeur })),
+    retenue: Math.abs(p[def.cle] - valeur) < 1e-9 && !(productivite && p.productiviteDepart !== null),
+    simulation: simuler(versScenario({ ...p, [def.cle]: valeur, ...(productivite ? { productiviteDepart: null } : {}) })),
   }));
+  if (!productivite) return base;
+  return [
+    ...base,
+    {
+      valeur: TENDANCE_OBSERVEE.longTerme,
+      libelle: LIBELLE_TENDANCE,
+      retenue: p.productiviteDepart !== null,
+      speciale: true,
+      simulation: simuler(versScenario({ ...p, productivite: TENDANCE_OBSERVEE.longTerme, productiviteDepart: TENDANCE_OBSERVEE.depart })),
+    },
+  ];
 }
 
 /** Hypothèses combinées les plus défavorables et les plus favorables au solde. */

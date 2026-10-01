@@ -12,6 +12,7 @@ import { REFORMES } from '../../engine/donnees/historique';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique } from '../historique';
 import { etatsPyramidesHistoriques } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
+import { LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
 
 interface Props {
@@ -141,7 +142,7 @@ function Comprendre({ reference, historique }: Props) {
       </div>
 
       <div className="grille-2">
-        <SoldeProductivite historique={historique} productivite={[{ nom: 'Législation actuelle', simulation: reference, couleur: 'var(--series-1)' }]}>
+        <SoldeProductivite historique={historique} productivite={[{ nom: 'Hypothèse du COR (0,7 % à long terme)', simulation: reference, couleur: 'var(--series-1)' }]}>
           <Courbes
             titre="Solde du système de retraite"
             sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
@@ -297,14 +298,22 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
             <legend>Hypothèses (incertitudes, pas des mesures)</legend>
             <Choix
               libelle="Productivité"
-              valeur={p.productivite}
+              valeur={p.productiviteDepart !== null ? 'tendance' : String(p.productivite)}
               options={[
-                { valeur: 0.4, libelle: '0,4 %' },
-                { valeur: 0.7, libelle: '0,7 % (COR)' },
-                { valeur: 1.0, libelle: '1,0 %' },
-                { valeur: 1.3, libelle: '1,3 %' },
+                { valeur: 'tendance', libelle: LIBELLE_TENDANCE_COURT },
+                { valeur: '0.4', libelle: '0,4 %' },
+                { valeur: '0.7', libelle: '0,7 % (COR)' },
+                { valeur: '1', libelle: '1,0 %' },
+                { valeur: '1.3', libelle: '1,3 %' },
               ]}
-              onChange={(v) => maj({ productivite: v })}
+              onChange={(v) =>
+                maj(
+                  v === 'tendance'
+                    ? { productivite: TENDANCE_OBSERVEE.longTerme, productiviteDepart: TENDANCE_OBSERVEE.depart }
+                    : { productivite: Number(v), productiviteDepart: null },
+                )
+              }
+              aide="Croissance annuelle à long terme. La tendance observée part du niveau quasi nul de 2024."
             />
             <Choix
               libelle="Chômage"
@@ -354,7 +363,7 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
             historique={historique}
             productivite={[
               { nom: 'Mon scénario', simulation: scenario, couleur: 'var(--series-1)' },
-              { nom: 'Législation actuelle', simulation: reference, couleur: 'var(--ref)', pointille: true },
+              { nom: 'Hypothèse du COR', simulation: reference, couleur: 'var(--ref)', pointille: true },
             ]}
             fourchette={{ nom: 'Hypothèses testées', bas: pessimiste, haut: optimiste }}
           >

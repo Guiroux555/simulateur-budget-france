@@ -15,7 +15,8 @@ const ANNEES = [2045, 2070] as const;
 
 function BlocHypothese({ parametres, def, historique }: { parametres: ParametresUI; def: DefinitionHypothese; historique: boolean }) {
   const vars = useMemo(() => variantes(parametres, def), [parametres, def]);
-  const couleurs = couleursOrdinales(vars.length);
+  const ordonnees = couleursOrdinales(vars.filter((v) => !v.speciale).length);
+  const couleurs = vars.map((v, i) => (v.speciale ? 'var(--series-3)' : ordonnees[i]));
   const ages = useMemo(() => vars.map((v) => ageEquilibre(v.simulation, 2070, parametres.soldeCible / 100)), [vars, parametres.soldeCible]);
   const solde = (i: number, a: number) => vars[i].simulation.annees.find((r) => r.annee === a)!.soldePctPib;
   const ecart2070 = Math.max(...vars.map((_, i) => solde(i, 2070))) - Math.min(...vars.map((_, i) => solde(i, 2070)));
@@ -29,11 +30,12 @@ function BlocHypothese({ parametres, def, historique }: { parametres: Parametres
           historique,
           'soldePctPib',
           vars.map((v, i) => ({
-            id: String(v.valeur),
+            id: `${v.valeur}-${v.speciale ?? ''}`,
             nom: v.libelle + (v.retenue ? ' ← retenue' : ''),
             couleur: couleurs[i],
             valeurs: v.simulation.annees.map((r) => ({ x: r.annee, y: r.soldePctPib })),
             epaisseur: v.retenue ? 3 : 1.75,
+            pointille: v.speciale,
           })),
         )}
         format={(v) => pct(v)}
@@ -53,10 +55,11 @@ function BlocHypothese({ parametres, def, historique }: { parametres: Parametres
           </thead>
           <tbody>
             {vars.map((v, i) => (
-              <tr key={v.valeur} className={v.retenue ? 'ligne-retenue' : undefined}>
+              <tr key={`${v.valeur}-${v.speciale ?? ''}`} className={v.retenue ? 'ligne-retenue' : undefined}>
                 <td>
-                  <span className="pastille" style={{ background: couleurs[i] }} /> {def.formatCourt(v.valeur)}
-                  {v.valeur === def.reference ? ' (COR)' : ''}
+                  <span className="pastille" style={{ background: couleurs[i] }} />{' '}
+                  {v.speciale ? `Tendance (${def.formatCourt(v.valeur)})` : def.formatCourt(v.valeur)}
+                  {!v.speciale && v.valeur === def.reference ? ' (COR)' : ''}
                 </td>
                 {ANNEES.map((a) => (
                   <td key={a}>{pctSigne(solde(i, a))}</td>

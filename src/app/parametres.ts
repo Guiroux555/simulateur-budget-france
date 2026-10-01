@@ -13,6 +13,7 @@ import {
   type Scenario,
   type Trajectoire,
 } from '../engine';
+import { TENDANCE_OBSERVEE } from './productivite';
 
 export interface ParametresUI {
   // Hypothèses (le monde)
@@ -20,6 +21,8 @@ export interface ParametresUI {
   ecartEsperanceVie: number; // années d'écart à la référence en 2070
   soldeMigratoire: number; // milliers / an
   productivite: number; // % / an à long terme
+  /** Point de départ de la trajectoire (% / an en 2024) ; null = transition du scénario de référence. */
+  productiviteDepart: number | null;
   chomage: number; // % à long terme
   inflation: number; // % / an
   // Leviers
@@ -48,6 +51,7 @@ export const PARAMETRES_REFERENCE: ParametresUI = {
   ecartEsperanceVie: 0,
   soldeMigratoire: 150,
   productivite: 0.7,
+  productiviteDepart: null,
   chomage: 7,
   inflation: 1.75,
   ageLegalCible: null,
@@ -108,10 +112,18 @@ export function versScenario(p: ParametresUI): Scenario {
         [2025, 120_000],
         [2026, p.soldeMigratoire * 1000],
       ],
-      productivite: [
-        [2025, Math.min(0.004, prodLT)],
-        [2032, prodLT],
-      ],
+      productivite:
+        p.productiviteDepart === null
+          ? [
+              // Transition simplifiée vers l'hypothèse de long terme, calée sur les soldes du COR.
+              [2025, Math.min(0.004, prodLT)],
+              [2032, prodLT],
+            ]
+          : [
+              // Départ du dernier niveau observé, puis convergence vers le niveau de long terme.
+              [TENDANCE_OBSERVEE.anneeDepart, p.productiviteDepart / 100],
+              [TENDANCE_OBSERVEE.anneeConvergence, prodLT],
+            ],
       chomage: [
         [2025, 0.075],
         [2030, p.chomage / 100],
@@ -160,7 +172,8 @@ export function depuisUrl(fragment: string): Partial<ParametresUI> {
     const propre: Record<string, unknown> = {};
     for (const [k, v] of Object.entries(brut)) {
       const r = (PARAMETRES_REFERENCE as unknown as Record<string, unknown>)[k];
-      if (k in PARAMETRES_REFERENCE && (typeof v === typeof r || (k === 'ageLegalCible' && (v === null || typeof v === 'number'))))
+      const nullable = k === 'ageLegalCible' || k === 'productiviteDepart';
+      if (k in PARAMETRES_REFERENCE && (typeof v === typeof r || (nullable && (v === null || typeof v === 'number'))))
         propre[k] = v;
     }
     return propre as Partial<ParametresUI>;

@@ -11,6 +11,7 @@ import { appliquerPreset, PRESETS } from '../presets';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, serieObservee } from '../historique';
 import { etatsPyramidesHistoriques } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
+import { LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
 
 interface Props {
@@ -66,6 +67,21 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
         <details open>
           <summary>Hypothèses économiques</summary>
           <Curseur libelle="Productivité (long terme)" valeur={p.productivite} min={0} max={1.8} pas={0.1} reference={REF.productivite} format={(v) => `${dec(1)(v)} % / an`} onChange={(v) => maj({ productivite: v })} />
+          <label className="case">
+            <input
+              type="checkbox"
+              checked={p.productiviteDepart !== null}
+              onChange={(e) => maj({ productiviteDepart: e.target.checked ? TENDANCE_OBSERVEE.depart : null })}
+            />
+            Partir du niveau observé en 2024 ({dec(1)(TENDANCE_OBSERVEE.depart)} %), convergence en {TENDANCE_OBSERVEE.anneeConvergence}
+          </label>
+          <button
+            type="button"
+            className="bouton lien"
+            onClick={() => maj({ productivite: TENDANCE_OBSERVEE.longTerme, productiviteDepart: TENDANCE_OBSERVEE.depart })}
+          >
+            Appliquer la {LIBELLE_TENDANCE.charAt(0).toLowerCase() + LIBELLE_TENDANCE.slice(1)}
+          </button>
           <Curseur libelle="Chômage (dès 2030)" valeur={p.chomage} min={4} max={11} pas={0.5} reference={REF.chomage} format={(v) => `${dec(1)(v)} %`} onChange={(v) => maj({ chomage: v })} />
           <Curseur libelle="Inflation" valeur={p.inflation} min={0} max={4} pas={0.25} reference={REF.inflation} format={(v) => `${dec(2)(v)} % / an`} onChange={(v) => maj({ inflation: v })} aide="N’intervient que pour le gel des pensions (le modèle est en euros constants)." />
         </details>
@@ -157,7 +173,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                 historique={historique}
                 productivite={[
                   { nom: 'Scénario', simulation: scenario, couleur: 'var(--series-1)' },
-                  { nom: 'Législation actuelle', simulation: reference, couleur: 'var(--ref)', pointille: true },
+                  { nom: 'Hypothèse du COR', simulation: reference, couleur: 'var(--ref)', pointille: true },
                 ]}
                 fourchette={{ nom: 'Hypothèses testées', bas: pessimiste, haut: optimiste }}
               >

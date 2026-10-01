@@ -130,6 +130,16 @@ est affichée sous le solde, dans un panneau aligné sur le même axe des année
 les unités diffèrent). Elle passe d'environ 2 %/an au milieu des années 1980 à environ 0 sur
 2019-2024 ; l'hypothèse de référence du COR (0,7 %/an à long terme) suppose donc un redressement.
 
+**Source de la projection de productivité.** L'hypothèse de référence est celle du COR (0,7 %/an à
+long terme, scénario de référence des rapports 2025 et 2026, jugée la plus réaliste par la Cour des
+comptes en février 2025). La transition 2025-2032 (0,4 % → 0,7 %) est une simplification du
+simulateur, calée sur les soldes publiés ; le COR situe l'atteinte de ce rythme vers 2040. Une
+trajectoire alternative, **« tendance observée 2010-2024 »**, part du niveau observé en 2024
+(≈ 0 %) et rejoint en 2030 la moyenne 2010-2024 (≈ 0,5 %/an) ; elle prolonge le passé récent
+(perte de productivité post-Covid d'environ 6 % par rapport à la tendance 2010-2019 selon la Banque
+de France, dont 4 points jugés durables). À l'inverse, la Commission européenne (Ageing Report 2024)
+retient une hypothèse plus favorable, de l'ordre de 1,2 %/an en moyenne jusqu'en 2070.
+
 Le solde avant 2002 (date de début de la série du COR) et la pension relative historique sont des
 ordres de grandeur. La dette cumulée n'a pas d'historique : elle est par construction cumulée à
 partir de 2025.
