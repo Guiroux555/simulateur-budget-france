@@ -14,7 +14,6 @@ import type { ResultatSimulation } from '../../engine';
 import type { ParametresUI } from '../parametres';
 import { Barres } from '../charts/Barres';
 import { RegimesTemps } from './RegimesTemps';
-import type { ModeInteractif } from './PanneauInteractif';
 import { Encadre, Tuile } from '../composants';
 
 /**
@@ -49,12 +48,13 @@ export function Regimes({
   integre = false,
   reference,
   parametres,
-  modePage,
+  interactif = true,
 }: {
   integre?: boolean;
   reference?: ResultatSimulation;
   parametres?: ParametresUI;
-  modePage?: ModeInteractif;
+  /** Propose le mode interactif dans l'onglet « Dans le temps ». */
+  interactif?: boolean;
 }) {
   const [onglet, setOnglet] = useState<'date' | 'temps'>('date');
   const [selection, setSelection] = useState<string | null>(null);
@@ -110,17 +110,9 @@ export function Regimes({
         ))}
       </div>
 
-      {onglet === 'temps' && reference && <RegimesTemps reference={reference} parametres={parametres} modePage={modePage} couleur={(id) => COULEURS_REGIMES[id] ?? 'var(--ref)'} selection={selection} onSelect={choisir} />}
+      {onglet === 'temps' && reference && <RegimesTemps reference={reference} parametres={parametres} interactif={interactif} couleur={(id) => COULEURS_REGIMES[id] ?? 'var(--ref)'} selection={selection} onSelect={choisir} />}
       {onglet === 'date' && (
         <>
-        {modePage?.actif && (
-          <p className="note interactif-actif">
-            Mode interactif : cet onglet présente les chiffres constatés de 2024, que les critères ne modifient pas.{' '}
-            <button type="button" className="bouton lien" onClick={() => setOnglet('temps')}>
-              Voir l’effet des critères par régime (onglet « Dans le temps ») →
-            </button>
-          </p>
-        )}
         <div className="tuiles">
           <Tuile libelle="Dépenses de retraite 2024" valeur={`${TOTAUX_2024.depenses} Md€`} detail="tous régimes, base et complémentaires" />
           <Tuile

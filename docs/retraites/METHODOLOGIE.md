@@ -233,11 +233,7 @@ case « Crises économiques » dans la barre « Période » permet de les masque
 
 ## 8. Mode interactif
 
-Sur la page « Comprendre », le mode interactif s'applique à toute la page : un tiroir de curseurs
-fixé en bas de l'écran pilote les soldes clés, la pyramide (années projetées), le rapport
-actifs/retraité et actifs/inactif, le solde, l'âge de départ et l'onglet « Dans le temps » des
-régimes ; la législation actuelle reste tracée en pointillés. L'onglet « À date » (chiffres constatés
-2024) n'est pas modifié. En mode expert, le mode interactif reste propre à l'onglet des régimes.
+Le mode interactif est proposé en mode expert, dans l'onglet « Régimes ».
 
 Dans l'onglet « Dans le temps », le mode interactif (`src/app/interactif.ts`) recalcule toutes les
 séries par régime avec des critères réglables : productivité, chômage, taux d'activité des 20-64 ans

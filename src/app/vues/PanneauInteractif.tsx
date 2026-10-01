@@ -18,8 +18,7 @@ export function useModeInteractif(base: ParametresUI) {
   }, [depart]);
   const differes = useDeferredValue(criteres);
   const resultat = useMemo(() => (actif ? simulerInteractif(base, differes) : null), [actif, base, differes]);
-  const modifie = (Object.keys(depart) as Array<keyof CriteresInteractifs>).some((k) => criteres[k] !== depart[k]);
-  return { actif, setActif, base, depart, criteres, setCriteres, resultat, modifie };
+  return { actif, setActif, base, depart, criteres, setCriteres, resultat };
 }
 
 export type ModeInteractif = ReturnType<typeof useModeInteractif>;
@@ -28,27 +27,22 @@ interface PropsPanneau {
   mode: ModeInteractif;
   /** Année pour le ratio actifs/inactifs affiché sous le curseur d'activité. */
   annee: number;
-  /** « page » : tiroir fixé en bas de l'écran, résultats affichés ailleurs. */
-  portee?: 'onglet' | 'page';
-  descriptionFerme?: string;
 }
 
 /** Curseurs du mode interactif (et, dans un onglet, ses résultats). */
-export function PanneauInteractif({ mode, annee, portee = 'onglet', descriptionFerme }: PropsPanneau) {
+export function PanneauInteractif({ mode, annee }: PropsPanneau) {
   const { actif, setActif, depart, criteres: c, setCriteres, resultat } = mode;
-  const [replie, setReplie] = useState(false);
   const maj = (m: Partial<CriteresInteractifs>) => setCriteres({ ...c, ...m });
   const anneeRatio = annee < 2025 ? 2070 : annee;
 
   if (!actif) {
     return (
       <div className="panneau-interactif ferme">
-        <button type="button" className="bouton principal" onClick={() => (setActif(true), setReplie(false))}>
+        <button type="button" className="bouton principal" onClick={() => setActif(true)}>
           Mode interactif : faire varier les critères
         </button>
         <span className="note">
-          {descriptionFerme ??
-            'Productivité, chômage, taux d’activité, âge de départ, natalité, valeur et rendement du point… et mesurer le poids de chacun.'}
+          Productivité, chômage, taux d’activité, âge de départ, natalité, valeur et rendement du point… et mesurer le poids de chacun.
         </span>
       </div>
     );
@@ -57,12 +51,6 @@ export function PanneauInteractif({ mode, annee, portee = 'onglet', descriptionF
   const entete = (
     <div className="panneau-interactif-entete">
       <h3>Mode interactif</h3>
-      {portee === 'page' && replie && <span className="resume-criteres">{resumeCriteres(c, depart)}</span>}
-      {portee === 'page' && (
-        <button type="button" className="bouton secondaire bouton-reduire" aria-expanded={!replie} onClick={() => setReplie(!replie)}>
-          {replie ? '▴ Afficher les curseurs' : '▾ Réduire'}
-        </button>
-      )}
       <button type="button" className="bouton secondaire" onClick={() => setCriteres(depart)}>
         Réinitialiser
       </button>
@@ -132,23 +120,6 @@ export function PanneauInteractif({ mode, annee, portee = 'onglet', descriptionF
     </div>
   );
 
-  if (portee === 'page') {
-    return (
-      <div className={`panneau-interactif tiroir${replie ? ' replie' : ''}`} role="region" aria-label="Critères du mode interactif">
-        {entete}
-        {!replie && (
-          <>
-            <p className="note">
-              Toute la page suit ces critères (projection dès 2025, mesures en 2028). Repère sous chaque curseur :
-              législation actuelle.
-            </p>
-            {curseurs}
-          </>
-        )}
-      </div>
-    );
-  }
-
   return (
     <div className="panneau-interactif">
       {entete}
@@ -163,21 +134,8 @@ export function PanneauInteractif({ mode, annee, portee = 'onglet', descriptionF
   );
 }
 
-/** Résumé des critères modifiés, pour le tiroir replié. */
-function resumeCriteres(c: CriteresInteractifs, d: CriteresInteractifs): string {
-  const morceaux: string[] = [];
-  if (c.productivite !== d.productivite) morceaux.push(`productivité ${virgule(c.productivite)} %`);
-  if (c.chomage !== d.chomage) morceaux.push(`chômage ${virgule(c.chomage)} %`);
-  if (c.activite !== d.activite) morceaux.push(`activité ${c.activite > 0 ? '+' : ''}${virgule(c.activite)} pt`);
-  if (c.ageLegal !== d.ageLegal) morceaux.push(`âge ${c.ageLegal === null ? 'actuel' : `${virgule(c.ageLegal, c.ageLegal % 1 ? 2 : 0)} ans`}`);
-  if (c.fecondite !== d.fecondite) morceaux.push(`natalité ${virgule(c.fecondite, 2)}`);
-  if (c.revalorisationPoint !== d.revalorisationPoint) morceaux.push(`point ${c.revalorisationPoint > 0 ? '+' : '−'}${virgule(Math.abs(c.revalorisationPoint))} pt`);
-  if (c.rendementPoint !== d.rendementPoint) morceaux.push(`rendement ${c.rendementPoint > 0 ? '+' : ''}${c.rendementPoint} %`);
-  return morceaux.length ? morceaux.join(' · ') : 'aucun critère modifié';
-}
-
 /** Soldes aux horizons clés et poids de chaque critère pris isolément. */
-export function ResultatsInteractifs({ mode, libelleTuile = 'Solde tous régimes en' }: { mode: ModeInteractif; libelleTuile?: string }) {
+function ResultatsInteractifs({ mode, libelleTuile = 'Solde tous régimes en' }: { mode: ModeInteractif; libelleTuile?: string }) {
   const { actif, base, depart, criteres, resultat } = mode;
   const [horizon, setHorizon] = useState<(typeof HORIZONS)[number]>(2070);
   const differes = useDeferredValue(criteres);
