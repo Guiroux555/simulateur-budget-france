@@ -12,3 +12,15 @@ séries annuelles), quel critère d'acceptation retenir ?
   dépasse d'un an la référence ?
 
 Contexte : `.planning/notes/module-dette-horizon-reference.md`.
+
+## Effet mécanique du report d'âge sur l'emploi (2026-10-01)
+
+Le moteur retraites calcule-t-il déjà le nombre d'actifs supplémentaires d'un report de l'âge de
+départ ? Si oui :
+
+- d'où vient ce nombre (taux d'activité par âge, hypothèse du COR, calcul propre) ?
+- est-il cohérent avec les chiffres du COR pour les dernières réformes ?
+- peut-on en déduire l'écart de PIB en volume (actifs supplémentaires × productivité du socle)
+  sans changer les résultats calibrés du module ?
+
+Contexte : `.planning/notes/branchement-modules-synthese.md`.
