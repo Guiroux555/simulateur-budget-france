@@ -8,8 +8,8 @@ import { Curseur } from '../composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
-import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, serieObservee } from '../historique';
-import { etatsPyramidesHistoriques } from '../pyramidesHistoriques';
+import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
+import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
@@ -202,6 +202,16 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
               <Courbes titre="Pension relative (y c. capitalisation)" sousTitre="Pension moyenne / revenu d’activité moyen" {...avecHistorique(historique, 'pensionRelative', compare('prel', (r) => r.pensionRelativeTotale))} format={(v) => pct(v, 0)} />
               <GraphiqueAges simulation={scenario} reference={reference} historique={historique} hauteur={320} />
               <Courbes titre="Cotisants par retraité" {...avecHistorique(historique, 'ratioCotisantsRetraites', compare('ratio', (r) => r.ratioCotisantsRetraites))} format={dec(2)} />
+              <Courbes
+                titre="Actifs en emploi pour un inactif"
+                sousTitre="Inactifs : retraités, jeunes, chômeurs et autres personnes sans emploi"
+                series={[
+                  ...(historique ? [{ id: 'hist-inactifs', nom: 'Reconstitué', couleur: 'var(--hist)', valeurs: serieActifsInactifsHistorique() }] : []),
+                  ...compare('inactifs', (r) => ratioActifsInactifs(r)),
+                ]}
+                {...(historique ? { separation: 2025, reformes: REPERES_REFORMES } : {})}
+                format={dec(2)}
+              />
               <Courbes titre="Dette cumulée du système" sousTitre="% du PIB" series={compare('dette', (r) => r.detteCumuleePctPib)} format={(v) => pct(v, 0)} zero />
               {p.capitalisationTaux > 0 && (
                 <Courbes

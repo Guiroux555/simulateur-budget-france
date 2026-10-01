@@ -1,5 +1,5 @@
 import { useId, useState } from 'react';
-import type { EtatPyramide } from '../pyramidesHistoriques';
+import { ratioActifsInactifs, type EtatPyramide } from '../pyramidesHistoriques';
 import { graduations, useLargeur } from './useLargeur';
 
 interface Props {
@@ -65,6 +65,15 @@ export function Pyramide({ resultat: r, reference, hauteur = 320 }: Props) {
             )}
           </span>
         </div>
+        <div className="ratio-principal">
+          <span className="ratio-valeur secondaire">{virgule(ratioActifsInactifs(r))}</span>
+          <span className="ratio-libelle">
+            actif en emploi pour 1 inactif
+            {reference && Math.abs(ratioActifsInactifs(reference) - ratioActifsInactifs(r)) > 0.005 && (
+              <span className="ratio-ref"> (législation actuelle : {virgule(ratioActifsInactifs(reference))})</span>
+            )}
+          </span>
+        </div>
         <div className="ratio-details">
           <span>
             <span className="pastille carree" style={{ background: 'var(--series-1)' }} /> {millions(r.cotisants)} actifs en emploi
@@ -73,7 +82,7 @@ export function Pyramide({ resultat: r, reference, hauteur = 320 }: Props) {
             <span className="pastille carree" style={{ background: 'var(--series-2)' }} /> {millions(r.retraites)} retraités
           </span>
           <span>
-            <span className="pastille carree" style={{ background: 'var(--autres)' }} /> {millions(autresTotal)} autres
+            <span className="pastille carree" style={{ background: 'var(--autres)' }} /> {millions(autresTotal)} autres inactifs
           </span>
         </div>
       </div>

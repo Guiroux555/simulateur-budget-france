@@ -61,3 +61,13 @@ export function etatsPyramidesHistoriques(): Map<number, EtatPyramide> {
   cache = out;
   return out;
 }
+
+/** Personnes en emploi pour une personne sans emploi (retraités, jeunes, chômeurs, autres inactifs). */
+export function ratioActifsInactifs(e: Pick<EtatPyramide, 'population' | 'cotisants'>): number {
+  return e.cotisants / (e.population - e.cotisants);
+}
+
+/** Série reconstituée 1985-2024 du rapport actifs en emploi / inactifs. */
+export function serieActifsInactifsHistorique(): Array<{ x: number; y: number }> {
+  return [...etatsPyramidesHistoriques().values()].sort((a, b) => a.annee - b.annee).map((e) => ({ x: e.annee, y: ratioActifsInactifs(e) }));
+}

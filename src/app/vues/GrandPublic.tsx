@@ -10,7 +10,7 @@ import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../param
 import { appliquerPreset, PRESETS } from '../presets';
 import { REFORMES } from '../../engine/donnees/historique';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique } from '../historique';
-import { etatsPyramidesHistoriques } from '../pyramidesHistoriques';
+import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
@@ -125,18 +125,32 @@ function Comprendre({ reference, historique }: Props) {
         </div>
         <div>
           <Courbes
-            titre="Cotisants pour un retraité"
-            sousTitre="Nombre de personnes en emploi pour une personne retraitée"
+            titre="Actifs en emploi pour un retraité et pour un inactif"
+            sousTitre="Inactifs : toutes les personnes sans emploi (retraités, jeunes, chômeurs, autres inactifs)"
             {...avecHistorique(historique, 'ratioCotisantsRetraites', [
-              { id: 'ref', nom: 'Projection (législation actuelle)', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ratioCotisantsRetraites) },
+              { id: 'ref', nom: 'Pour un retraité', couleur: 'var(--series-1)', valeurs: serie(reference, (x) => x.ratioCotisantsRetraites) },
+              {
+                id: 'inactifs',
+                nom: 'Pour un inactif',
+                couleur: 'var(--series-3)',
+                valeurs: [...(historique ? serieActifsInactifsHistorique() : []), ...serie(reference, (x) => ratioActifsInactifs(x))],
+              },
             ])}
-            format={(v) => v.toFixed(1).replace('.', ',')}
-            domaine={[1, 1.8]}
+            format={(v) => v.toFixed(2).replace('.', ',')}
+            formatAxe={(v) => v.toFixed(1).replace('.', ',')}
+            domaine={[0.5, 1.8]}
+            hauteur={270}
           />
           <p className="explication">
             On passerait de <strong>{debut.ratioCotisantsRetraites.toFixed(2).replace('.', ',')}</strong> cotisant par retraité
             en 2025 à <strong>{fin.ratioCotisantsRetraites.toFixed(2).replace('.', ',')}</strong> en 2070 : les générations
             nombreuses du baby-boom partent à la retraite, l’espérance de vie progresse et les naissances reculent.
+          </p>
+          <p className="explication">
+            Le nombre d’actifs en emploi pour un <strong>inactif</strong> (toute personne sans emploi) bouge beaucoup moins :{' '}
+            <strong>{ratioActifsInactifs(debut).toFixed(2).replace('.', ',')}</strong> en 2025,{' '}
+            <strong>{ratioActifsInactifs(fin).toFixed(2).replace('.', ',')}</strong> en 2070. Il y aura moins de jeunes à
+            charge mais davantage de retraités — or seuls ces derniers sont financés par les caisses de retraite.
           </p>
         </div>
       </div>
