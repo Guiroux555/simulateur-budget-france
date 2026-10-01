@@ -4,6 +4,7 @@ import { depuisUrl, PARAMETRES_REFERENCE, versScenario, versUrl, type Parametres
 import { ANNEE_PROJECTION, ControleFenetre, FENETRE_DEFAUT, FENETRE_MAX, FENETRE_MIN, FenetreContext, type Fenetre } from './fenetre';
 import { Expert } from './vues/Expert';
 import { GrandPublic } from './vues/GrandPublic';
+import { Garde } from './Garde';
 
 type Mode = 'decouvrir' | 'expert';
 
@@ -88,7 +89,9 @@ export function App() {
       </div>
 
       <FenetreContext.Provider value={fenetre}>
-        <main>{mode === 'decouvrir' ? <GrandPublic {...props} /> : <Expert {...props} />}</main>
+        <main>
+          <Garde cle={mode}>{mode === 'decouvrir' ? <GrandPublic {...props} /> : <Expert {...props} />}</Garde>
+        </main>
       </FenetreContext.Provider>
 
       <footer className="pied">

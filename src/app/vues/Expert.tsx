@@ -31,6 +31,7 @@ const dec = (d: number) => (v: number) => v.toFixed(d).replace('.', ',');
 export function Expert({ parametres: p, setParametres, reference, scenario, equilibreScenario, historique }: Props) {
   const maj = (m: Partial<ParametresUI>) => setParametres({ ...p, ...m });
   const [anneePyramide, setAnneePyramide] = useState(2050);
+  const [csv, setCsv] = useState<string | null>(null);
   const [vue, setVue] = useState<'graphiques' | 'tableau' | 'sensibilite' | 'regimes'>('graphiques');
   const pDiffere = useDeferredValue(p);
   const { pessimiste, optimiste } = useMemo(() => fourchette(pDiffere), [pDiffere]);
@@ -164,11 +165,20 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
               {libelle}
             </button>
           ))}
-          <button type="button" className="bouton secondaire" onClick={() => exporterCsv(scenario, equilibreScenario)}>
+          <button
+            type="button"
+            className="bouton secondaire"
+            onClick={() => {
+              const texte = texteCsv(scenario, equilibreScenario);
+              if (telechargementPossible()) telechargerCsv(texte);
+              else setCsv(texte);
+            }}
+          >
             Exporter en CSV
           </button>
         </div>
 
+        {csv && <ExportCsv texte={csv} fermer={() => setCsv(null)} />}
         {vue === 'regimes' && <Regimes reference={reference} parametres={p} />}
         {vue === 'sensibilite' && <Sensibilite parametres={p} historique={historique} />}
         {vue === 'tableau' && <TableauDonnees scenario={scenario} equilibre={equilibreScenario} mode={mode} />}
@@ -293,17 +303,54 @@ const COLONNES: Array<[string, (r: ResultatAnnee) => number | string]> = [
   ['fonds_capitalisation_mds', (r) => r.fondsCapitalisation.toFixed(1)],
 ];
 
-function exporterCsv(s: ResultatSimulation, eq: EquilibreAnnee[]) {
+function texteCsv(s: ResultatSimulation, eq: EquilibreAnnee[]): string {
   const entete = [...COLONNES.map(([n]) => n), 'hausse_taux_equilibre_pt', 'pension_relative_equilibre_pct', 'age_depart_equilibre'];
   const lignes = s.annees.map((r, i) =>
     [...COLONNES.map(([, f]) => f(r)), (eq[i].hausseTauxNecessaire * 100).toFixed(3), (eq[i].pensionRelativeNecessaire * 100).toFixed(2), eq[i].ageDepartNecessaire.toFixed(2)].join(';'),
   );
-  const blob = new Blob([[entete.join(';'), ...lignes].join('\n')], { type: 'text/csv;charset=utf-8' });
+  return [entete.join(';'), ...lignes].join('\n');
+}
+
+/** Dans une page intégrée (aperçu, artifact), le téléchargement est bloqué : on affiche le texte à copier. */
+const telechargementPossible = () => {
+  try {
+    return window.top === window.self;
+  } catch {
+    return false;
+  }
+};
+
+function telechargerCsv(texte: string) {
   const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
+  a.href = URL.createObjectURL(new Blob([texte], { type: 'text/csv;charset=utf-8' }));
   a.download = 'simulation-retraites.csv';
   a.click();
-  URL.revokeObjectURL(a.href);
+  setTimeout(() => URL.revokeObjectURL(a.href), 1000);
+}
+
+function ExportCsv({ texte, fermer }: { texte: string; fermer: () => void }) {
+  const [copie, setCopie] = useState(false);
+  const copier = async () => {
+    try {
+      await navigator.clipboard.writeText(texte);
+      setCopie(true);
+    } catch {
+      setCopie(false);
+    }
+  };
+  return (
+    <div className="encadre export-csv">
+      <h3>Données du scénario (CSV, séparateur « ; »)</h3>
+      <p className="note">Le téléchargement n’est pas possible dans cet aperçu : copiez le texte puis collez-le dans un tableur.</p>
+      <textarea readOnly value={texte} rows={8} onFocus={(e) => e.currentTarget.select()} aria-label="Données CSV" />
+      <button type="button" className="bouton principal" onClick={copier}>
+        {copie ? 'Copié ✓' : 'Copier'}
+      </button>{' '}
+      <button type="button" className="bouton secondaire" onClick={fermer}>
+        Fermer
+      </button>
+    </div>
+  );
 }
 
 function TableauDonnees({ scenario, equilibre, mode }: { scenario: ResultatSimulation; equilibre: EquilibreAnnee[]; mode?: string }) {

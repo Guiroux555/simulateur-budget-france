@@ -370,3 +370,6 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
   .bouton-reduire { display: inline-block; }
   section.avec-tiroir { padding-bottom: 52vh; }
 }
+.encadre.erreur { border-left: 4px solid var(--deficit); }
+.encadre.erreur pre { white-space: pre-wrap; font-size: 0.82rem; background: var(--surface-0); padding: 8px; border-radius: 6px; }
+.export-csv textarea { width: 100%; font-family: ui-monospace, monospace; font-size: 0.78rem; margin: 6px 0 8px; background: var(--surface-0); color: var(--text-primary); border: 1px solid var(--bordure); border-radius: 6px; }
