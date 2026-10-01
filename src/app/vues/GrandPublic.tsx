@@ -37,7 +37,10 @@ const serie = (s: ResultatSimulation, f: (r: ResultatSimulation['annees'][number
 
 export function GrandPublic(props: Props) {
   const [etape, setEtape] = useState(0);
-  useEffect(() => window.scrollTo({ top: 0 }), [etape]);
+  useEffect(() => {
+    // Accolades : dans les navigateurs récents, scrollTo renvoie une promesse, que React prendrait pour un nettoyage.
+    window.scrollTo({ top: 0 });
+  }, [etape]);
   return (
     <div className="grand-public">
       <nav className="etapes" aria-label="Étapes">

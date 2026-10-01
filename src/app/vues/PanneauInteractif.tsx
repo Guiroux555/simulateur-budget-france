@@ -13,7 +13,9 @@ export function useModeInteractif(base: ParametresUI) {
   const depart = useMemo(() => criteresDepuis(base), [base]);
   const [actif, setActif] = useState(false);
   const [criteres, setCriteres] = useState<CriteresInteractifs>(depart);
-  useEffect(() => setCriteres(depart), [depart]);
+  useEffect(() => {
+    setCriteres(depart);
+  }, [depart]);
   const differes = useDeferredValue(criteres);
   const resultat = useMemo(() => (actif ? simulerInteractif(base, differes) : null), [actif, base, differes]);
   const modifie = (Object.keys(depart) as Array<keyof CriteresInteractifs>).some((k) => criteres[k] !== depart[k]);
