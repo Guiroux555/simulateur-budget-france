@@ -20,6 +20,7 @@ describe('contrat de module', () => {
       expect(resume.annees.at(-1)?.annee).toBe(m.horizon.fin);
       for (const a of resume.annees) {
         expect(a.ecartSoldeReferencePctPib).toBe(0);
+        expect(a.ecartPibVolumePct).toBe(0);
         expect(a.soldePctPib).toBeCloseTo(a.recettesPctPib - a.depensesPctPib, 10);
       }
     }
@@ -34,5 +35,24 @@ describe('contrat de module', () => {
     const r2070 = resume.annees.at(-1)!;
     expect(r2070.ecartSoldeReferencePctPib).toBeGreaterThan(0);
     expect(r2070.soldePctPib).toBeCloseTo(simuler(moduleRetraites.scenarioDepuisLien(lien)).annees.at(-1)!.soldePctPib, 12);
+  });
+
+  it('retraites : un report de l’âge légal augmente le PIB, l’écart de solde est rapporté au PIB de la référence', () => {
+    const lien = versUrl({ ...PARAMETRES_REFERENCE, ageLegalCible: 66 });
+    const reference = moduleRetraites.simuler(moduleRetraites.scenarioReference());
+    const scenario = moduleRetraites.simuler(moduleRetraites.scenarioDepuisLien(lien));
+    const resume = moduleRetraites.resume(scenario, reference);
+    const i = resume.annees.findIndex((a) => a.annee === 2045);
+    const a = resume.annees[i];
+    const s = scenario.annees[i];
+    const r = reference.annees[i];
+    for (const x of resume.annees) {
+      expect(Number.isFinite(x.ecartPibVolumePct)).toBe(true);
+      expect(Number.isFinite(x.ecartSoldeReferencePctPib)).toBe(true);
+    }
+    expect(a.ecartPibVolumePct).toBeGreaterThan(0);
+    expect(a.ecartPibVolumePct).toBeCloseTo(s.pib / r.pib - 1, 12);
+    expect(a.ecartSoldeReferencePctPib).toBeCloseTo((s.solde - r.solde) / r.pib, 12);
+    expect(a.ecartSoldeReferencePctPib).toBeGreaterThan(0);
   });
 });

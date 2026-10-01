@@ -13,8 +13,18 @@ export interface AnneeResume {
   depensesPctPib: number;
   recettesPctPib: number;
   soldePctPib: number;
-  /** Écart de solde par rapport au scénario de référence du module (> 0 = amélioration). */
+  /**
+   * Écart de solde par rapport au scénario de référence du module (> 0 = amélioration), en part
+   * du PIB **de la référence** : effet purement budgétaire, sans effet de dénominateur. L'effet
+   * d'un PIB différent passe uniquement par `ecartPibVolumePct`, ce qui évite le double compte.
+   */
   ecartSoldeReferencePctPib: number;
+  /**
+   * Écart de PIB en volume par rapport au scénario de référence du module (fraction :
+   * 0.001 = +0,1 %). Effet mécanique seulement (actifs supplémentaires × productivité du socle),
+   * sans élasticité comportementale.
+   */
+  ecartPibVolumePct: number;
 }
 
 export interface ResumeModule {

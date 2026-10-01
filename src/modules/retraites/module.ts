@@ -13,13 +13,18 @@ export const moduleRetraites: ModuleBudgetaire<Scenario, ResultatSimulation> = {
   resume(resultat, reference) {
     return {
       module: 'retraites',
-      annees: resultat.annees.map((a, i) => ({
-        annee: a.annee,
-        depensesPctPib: a.depensesPctPib,
-        recettesPctPib: a.ressourcesPctPib,
-        soldePctPib: a.soldePctPib,
-        ecartSoldeReferencePctPib: a.soldePctPib - (reference.annees[i]?.soldePctPib ?? a.soldePctPib),
-      })),
+      annees: resultat.annees.map((a, i) => {
+        const ref = reference.annees[i] ?? a;
+        return {
+          annee: a.annee,
+          depensesPctPib: a.depensesPctPib,
+          recettesPctPib: a.ressourcesPctPib,
+          soldePctPib: a.soldePctPib,
+          ecartSoldeReferencePctPib: (a.solde - ref.solde) / ref.pib,
+          // Le PIB du moteur suit la masse des revenus d'activité : un report d'âge l'augmente.
+          ecartPibVolumePct: a.pib / ref.pib - 1,
+        };
+      }),
     };
   },
 };
