@@ -213,6 +213,7 @@ export function simuler(scenario: Scenario): ResultatSimulation {
       pensionRelative: pensionMoyenne / revenu,
       pensionLiquidationRelative: liquidation / revenu,
       esperanceVie60: esperanceVieA(tableMortalite(valeurA(hyp.esperanceVie, t)), 60),
+      esperanceVie65: esperanceVieA(tableMortalite(valeurA(hyp.esperanceVie, t)), 65),
       esperanceVieADepart: esperanceVieA(tableMortalite(valeurA(hyp.esperanceVie, t)), Math.round(ageMoyenDepart(leviers, t))),
       pensionRelativeTotale: ((depenses + rentesIndividuelles) * 1e9) / retraites / revenu,
       pib,

@@ -29,11 +29,13 @@ export interface Bande {
   haut: ReadonlyArray<{ x: number; y: number }>;
   /** Texte de l'info-bulle (par défaut : « bas à haut »). */
   formatValeur?: (bas: number, haut: number) => string;
+  /** Opacité du remplissage (0,16 par défaut). */
+  opacite?: number;
 }
 
 export interface Props {
   titre: string;
-  bande?: Bande;
+  bande?: Bande | Bande[];
   sousTitre?: string;
   series: Serie[];
   format: (v: number) => string;
@@ -125,7 +127,8 @@ export function Courbes({
   const reformesVisibles = reformes.filter((r) => r.annee >= xMin && r.annee <= xMax);
   const haut = MARGE.haut + (reformesVisibles.length ? HAUTEUR_REFORMES : 0);
 
-  const tousY = [...series, ...(bande ? [{ valeurs: bande.bas }, { valeurs: bande.haut }] : [])].flatMap((s) => s.valeurs.map((v) => v.y));
+  const bandes = bande === undefined ? [] : Array.isArray(bande) ? bande : [bande];
+  const tousY = [...series, ...bandes.flatMap((b) => [{ valeurs: b.bas }, { valeurs: b.haut }])].flatMap((s) => s.valeurs.map((v) => v.y));
   let yMin = Math.min(...tousY);
   let yMax = Math.max(...tousY);
   if (zero) {
@@ -163,7 +166,7 @@ export function Courbes({
         <span className="graphique-titre">{titre}</span>
         {sousTitre && <span className="graphique-sous-titre">{sousTitre}</span>}
       </figcaption>
-      {(series.length > 1 || bande) && (
+      {(series.length > 1 || bandes.length > 0) && (
         <ul className="legende">
           {series.map((s) => (
             <li key={s.id}>
@@ -173,12 +176,12 @@ export function Courbes({
               {s.nom}
             </li>
           ))}
-          {bande && (
-            <li>
-              <span className="pastille carree" style={{ background: bande.couleur, opacity: 0.3 }} />
-              {bande.nom}
+          {bandes.map((b) => (
+            <li key={b.nom}>
+              <span className="pastille carree" style={{ background: b.couleur, opacity: Math.min(1, (b.opacite ?? 0.16) * 2) }} />
+              {b.nom}
             </li>
-          )}
+          ))}
         </ul>
       )}
       <div ref={ref} className="graphique-zone">
@@ -229,17 +232,18 @@ export function Courbes({
               </text>
             </g>
           ))}
-          {bande && (
+          {bandes.map((b) => (
             <path
+              key={b.nom}
               d={
-                bande.haut.map((v, i) => `${i ? 'L' : 'M'}${sx(v.x).toFixed(1)},${sy(v.y).toFixed(1)}`).join('') +
-                [...bande.bas].reverse().map((v) => `L${sx(v.x).toFixed(1)},${sy(v.y).toFixed(1)}`).join('') +
+                b.haut.map((v, k) => `${k ? 'L' : 'M'}${sx(v.x).toFixed(1)},${sy(v.y).toFixed(1)}`).join('') +
+                [...b.bas].reverse().map((v) => `L${sx(v.x).toFixed(1)},${sy(v.y).toFixed(1)}`).join('') +
                 'Z'
               }
-              fill={bande.couleur}
-              opacity={0.16}
+              fill={b.couleur}
+              opacity={b.opacite ?? 0.16}
             />
-          )}
+          ))}
           {series.map((s) => (
             <g key={s.id}>
               <path d={chemin(s)} fill="none" stroke={s.couleur} strokeWidth={s.epaisseur ?? 2} strokeLinejoin="round" strokeLinecap="round" strokeDasharray={s.pointille ? '5 4' : undefined} />
@@ -278,20 +282,17 @@ export function Courbes({
           >
             <div className="bulle-titre">{survol}</div>
             {reformeSurvolee && <div className="bulle-reforme">{reformeSurvolee.nom}</div>}
-            {bande &&
-              (() => {
-                const b = valeurEn({ id: '', nom: '', couleur: '', valeurs: bande.bas }, survol);
-                const h = valeurEn({ id: '', nom: '', couleur: '', valeurs: bande.haut }, survol);
-                return b === null || h === null ? null : (
-                  <div className="bulle-ligne">
-                    <span className="pastille carree" style={{ background: bande.couleur, opacity: 0.3 }} />
-                    <span className="bulle-nom">{bande.nom}</span>
-                    <span className="bulle-valeur">
-                      {bande.formatValeur ? bande.formatValeur(b, h) : `${format(Math.min(b, h))} à ${format(Math.max(b, h))}`}
-                    </span>
-                  </div>
-                );
-              })()}
+            {bandes.map((bd) => {
+              const b = valeurEn({ id: '', nom: '', couleur: '', valeurs: bd.bas }, survol);
+              const h = valeurEn({ id: '', nom: '', couleur: '', valeurs: bd.haut }, survol);
+              return b === null || h === null ? null : (
+                <div key={bd.nom} className="bulle-ligne">
+                  <span className="pastille carree" style={{ background: bd.couleur, opacity: Math.min(1, (bd.opacite ?? 0.16) * 2) }} />
+                  <span className="bulle-nom">{bd.nom}</span>
+                  <span className="bulle-valeur">{bd.formatValeur ? bd.formatValeur(b, h) : `${format(Math.min(b, h))} à ${format(Math.max(b, h))}`}</span>
+                </div>
+              );
+            })}
             {series.map((s) => {
               const y = valeurEn(s, survol);
               if (y === null) return null;

@@ -140,6 +140,13 @@ trajectoire alternative, **« tendance observée 2010-2024 »**, part du niveau 
 de France, dont 4 points jugés durables). À l'inverse, la Commission européenne (Ageing Report 2024)
 retient une hypothèse plus favorable, de l'ordre de 1,2 %/an en moyenne jusqu'en 2070.
 
+**Âge sans incapacité.** Le graphique « Âge de départ et espérance de vie » ajoute l'âge atteint
+sans incapacité par les personnes de 65 ans (65 + espérance de vie sans incapacité à 65 ans,
+DREES, moyenne simple femmes-hommes : ≈ 9,4 ans en 2008, 11,2 ans en 2024). La projection suppose
+constante la part des années restant à vivre à 65 ans passées sans incapacité (≈ 52 % en 2023) :
+c'est une hypothèse illustrative ; elle hérite de la surestimation de l'espérance de vie en fin de
+période (cf. §3). Les années de retraite « sans incapacité » sont mesurées depuis l'âge de départ.
+
 Le solde avant 2002 (date de début de la série du COR) et la pension relative historique sont des
 ordres de grandeur. La dette cumulée n'a pas d'historique : elle est par construction cumulée à
 partir de 2025.

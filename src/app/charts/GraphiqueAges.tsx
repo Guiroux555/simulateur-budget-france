@@ -1,5 +1,5 @@
 import type { ResultatSimulation } from '../../engine';
-import { HISTORIQUE } from '../../engine/donnees/historique';
+import { HISTORIQUE, PART_SANS_INCAPACITE_65 } from '../../engine/donnees/historique';
 import { ans } from '../format';
 import { ANNEE_DEBUT_HISTORIQUE, ANNEE_PROJECTION, REPERES_REFORMES, serieObservee } from '../historique';
 import { Courbes, type Serie } from './Courbes';
@@ -41,6 +41,12 @@ export function GraphiqueAges({ simulation, reference, historique, hauteur = 340
   const departObserve = historique ? annuel(HISTORIQUE.ageMoyenDepart.points, ANNEE_DEBUT_HISTORIQUE, fin) : [];
   const e60 = [...e60Observee, ...proj((r) => 60 + r.esperanceVie60)];
   const depart = [...departObserve, ...proj((r) => r.ageMoyenDepart)];
+  // Âge atteint sans incapacité par les personnes de 65 ans : observé (DREES, depuis 2008), puis
+  // projeté en supposant constante la part des années vécues sans incapacité.
+  const pointsSante = HISTORIQUE.esperanceVieSansIncapacite65.points;
+  const santeObservee = historique ? annuel(pointsSante.map(([a, v]) => [a, 65 + v] as const), pointsSante[0][0], fin) : [];
+  const santeProjetee = proj((r) => 65 + PART_SANS_INCAPACITE_65 * r.esperanceVie65);
+  const sante = [...santeObservee, ...santeProjetee];
 
   const series: Serie[] = [
     ...(historique ? [serieObservee('ageMoyenDepart', 'Âge de départ observé')] : []),
@@ -56,6 +62,24 @@ export function GraphiqueAges({ simulation, reference, historique, hauteur = 340
       : []),
     { id: 'moyen', nom: reference ? 'Départ, scénario' : 'Âge de départ projeté', couleur: 'var(--series-1)', valeurs: proj((r) => r.ageMoyenDepart) },
     { id: 'e60', nom: 'Espérance de vie à 60 ans (âge atteint)', couleur: 'var(--series-3)', valeurs: e60 },
+    ...(historique
+      ? [
+          {
+            id: 'sante-obs',
+            nom: 'Âge atteint sans incapacité, observé',
+            couleur: 'var(--series-7)',
+            approximatif: true,
+            valeurs: pointsSante.map(([x, y]) => ({ x, y: 65 + y })),
+          },
+        ]
+      : []),
+    {
+      id: 'sante-proj',
+      nom: 'Âge atteint sans incapacité, projeté',
+      couleur: 'var(--series-7)',
+      pointille: true,
+      valeurs: santeProjetee,
+    },
   ];
 
   // Zone « durée de retraite » sur les années communes aux deux courbes.
@@ -63,19 +87,19 @@ export function GraphiqueAges({ simulation, reference, historique, hauteur = 340
   const haut = e60.filter((p) => annees.has(p.x));
   const xs = new Set(haut.map((p) => p.x));
   const bas = depart.filter((p) => xs.has(p.x));
+  const anneesSante = new Set(sante.map((p) => p.x));
+  const hautSante = sante.filter((p) => annees.has(p.x));
+  const basSante = depart.filter((p) => anneesSante.has(p.x));
 
   return (
     <Courbes
       titre="Âge de départ et espérance de vie"
-      sousTitre="La zone colorée représente la durée moyenne de retraite : de l’âge de départ à l’âge atteint en moyenne par les personnes de 60 ans"
+      sousTitre="Zones colorées : durée moyenne de retraite (jusqu’à l’âge atteint en moyenne par les personnes de 60 ans), dont années sans incapacité (espérance de vie sans incapacité à 65 ans, DREES)"
       series={series}
-      bande={{
-        nom: 'Durée de retraite',
-        couleur: 'var(--series-3)',
-        bas,
-        haut,
-        formatValeur: (b, h) => ans(h - b),
-      }}
+      bande={[
+        { nom: 'Durée de retraite', couleur: 'var(--series-3)', bas, haut, formatValeur: (b, h) => ans(h - b) },
+        { nom: 'dont sans incapacité', couleur: 'var(--series-7)', bas: basSante, haut: hautSante, formatValeur: (b, h) => ans(h - b), opacite: 0.2 },
+      ]}
       {...(historique ? { separation: ANNEE_PROJECTION, reformes: REPERES_REFORMES } : {})}
       format={(v) => ans(v)}
       formatAxe={(v) => v.toFixed(0)}

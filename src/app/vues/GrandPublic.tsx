@@ -187,7 +187,9 @@ function Comprendre({ reference, historique }: Props) {
       <p className="note">
         Espérance de vie : 25,7 ans à 60 ans en 2025 (INSEE). Le modèle simplifié projette ensuite une hausse plus rapide
         que les projections de l’INSEE (≈ 32,7 ans en 2070 contre ≈ 30 ans) : c’est un paramètre de calage, documenté dans la
-        note de méthode, qui sera corrigé avec les tables de mortalité officielles.
+        note de méthode, qui sera corrigé avec les tables de mortalité officielles. Âge sans incapacité : 65 ans + espérance
+        de vie sans incapacité à 65 ans (DREES : ≈ 11,2 ans en 2024, moyenne femmes-hommes) ; projeté en supposant que la
+        part des années vécues sans incapacité reste de 52 % — une hypothèse, pas une prévision.
       </p>
 
       <Encadre titre="Quarante ans de réformes">

@@ -148,6 +148,19 @@ export const HISTORIQUE = {
     ],
     source: 'INSEE, bilans démographiques (moyenne simple des espérances de vie à 60 ans des hommes et des femmes)',
   },
+  /** Espérance de vie sans incapacité à 65 ans, moyenne hommes-femmes (DREES). */
+  esperanceVieSansIncapacite65: {
+    points: [
+      [2008, 9.4],
+      [2019, 10.8],
+      [2021, 11.9],
+      [2022, 11.0],
+      [2023, 11.3],
+      [2024, 11.2],
+    ],
+    source:
+      'DREES, Études et résultats (2023 : 12,0 ans femmes, 10,5 ans hommes ; 2024 : 11,8 et 10,5 ; +1 an et 10-11 mois depuis 2008) ; 2019 approximatif',
+  },
   /** Âge légal d'ouverture des droits (régime général), par année civile. */
   ageLegal: {
     points: [
@@ -160,6 +173,12 @@ export const HISTORIQUE = {
     source: 'Législation (réformes de 2010 et 2023)',
   },
 } satisfies Record<string, SerieHistorique>;
+
+/**
+ * Part des années restant à vivre à 65 ans passées sans incapacité (DREES 2023 : 50,8 % pour les
+ * femmes, 52,9 % pour les hommes). Hypothèse de projection : part constante.
+ */
+export const PART_SANS_INCAPACITE_65 = 0.52;
 
 function interpoler(points: ReadonlyArray<Point>, x: number): number {
   for (let i = 1; i < points.length; i++) {
