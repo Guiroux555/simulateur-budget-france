@@ -12,7 +12,8 @@
     "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "calibration": "tsx scripts/calibration.ts"
+    "calibration": "tsx scripts/calibration.ts",
+    "verification": "tsx scripts/verification-indicateurs.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",
