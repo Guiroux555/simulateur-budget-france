@@ -103,7 +103,7 @@ function Comprendre({ reference, historique }: Props) {
 
       <div className="grille-2">
         <div>
-          <Pyramide annee={annee} population={r.pyramide} retraites={r.pyramideRetraites} ageLegal={r.ageLegal} />
+          <Pyramide resultat={r} />
           <div className="controle-annee">
             <button type="button" className="bouton secondaire" onClick={() => (annee >= 2070 && setAnnee(2025), setLecture(!lecture))}>
               {lecture ? '❚❚ Pause' : '▶ Animer'}
@@ -163,7 +163,7 @@ function Comprendre({ reference, historique }: Props) {
         note de méthode, qui sera corrigé avec les tables de mortalité officielles.
       </p>
 
-      <Encadre titre="Trente ans de réformes">
+      <Encadre titre="Quarante ans de réformes">
         <ol className="frise">
           {REFORMES.map((r) => (
             <li key={r.annee}>

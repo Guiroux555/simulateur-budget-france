@@ -127,6 +127,8 @@ export interface ResultatAnnee {
   pyramide: number[];
   /** Retraités par âge simple. */
   pyramideRetraites: number[];
+  /** Actifs en emploi (cotisants) par âge simple. */
+  pyramideCotisants: number[];
 }
 
 export interface ResultatSimulation {

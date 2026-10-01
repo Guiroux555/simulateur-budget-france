@@ -66,7 +66,7 @@ export function App() {
           </div>
           <label className="case">
             <input type="checkbox" checked={historique} onChange={(e) => setHistorique(e.target.checked)} />
-            Afficher 1995-2024 et les réformes
+            Afficher 1985-2024 et les réformes
           </label>
           <button type="button" className="bouton secondaire" onClick={copierLien}>
             {copie ? 'Lien copié ✓' : 'Copier le lien du scénario'}

@@ -15,7 +15,7 @@ rendre leurs mécanismes manipulables.
 | Pyramide 2025 | **Provisoire** : reconstruite à partir de l'historique des naissances, d'une mortalité historique et des migrations, puis recalée sur les effectifs 0-19 / 20-64 / 65+ (voir §4). | `donnees/population2025.ts` |
 | Départs à la retraite | Part des retraités à chaque âge = loi logistique autour de l'âge moyen effectif de départ **de la génération** (un relèvement n'affecte que les générations qui n'ont pas encore liquidé). | `modele.ts` |
 | Âge effectif | Âge légal de référence (suspension LFSS 2026 puis reprise du calendrier décalé d'un trimestre) + écart calibré ; un an d'âge légal en plus → +0,6 an d'âge effectif ; un an de durée requise en plus → +0,5 an. | `modele.ts`, `reference.ts` |
-| Cotisants | Non-retraités × taux d'activité par âge × (1 − chômage). | `modele.ts` |
+| Cotisants | Non-retraités de 15 ans et plus × taux d'activité par âge × (1 − chômage). | `modele.ts` |
 | Pensions | Suivies par âge. Le stock est revalorisé sur les prix (± mesures : gel, sous-indexation). Les nouveaux retraités liquident une pension proportionnelle au revenu d'activité moyen d'il y a 14 ans (salaires portés au compte revalorisés sur les prix), avec une érosion annuelle de 0,62 % qui résume les règles indexées sur les prix. | `modele.ts` |
 | PIB | Proportionnel à la masse des revenus d'activité (part calée en 2025). | `modele.ts` |
 | Ressources | Trajectoire du COR en % du PIB à législation inchangée + leviers (hausse de taux, recettes externes, revenus d'un fonds de réserve). | `reference.ts` |
@@ -46,16 +46,16 @@ Rendement réel déterministe à ce stade (Monte-Carlo prévu en V2), maturité 
 | Indicateur | Année | COR 2026 | Modèle | Écart |
 |---|---|---|---|---|
 | Dépenses / PIB | 2025 | 14,1 % | 14,1 % | 0,00 pt |
-| Dépenses / PIB | 2045 | 14,2 % | 14,2 % | +0,04 pt |
-| Dépenses / PIB | 2070 | 15,3 % | 15,4 % | +0,06 pt |
-| Solde / PIB | 2030 | −0,2 % | −0,3 % | −0,13 pt |
-| Solde / PIB | 2045 | −0,9 % | −0,9 % | −0,04 pt |
-| Solde / PIB | 2070 | −2,4 % | −2,5 % | −0,06 pt |
+| Dépenses / PIB | 2045 | 14,2 % | 14,2 % | −0,04 pt |
+| Dépenses / PIB | 2070 | 15,3 % | 15,2 % | −0,06 pt |
+| Solde / PIB | 2030 | −0,2 % | −0,3 % | −0,09 pt |
+| Solde / PIB | 2045 | −0,9 % | −0,9 % | +0,04 pt |
+| Solde / PIB | 2070 | −2,4 % | −2,3 % | +0,06 pt |
 | Pension relative | 2025 | 54,6 % | 54,6 % | 0,0 pt |
 | Pension relative | 2070 | 45,3 % | 42,4 % | **−2,9 pt** |
 | 20-64 ans / 65 ans et + | 2070 | 1,62 | 1,63 | +0,01 |
-| Âge de départ d'équilibre | 2030 / 2045 / 2070 | 64,2 / 65,6 / 67,6 | 63,9 / 65,6 / 67,4 | ≤ 0,3 an |
-| Hausse de prélèvement d'équilibre | 2070 | 5,6 pts | 5,5 pts | −0,1 pt |
+| Âge de départ d'équilibre | 2030 / 2045 / 2070 | 64,2 / 65,6 / 67,6 | 63,8 / 65,5 / 67,2 | ≤ 0,4 an |
+| Hausse de prélèvement d'équilibre | 2070 | 5,6 pts | 5,4 pts | −0,2 pt |
 
 Les tests (`npm test`) verrouillent ces écarts pour détecter toute dérive.
 
@@ -86,12 +86,14 @@ Les tests (`npm test`) verrouillent ces écarts pour détecter toute dérive.
 - Prochaine étape « données » : importer la pyramide INSEE au 1er janvier 2025 par sexe et âge
   détaillé, les quotients de mortalité projetés de l'INSEE et les séries détaillées du COR.
 
-## 5. Historique 1995-2024 et réformes
+## 5. Historique 1985-2024 et réformes
 
 `src/engine/donnees/historique.ts` contient, pour la mise en perspective, des **points d'ancrage
 approximatifs** (dépenses et solde en % du PIB, cotisants par retraité, âge moyen conjoncturel de
-départ, âge légal) et la liste des réformes depuis 1993 (Balladur, Juppé, Fillon, régimes spéciaux,
-Woerth, Touraine, Agirc-Arrco, 2023, suspension LFSS 2026). Les graphiques relient ces points ;
+départ, espérance de vie à 60 ans, âge légal) et la liste des réformes depuis 1982 (retraite à
+60 ans, indexation sur les prix, Balladur, Juppé, FRR, Fillon, régimes spéciaux, Woerth, Touraine,
+Agirc-Arrco, 2023, suspension LFSS 2026). Les points de 1985 et 1990 sont les plus incertains ; la
+série du solde ne commence qu'en 2002 (début de la série COR). Les graphiques relient ces points ;
 ils ne sont pas utilisés par le modèle. À remplacer par les séries annuelles officielles (base de
 données du rapport annuel du COR, Panorama DREES « Les retraités et les retraites »). Les
 définitions diffèrent légèrement de celles du modèle, d'où de petites marches entre 2024 et 2025.

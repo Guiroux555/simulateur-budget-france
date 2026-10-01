@@ -2,7 +2,7 @@ import { HISTORIQUE, REFORMES } from '../engine/donnees/historique';
 import type { ResultatAnnee, ResultatSimulation } from '../engine';
 import type { RepereReforme, Serie } from './charts/Courbes';
 
-export const ANNEE_DEBUT_HISTORIQUE = 1995;
+export const ANNEE_DEBUT_HISTORIQUE = 1985;
 export const ANNEE_PROJECTION = 2025;
 
 type CleHistorique = keyof typeof HISTORIQUE;

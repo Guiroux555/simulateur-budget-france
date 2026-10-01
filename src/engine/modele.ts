@@ -64,7 +64,7 @@ export function effectifs(
       part[a] = partRetraites(a, ageDepart(anneeGeneration));
     }
     retraites[a] = population[a] * part[a];
-    let activite = valeurA(CALIBRAGE.activiteParAge, a);
+    let activite = a < 15 ? 0 : valeurA(CALIBRAGE.activiteParAge, a);
     if (a >= 55 && a < 70) activite = Math.min(0.95, activite + hausseEmploiSeniors);
     cotisants[a] = population[a] * (1 - part[a]) * activite * (1 - chomage);
   }
@@ -228,6 +228,7 @@ export function simuler(scenario: Scenario): ResultatSimulation {
       cotisationsCapitalisation: cotisationsCap,
       pyramide: Array.from(population),
       pyramideRetraites: Array.from(eff.retraites),
+      pyramideCotisants: Array.from(eff.cotisants),
     });
 
     // Passage à l'année suivante.

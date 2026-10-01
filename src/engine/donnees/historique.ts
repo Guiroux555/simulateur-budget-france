@@ -1,5 +1,5 @@
 /**
- * Historique 1995-2024 et réformes des retraites.
+ * Historique 1985-2024 et réformes des retraites.
  *
  * ⚠️ Les séries chiffrées sont des **points d'ancrage approximatifs** (comptes rendus des
  * rapports du COR, DREES, Cour des comptes), interpolés entre deux points. Les séries
@@ -20,6 +20,8 @@ export const HISTORIQUE = {
   /** Dépenses de retraite, tous régimes, en % du PIB. */
   depensesPctPib: {
     points: [
+      [1985, 0.106],
+      [1990, 0.11],
       [1995, 0.119],
       [2000, 0.116],
       [2005, 0.124],
@@ -33,7 +35,7 @@ export const HISTORIQUE = {
       [2023, 0.136],
       [2024, 0.139],
     ],
-    source: 'COR (rapports annuels), FIPECO ; 2020 : 14,7 %, 2024 : 13,9 % ; +2 pts de PIB entre 1995 et 2024',
+    source: 'COR (rapports annuels), FIPECO ; 2020 : 14,7 %, 2024 : 13,9 % ; +2 pts de PIB entre 1995 et 2024 ; 1985-1990 approximatifs',
   },
   /** Solde du système de retraite, en % du PIB (série COR disponible à partir de 2002). */
   soldePctPib: {
@@ -58,6 +60,8 @@ export const HISTORIQUE = {
   /** Nombre de cotisants pour un retraité. */
   ratioCotisantsRetraites: {
     points: [
+      [1985, 2.4],
+      [1990, 2.3],
       [1995, 2.2],
       [2000, 2.1],
       [2005, 2.05],
@@ -72,6 +76,8 @@ export const HISTORIQUE = {
   /** Âge moyen conjoncturel de départ à la retraite (DREES). */
   ageMoyenDepart: {
     points: [
+      [1985, 61.0],
+      [1990, 61.0],
       [1995, 61.0],
       [2000, 60.9],
       [2004, 60.6],
@@ -89,6 +95,8 @@ export const HISTORIQUE = {
   /** Espérance de vie à 60 ans, moyenne hommes-femmes (INSEE). */
   esperanceVie60: {
     points: [
+      [1985, 20.7],
+      [1990, 21.4],
       [1995, 22.3],
       [2000, 23.0],
       [2005, 23.9],
@@ -104,7 +112,7 @@ export const HISTORIQUE = {
   /** Âge légal d'ouverture des droits (régime général), par année civile. */
   ageLegal: {
     points: [
-      [1995, 60],
+      [1985, 60],
       [2011, 60],
       [2017, 62],
       [2023, 62],
@@ -122,8 +130,20 @@ export interface Reforme {
   mesures: string[];
 }
 
-/** Principales réformes des retraites depuis 1993. */
+/** Principales réformes des retraites depuis 1982. */
 export const REFORMES: Reforme[] = [
+  {
+    annee: 1983,
+    court: 'Retraite à 60 ans',
+    nom: 'Ordonnance de 1982 (entrée en vigueur en 1983)',
+    mesures: ['Âge légal abaissé de 65 à 60 ans au régime général, avec 37,5 ans de cotisation pour le taux plein'],
+  },
+  {
+    annee: 1987,
+    court: 'Indexation prix',
+    nom: 'Indexation des pensions sur les prix',
+    mesures: ['Revalorisation des pensions du régime général alignée sur l’inflation et non plus sur les salaires (inscrite dans la loi en 1993)'],
+  },
   {
     annee: 1993,
     court: 'Balladur',
@@ -139,6 +159,12 @@ export const REFORMES: Reforme[] = [
     court: 'Juppé',
     nom: 'Plan Juppé',
     mesures: ['Volet retraites des régimes spéciaux retiré après les grèves de novembre-décembre 1995'],
+  },
+  {
+    annee: 1999,
+    court: 'FRR',
+    nom: 'Création du Fonds de réserve pour les retraites',
+    mesures: ['Fonds destiné à lisser le choc démographique ; ses ressources sont affectées à la CADES à partir de 2011'],
   },
   {
     annee: 2003,

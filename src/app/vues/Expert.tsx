@@ -182,7 +182,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                 />
               )}
               <div>
-                <Pyramide annee={anneePyramide} population={rPyr.pyramide} retraites={rPyr.pyramideRetraites} ageLegal={rPyr.ageLegal} hauteur={280} />
+                <Pyramide resultat={rPyr} reference={reference.annees.find((x) => x.annee === anneePyramide)} hauteur={280} />
                 <div className="controle-annee">
                   <input type="range" min={2025} max={2070} value={anneePyramide} aria-label="Année de la pyramide" onChange={(e) => setAnneePyramide(Number(e.target.value))} />
                   <span className="annee">{anneePyramide}</span>
