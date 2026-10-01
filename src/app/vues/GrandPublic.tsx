@@ -1,18 +1,18 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import type { EquilibreAnnee, ResultatSimulation } from '../../engine';
+import { simuler, type EquilibreAnnee, type ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
 import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
 import { SoldeProductivite } from '../charts/SoldeProductivite';
 import { Choix, Curseur, Encadre, Tuile } from '../composants';
 import { ans, effortFinancement, milliards, pct, pctSigne, points } from '../format';
-import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../parametres';
+import { ANNEE_MESURES, PARAMETRES_REFERENCE, versScenario, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { REFORMES } from '../../engine/donnees/historique';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique } from '../historique';
 import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
-import { LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
+import { avecTendanceObservee, LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
 
 interface Props {
@@ -65,6 +65,7 @@ export function GrandPublic(props: Props) {
 }
 
 function Comprendre({ reference, historique }: Props) {
+  const referenceTendance = useMemo(() => simuler(versScenario(avecTendanceObservee(PARAMETRES_REFERENCE))), []);
   const [annee, setAnnee] = useState(2025);
   const [lecture, setLecture] = useState(false);
   useEffect(() => {
@@ -156,7 +157,11 @@ function Comprendre({ reference, historique }: Props) {
       </div>
 
       <div className="grille-2">
-        <SoldeProductivite historique={historique} productivite={[{ nom: 'Hypothèse du COR (0,7 % à long terme)', simulation: reference, couleur: 'var(--series-1)' }]}>
+        <SoldeProductivite
+          historique={historique}
+          productivite={[{ nom: 'Hypothèse du COR (0,7 % à long terme)', simulation: reference, couleur: 'var(--series-1)' }]}
+          soldeTendance={referenceTendance}
+        >
           <Courbes
             titre="Solde du système de retraite"
             sousTitre="En % du PIB — au-dessus de zéro : excédent ; en dessous : déficit"
@@ -228,6 +233,7 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
   const gel = p.anneesGel.includes(ANNEE_MESURES);
   const pDiffere = useDeferredValue(p);
   const { pessimiste, optimiste } = useMemo(() => fourchette(pDiffere), [pDiffere]);
+  const scenarioTendance = useMemo(() => simuler(versScenario(avecTendanceObservee(pDiffere))), [pDiffere]);
 
   return (
     <section>
@@ -380,6 +386,7 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
               { nom: 'Hypothèse du COR', simulation: reference, couleur: 'var(--ref)', pointille: true },
             ]}
             fourchette={{ nom: 'Hypothèses testées', bas: pessimiste, haut: optimiste }}
+            soldeTendance={scenarioTendance}
           >
             <Courbes
               titre="Solde du système de retraite"

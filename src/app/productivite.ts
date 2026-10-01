@@ -3,6 +3,7 @@
  */
 import { HISTORIQUE } from '../engine/donnees/historique';
 import { valeurA } from '../engine/trajectoire';
+import type { ParametresUI } from './parametres';
 
 const PERIODE_TENDANCE: [number, number] = [2010, 2024];
 
@@ -60,3 +61,8 @@ export const SOURCES_PRODUCTIVITE: SourceProductivite[] = [
     url: 'https://economy-finance.ec.europa.eu/document/download/e412927a-ea31-406d-bb6c-c925914123e9_en',
   },
 ];
+
+/** Les mêmes paramètres, avec la trajectoire de productivité « tendance observée ». */
+export function avecTendanceObservee(p: ParametresUI): ParametresUI {
+  return { ...p, productivite: TENDANCE_OBSERVEE.longTerme, productiviteDepart: TENDANCE_OBSERVEE.depart };
+}

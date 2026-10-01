@@ -1,17 +1,17 @@
 import { useDeferredValue, useMemo, useState } from 'react';
-import type { EquilibreAnnee, ResultatAnnee, ResultatSimulation } from '../../engine';
+import { simuler, type EquilibreAnnee, type ResultatAnnee, type ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
 import { GraphiqueAges } from '../charts/GraphiqueAges';
 import { Pyramide } from '../charts/Pyramide';
 import { SoldeProductivite } from '../charts/SoldeProductivite';
 import { Curseur } from '../composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
-import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, type ParametresUI } from '../parametres';
+import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, versScenario, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
 import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
-import { LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';
+import { avecTendanceObservee, LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
 
 interface Props {
@@ -32,6 +32,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
   const [vue, setVue] = useState<'graphiques' | 'tableau' | 'sensibilite'>('graphiques');
   const pDiffere = useDeferredValue(p);
   const { pessimiste, optimiste } = useMemo(() => fourchette(pDiffere), [pDiffere]);
+  const scenarioTendance = useMemo(() => simuler(versScenario(avecTendanceObservee(pDiffere))), [pDiffere]);
   const mode = p.capitalisationTaux > 0 ? p.capitalisationMode : undefined;
   const compare = (id: string, f: (r: ResultatAnnee) => number) => [
     { id: `ref-${id}`, nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, f), pointille: true },
@@ -176,6 +177,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                   { nom: 'Hypothèse du COR', simulation: reference, couleur: 'var(--ref)', pointille: true },
                 ]}
                 fourchette={{ nom: 'Hypothèses testées', bas: pessimiste, haut: optimiste }}
+                soldeTendance={scenarioTendance}
               >
                 <Courbes
                   titre="Solde"

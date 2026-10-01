@@ -11,6 +11,8 @@ interface Props {
   children: ReactElement<PropsCourbes>;
   /** Simulations dont on trace l'hypothèse de productivité (la première est la principale). */
   productivite: Array<{ nom: string; simulation: ResultatSimulation; couleur: string; pointille?: boolean }>;
+  /** Même scénario simulé avec la tendance observée de productivité, tracé sur le solde. */
+  soldeTendance?: ResultatSimulation;
   /** Fourchette de productivité testée (hypothèses défavorable et favorable). */
   fourchette?: { nom: string; bas: ResultatSimulation; haut: ResultatSimulation };
   historique: boolean;
@@ -23,7 +25,7 @@ const pctAn = (v: number) => `${(v * 100).toFixed(1).replace('.', ',')} %`;
  * productivité : deux grandeurs d'unités différentes, donc deux panneaux alignés plutôt
  * qu'un double axe. Le survol est synchronisé.
  */
-export function SoldeProductivite({ children: solde, productivite, fourchette, historique }: Props) {
+export function SoldeProductivite({ children: solde, productivite, soldeTendance, fourchette, historique }: Props) {
   const [survol, setSurvol] = useState<number | null>(null);
   const domaineX: [number, number] = [historique ? ANNEE_DEBUT_HISTORIQUE : 2025, 2070];
   const serie = (s: ResultatSimulation) => s.annees.map((r) => ({ x: r.annee, y: r.productivite }));
@@ -61,7 +63,24 @@ export function SoldeProductivite({ children: solde, productivite, fourchette, h
 
   return (
     <div className="solde-productivite">
-      {cloneElement(solde, { domaineX, survol, onSurvol: setSurvol })}
+      {cloneElement(solde, {
+        domaineX,
+        survol,
+        onSurvol: setSurvol,
+        series:
+          soldeTendance && !suitTendance(productivite[0].simulation)
+            ? [
+                ...solde.props.series,
+                {
+                  id: 'solde-tendance',
+                  nom: `Même scénario, productivité selon la tendance observée (${t.longTerme.toFixed(1).replace('.', ',')} %)`,
+                  couleur: 'var(--series-3)',
+                  pointille: true,
+                  valeurs: soldeTendance.annees.map((r) => ({ x: r.annee, y: r.soldePctPib })),
+                },
+              ]
+            : solde.props.series,
+      })}
       <Courbes
         titre="Gains de productivité du travail"
         sousTitre="Croissance annuelle — moteur des salaires, donc des cotisations ; les pensions, elles, suivent les prix"
