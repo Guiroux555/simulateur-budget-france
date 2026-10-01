@@ -5,7 +5,7 @@ import type { ResultatSimulation } from '../engine';
 import { HISTORIQUE, type Point } from '../engine/donnees/historique';
 import { REGIMES } from '../engine/donnees/regimes';
 import { etatsPyramidesHistoriques } from './pyramidesHistoriques';
-import { CONTRIBUTIONS_EQUILIBRE_PCT_PIB, TRAJECTOIRES_REGIMES } from '../engine/donnees/regimesTemps';
+import { TRAJECTOIRES_REGIMES } from '../engine/donnees/regimesTemps';
 import { valeurA } from '../engine/trajectoire';
 
 export const ANNEE_DEBUT_REGIMES = 2000;
@@ -36,7 +36,6 @@ export interface SerieRegime {
 
 export interface RegimesDansLeTemps {
   regimes: SerieRegime[];
-  contributionsEquilibre: Array<{ x: number; y: number }>;
 }
 
 const interp = (p: ReadonlyArray<Point>, x: number) => valeurA(p, x);
@@ -86,9 +85,7 @@ export function regimesDansLeTemps(simulation: ResultatSimulation): RegimesDansL
     lignes.forEach(({ residuel: _r, ...l }, i) => series[i].annees.push(l));
   }
   enrichir(series, simulation);
-  const contributionsEquilibre = [];
-  for (let a = ANNEE_BASCULE; a <= ANNEE_FIN_REGIMES; a++) contributionsEquilibre.push({ x: a, y: interp(CONTRIBUTIONS_EQUILIBRE_PCT_PIB, a) });
-  return { regimes: series, contributionsEquilibre };
+  return { regimes: series };
 }
 
 /** PIB en volume, Md€ de 2025 (ordres de grandeur INSEE) avant la période projetée. */

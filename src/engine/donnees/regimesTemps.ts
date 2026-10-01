@@ -75,14 +75,5 @@ export const TRAJECTOIRES_REGIMES: Record<string, TrajectoireRegime> = {
   },
 };
 
-/**
- * Contributions et subventions d'équilibre de l'État et des employeurs publics aux régimes de la
- * fonction publique et aux régimes spéciaux, en % du PIB (COR 2026 : 1,9 % en 2025, 1,1 % en 2070).
- */
-export const CONTRIBUTIONS_EQUILIBRE_PCT_PIB: Point[] = [
-  [2025, 0.019],
-  [2070, 0.011],
-];
-
 export const STATUT_REGIMES_TEMPS =
   'Estimations : trajectoires reconstituées à partir des chiffres 2024, de quelques points publiés (CNRACL, COR 2026) et de l’évolution d’ensemble du simulateur ; à remplacer par les séries officielles par régime.';

@@ -159,14 +159,6 @@ export function RegimesTemps({ reference, couleur, selection, onSelect }: Props)
           {...axe}
           hauteur={300}
         />
-        <Courbes
-          titre="Contributions d’équilibre de l’État et des employeurs publics"
-          sousTitre="Fonction publique et régimes spéciaux, % du PIB (COR 2026)"
-          series={[{ id: 'contrib', nom: 'Contributions et subventions d’équilibre', couleur: 'var(--series-3)', valeurs: donnees.contributionsEquilibre }]}
-          format={pctPibSimple}
-          domaine={[0, 0.02]}
-          hauteur={300}
-        />
       </div>
     </div>
   );
