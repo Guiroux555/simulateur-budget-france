@@ -2,6 +2,8 @@ import { useState } from 'react';
 import {
   COMPENSATION_DEMOGRAPHIQUE,
   LIBELLES_FAMILLES,
+  PARCOURS_TYPES,
+  POLYPENSION,
   REGIMES,
   SOURCES_COTISATIONS,
   TOTAUX_2024,
@@ -43,6 +45,7 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
   const [convention, setConvention] = useState<Convention>('comptable');
   const choisir = (id: string) => setSelection((s) => (s === id ? null : id));
   const parDepenses = [...REGIMES].sort((a, b) => b.depenses - a.depenses);
+  const pensionsParRetraite = REGIMES.reduce((t, r) => t + (r.retraites ?? 0), 0) / TOTAUX_2024.retraites;
   const avecCotisations = parDepenses.filter((r) => r.cotisations !== null && r.cotisants !== null && r.retraites !== null);
   const subventions = REGIMES.reduce((s, r) => s + r.subventionEtat, 0);
   const soldeAffiche = (r: Regime) => (convention === 'comptable' ? r.solde : r.solde - r.subventionEtat);
@@ -152,6 +155,57 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
         davantage dans les dépenses que dans le nombre de retraités. Le montant moyen versé par chaque régime figure sur
         les fiches ci-dessous (réversions comprises).
       </p>
+
+      <h3>Un retraité, plusieurs régimes</h3>
+      <div className="tuiles">
+        <Tuile
+          libelle="Retraités polypensionnés"
+          valeur={`${virgule(100 * POLYPENSION.partPolypensionnes)} %`}
+          detail={<>touchent des pensions d’au moins deux régimes de base (hommes {virgule(100 * POLYPENSION.partHommes)} %, femmes {virgule(100 * POLYPENSION.partFemmes)} %)</>}
+        />
+        <Tuile
+          libelle="Pensions par retraité"
+          valeur={`≈ ${virgule(pensionsParRetraite)}`}
+          detail={<>en comptant base et principales complémentaires ({virgule(POLYPENSION.pensionsBaseParRetraite)} pension de base en moyenne)</>}
+        />
+        <Tuile libelle="Retraités de droit direct" valeur={`${virgule(TOTAUX_2024.retraites)} M`} detail="personnes, chacune comptée une seule fois" />
+      </div>
+      <p className="note">
+        Un salarié du privé touche au minimum deux pensions (régime général et Agirc-Arrco) ; un quart des retraités ont en
+        plus changé de régime de base au cours de leur carrière. C’est pourquoi les effectifs par régime, additionnés,
+        dépassent largement le nombre de retraités. Exemples de parcours (répartitions indicatives, non statistiques) :
+      </p>
+      <div className="parcours">
+        {PARCOURS_TYPES.map((p) => (
+          <div key={p.titre} className="parcours-ligne">
+            <div className="parcours-titre">
+              <strong>{p.titre}</strong>
+              <span>{p.description}</span>
+            </div>
+            <div className="parcours-barre" role="img" aria-label={`${p.titre} : ${p.parts.map((x) => `${x.libelle} ${x.part} %`).join(', ')}`}>
+              {p.parts.map((x) => (
+                <span
+                  key={x.libelle}
+                  className="parcours-segment"
+                  style={{ flexGrow: x.part, background: COULEURS_REGIMES[x.regime] ?? 'var(--ref)' }}
+                  title={`${x.libelle} : ${x.part} % de la pension`}
+                >
+                  {x.part >= 12 && <span className="parcours-libelle">{x.libelle}&nbsp;</span>}
+                  {x.part} %
+                </span>
+              ))}
+            </div>
+            <ul className="parcours-legende">
+              {p.parts.map((x) => (
+                <li key={x.libelle}>
+                  <span className="pastille carree" style={{ background: COULEURS_REGIMES[x.regime] ?? 'var(--ref)' }} />
+                  {x.libelle} {x.part} %
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
 
       <Barres
         titre="Cotisants pour un retraité, par régime"

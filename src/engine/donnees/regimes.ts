@@ -304,3 +304,80 @@ export const SOURCES_COTISATIONS =
 
 export const COMPENSATION_DEMOGRAPHIQUE =
   'La compensation démographique transfère chaque année plusieurs milliards d’euros des régimes à la démographie favorable (régime général, professions libérales, fonction publique territoriale) vers ceux qui comptent peu de cotisants par retraité (exploitants agricoles, régimes en extinction).';
+
+/** Polypension (DREES, fin 2023). */
+export const POLYPENSION = {
+  /** Part des retraités de droit direct percevant des pensions d'au moins deux régimes de base. */
+  partPolypensionnes: 0.256,
+  partHommes: 0.278,
+  partFemmes: 0.235,
+  /** Nombre moyen de pensions de droit direct de régimes de base par retraité. */
+  pensionsBaseParRetraite: 1.3,
+  source: 'DREES, Les retraités et les retraites, édition 2025 (données fin 2023)',
+};
+
+export interface ParcoursType {
+  titre: string;
+  description: string;
+  /** Répartition indicative de la pension totale entre régimes (identifiants de REGIMES, parts en %). */
+  parts: Array<{ regime: string; part: number; libelle: string }>;
+}
+
+/**
+ * Parcours illustratifs : répartitions indicatives d'une pension totale entre régimes, pour
+ * montrer qu'un même retraité est payé par plusieurs caisses. Ce ne sont pas des statistiques.
+ */
+export const PARCOURS_TYPES: ParcoursType[] = [
+  {
+    titre: 'Salarié du privé non cadre, toute sa carrière',
+    description: '2 régimes : base et complémentaire',
+    parts: [
+      { regime: 'cnav', part: 70, libelle: 'Régime général' },
+      { regime: 'agirc-arrco', part: 30, libelle: 'Agirc-Arrco' },
+    ],
+  },
+  {
+    titre: 'Cadre du privé, toute sa carrière',
+    description: '2 régimes ; la complémentaire pèse plus lourd car elle couvre les salaires au-delà du plafond',
+    parts: [
+      { regime: 'cnav', part: 45, libelle: 'Régime général' },
+      { regime: 'agirc-arrco', part: 55, libelle: 'Agirc-Arrco' },
+    ],
+  },
+  {
+    titre: 'Fonctionnaire de l’État, toute sa carrière',
+    description: '1 régime couvrant base et complément, plus le petit régime additionnel sur les primes (RAFP)',
+    parts: [
+      { regime: 'fpe', part: 95, libelle: 'Régime des fonctionnaires de l’État' },
+      { regime: 'autres-complementaires', part: 5, libelle: 'RAFP' },
+    ],
+  },
+  {
+    titre: 'Salariée du privé puis fonctionnaire hospitalière',
+    description: '4 régimes : polypensionnée',
+    parts: [
+      { regime: 'cnav', part: 28, libelle: 'Régime général' },
+      { regime: 'agirc-arrco', part: 14, libelle: 'Agirc-Arrco' },
+      { regime: 'cnracl', part: 54, libelle: 'CNRACL' },
+      { regime: 'autres-complementaires', part: 4, libelle: 'RAFP' },
+    ],
+  },
+  {
+    titre: 'Salarié agricole puis exploitant',
+    description: '3 régimes : polypensionné',
+    parts: [
+      { regime: 'cnav', part: 30, libelle: 'Régime général (salariés agricoles)' },
+      { regime: 'agirc-arrco', part: 15, libelle: 'Agirc-Arrco' },
+      { regime: 'msa-exploitants', part: 55, libelle: 'MSA exploitants (base et complémentaire)' },
+    ],
+  },
+  {
+    titre: 'Salarié puis artisan ou commerçant',
+    description: '3 régimes ; la base des indépendants est gérée par le régime général depuis 2020',
+    parts: [
+      { regime: 'cnav', part: 55, libelle: 'Régime général (salarié et indépendant)' },
+      { regime: 'agirc-arrco', part: 25, libelle: 'Agirc-Arrco' },
+      { regime: 'autres-complementaires', part: 20, libelle: 'Complémentaire des indépendants (RCI)' },
+    ],
+  },
+];

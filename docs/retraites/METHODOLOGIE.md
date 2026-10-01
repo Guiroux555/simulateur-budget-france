@@ -177,3 +177,10 @@ de cotisants), taux légaux et masse salariale pour la CNAV (≈ 125 Md€, esti
 pour l'État (cotisations ≈ pensions par construction) ; régimes spéciaux, exploitants agricoles et
 professions libérales en ordres de grandeur ; cotisants estimés par rapport démographique × retraités
 quand l'effectif n'est pas publié.
+
+**Polypension.** Le bloc « Un retraité, plusieurs régimes » rappelle que les effectifs par régime ne
+s'additionnent pas : fin 2023, 25,6 % des retraités de droit direct perçoivent des pensions d'au
+moins deux régimes de base (1,3 pension de base en moyenne, DREES) et presque tous les salariés ont
+en plus une complémentaire (≈ 1,9 pension par retraité en comptant les principales complémentaires,
+calcul à partir des effectifs par régime). Les « parcours types » sont des répartitions indicatives
+d'une pension entre régimes, à visée pédagogique, et non des statistiques.
