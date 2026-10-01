@@ -25,7 +25,7 @@ const mdsSigne = (v: number) => (v > 0 ? `+${mds(v)}` : mds(v));
 type Convention = 'comptable' | 'hors-subventions';
 
 /** Section « Les régimes » : poids, solde, démographie et règles de chaque grand régime. */
-export function Regimes() {
+export function Regimes({ integre = false }: { integre?: boolean }) {
   const [selection, setSelection] = useState<string | null>(null);
   const [convention, setConvention] = useState<Convention>('comptable');
   const choisir = (id: string) => setSelection((s) => (s === id ? null : id));
@@ -38,8 +38,8 @@ export function Regimes() {
   const regimeSelectionne = REGIMES.find((r) => r.id === selection);
 
   return (
-    <section className="regimes">
-      <h2>Les régimes de retraite</h2>
+    <section className={integre ? 'regimes regimes-integre' : 'regimes'} id="regimes" aria-labelledby="titre-regimes">
+      <h2 id="titre-regimes">Les régimes de retraite</h2>
       <p className="chapeau">
         Le système français n’est pas une caisse unique : il réunit une quarantaine de régimes. Chaque assuré cotise à un{' '}
         <strong>régime de base</strong> (selon son statut) et, le plus souvent, à un <strong>régime complémentaire</strong>.

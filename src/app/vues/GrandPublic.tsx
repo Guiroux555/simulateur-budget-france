@@ -26,7 +26,7 @@ interface Props {
   setHistorique: (v: boolean) => void;
 }
 
-const ETAPES = ['Comprendre', 'Choisir mes mesures', 'Qui paie ?', 'Les régimes'] as const;
+const ETAPES = ['Comprendre', 'Choisir mes mesures', 'Qui paie ?'] as const;
 const ANNEES_CLES = [2030, 2045, 2070] as const;
 
 const an = (s: ResultatSimulation, a: number) => s.annees.find((r) => r.annee === a)!;
@@ -49,7 +49,6 @@ export function GrandPublic(props: Props) {
       {etape === 0 && <Comprendre {...props} />}
       {etape === 1 && <Choisir {...props} />}
       {etape === 2 && <QuiPaie {...props} />}
-      {etape === 3 && <Regimes />}
       <div className="navigation-etapes">
         {etape > 0 && (
           <button type="button" className="bouton secondaire" onClick={() => setEtape(etape - 1)}>
@@ -87,6 +86,11 @@ function Comprendre({ reference, historique }: Props) {
         En France, les retraites sont financées par <strong>répartition</strong> : les cotisations des actifs
         d’une année paient les pensions des retraités de la même année. L’équilibre dépend donc du
         nombre de cotisants par retraité, du niveau des pensions et du taux de prélèvement.
+      </p>
+      <p className="sommaire">
+        <button type="button" className="bouton lien" onClick={() => document.getElementById('regimes')?.scrollIntoView({ behavior: 'smooth' })}>
+          Voir la répartition par régime (régime général, fonction publique, régimes spéciaux…) ↓
+        </button>
       </p>
 
       <div className="tuiles">
@@ -226,6 +230,8 @@ function Comprendre({ reference, historique }: Props) {
           la façon d’épargner, mais pas l’équation de la répartition pendant la transition.
         </p>
       </Encadre>
+
+      <Regimes integre />
     </section>
   );
 }
