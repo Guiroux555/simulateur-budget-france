@@ -3,6 +3,8 @@
 Outils de simulation ouverts et politiquement neutres pour éclairer le débat public sur les
 finances publiques françaises.
 
+- Extension de la méthode à l'ensemble du budget (idéation) : [`docs/budget/IDEATION.md`](docs/budget/IDEATION.md)
+
 ## Module retraites (présidentielle 2027)
 
 Projection 2025-2070 de l'équilibre du système de retraite (tous régimes), calibrée sur le
