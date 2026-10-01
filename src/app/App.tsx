@@ -1,16 +1,21 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { equilibre, simuler } from '../engine';
 import { depuisUrl, PARAMETRES_REFERENCE, versScenario, versUrl, type ParametresUI } from './parametres';
 import { ANNEE_PROJECTION, ControleFenetre, FENETRE_DEFAUT, FENETRE_MAX, FENETRE_MIN, FenetreContext, type Fenetre } from './fenetre';
 import { Expert } from './vues/Expert';
 import { GrandPublic } from './vues/GrandPublic';
 import { Garde } from './Garde';
+import { AideContext } from './aideContexte';
+import { FICHES_AIDE, type CleAide } from './aide';
+import { PageAide } from './vues/PageAide';
 
 type Mode = 'decouvrir' | 'expert';
 
-function lireUrl(): { mode: Mode; parametres: ParametresUI; fenetre: Fenetre } {
+function lireUrl(): { mode: Mode; parametres: ParametresUI; fenetre: Fenetre; aide: { fiche: CleAide | null } | null } {
   const h = new URLSearchParams(window.location.hash.slice(1));
+  const fiche = h.get('aide');
   return {
+    aide: fiche === null ? null : { fiche: fiche in FICHES_AIDE ? (fiche as CleAide) : null },
     mode: h.get('mode') === 'expert' ? 'expert' : 'decouvrir',
     fenetre: lireFenetre(h.get('f')),
     parametres: { ...PARAMETRES_REFERENCE, ...depuisUrl(h.get('s') ?? '') },
@@ -31,6 +36,19 @@ export function App() {
   const [parametres, setParametres] = useState<ParametresUI>(initial.parametres);
   const [copie, setCopie] = useState(false);
   const [fenetre, setFenetre] = useState<Fenetre>(initial.fenetre);
+  // Page d'aide ouverte (fiche affichée) ; on revient ensuite au même endroit du mode expert.
+  const [aide, setAide] = useState<{ fiche: CleAide | null } | null>(initial.aide);
+  const defilementAvantAide = useRef(0);
+  const ouvrirAide = (fiche: CleAide | null) => {
+    defilementAvantAide.current = window.scrollY;
+    setAide({ fiche });
+  };
+  const fermerAide = () => {
+    setAide(null);
+    setTimeout(() => {
+      window.scrollTo({ top: defilementAvantAide.current });
+    }, 0);
+  };
   const historique = fenetre.debut < ANNEE_PROJECTION;
   const setHistorique = (v: boolean) => setFenetre(v ? FENETRE_DEFAUT : { debut: ANNEE_PROJECTION, fin: fenetre.fin });
 
@@ -41,13 +59,14 @@ export function App() {
   useEffect(() => {
     const s = versUrl(parametres);
     const f = fenetre.debut === FENETRE_DEFAUT.debut && fenetre.fin === FENETRE_DEFAUT.fin ? '' : `&f=${fenetre.debut}-${fenetre.fin}`;
-    const hash = `mode=${mode}${f}${s ? `&s=${s}` : ''}`;
+    const a = aide ? `&aide=${aide.fiche ?? ''}` : '';
+    const hash = `mode=${mode}${f}${s ? `&s=${s}` : ''}${a}`;
     try {
       history.replaceState(null, '', `#${hash}`);
     } catch {
       /* environnement sans historique (aperçu) */
     }
-  }, [mode, parametres, fenetre]);
+  }, [mode, parametres, fenetre, aide]);
 
   const copierLien = async () => {
     try {
@@ -70,10 +89,10 @@ export function App() {
         </div>
         <div className="entete-actions">
           <div className="bascule" role="tablist" aria-label="Présentation">
-            <button type="button" role="tab" aria-selected={mode === 'decouvrir'} className={mode === 'decouvrir' ? 'actif' : ''} onClick={() => setMode('decouvrir')}>
+            <button type="button" role="tab" aria-selected={mode === 'decouvrir'} className={mode === 'decouvrir' ? 'actif' : ''} onClick={() => (setAide(null), setMode('decouvrir'))}>
               Découvrir
             </button>
-            <button type="button" role="tab" aria-selected={mode === 'expert'} className={mode === 'expert' ? 'actif' : ''} onClick={() => setMode('expert')}>
+            <button type="button" role="tab" aria-selected={mode === 'expert'} className={mode === 'expert' ? 'actif' : ''} onClick={() => (setAide(null), setMode('expert'))}>
               Mode expert
             </button>
           </div>
@@ -90,7 +109,17 @@ export function App() {
 
       <FenetreContext.Provider value={fenetre}>
         <main>
-          <Garde cle={mode}>{mode === 'decouvrir' ? <GrandPublic {...props} /> : <Expert {...props} />}</Garde>
+          <Garde cle={aide ? 'aide' : mode}>
+            {aide ? (
+              <PageAide fiche={aide.fiche} retour={fermerAide} />
+            ) : mode === 'decouvrir' ? (
+              <GrandPublic {...props} />
+            ) : (
+              <AideContext.Provider value={ouvrirAide}>
+                <Expert {...props} />
+              </AideContext.Provider>
+            )}
+          </Garde>
         </main>
       </FenetreContext.Provider>
 

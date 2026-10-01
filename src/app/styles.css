@@ -347,3 +347,23 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .encadre.erreur { border-left: 4px solid var(--deficit); }
 .encadre.erreur pre { white-space: pre-wrap; font-size: 0.82rem; background: var(--surface-0); padding: 8px; border-radius: 6px; }
 .export-csv textarea { width: 100%; font-family: ui-monospace, monospace; font-size: 0.78rem; margin: 6px 0 8px; background: var(--surface-0); color: var(--text-primary); border: 1px solid var(--bordure); border-radius: 6px; }
+
+/* Aide des indicateurs */
+.bouton-aide {
+  display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; margin-left: 6px; padding: 0;
+  border-radius: 50%; border: 1px solid var(--accent); background: transparent; color: var(--accent);
+  font-size: 0.72rem; font-weight: 700; line-height: 1; cursor: pointer; vertical-align: middle; flex: none;
+}
+.bouton-aide:hover, .bouton-aide:focus-visible { background: var(--accent); color: var(--accent-texte); }
+.page-aide { max-width: 860px; }
+.retour-aide { position: sticky; top: 64px; z-index: 4; }
+.sommaire-aide { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 190px), 1fr)); gap: 8px 18px; margin: 12px 0 8px; font-size: 0.88rem; }
+.sommaire-aide ul { margin: 4px 0 0; padding-left: 16px; }
+.categorie-aide { margin-top: 26px; border-bottom: 1px solid var(--bordure); padding-bottom: 4px; }
+.fiche-aide { padding: 12px 14px; border-radius: var(--rayon); margin: 10px 0; scroll-margin-top: 110px; border: 1px solid transparent; }
+.fiche-aide.selectionnee { border-color: var(--accent); background: var(--surface-1); }
+.fiche-aide h4 { margin: 0 0 6px; font-size: 1.05rem; }
+.fiche-aide dl { margin: 0; display: grid; grid-template-columns: 150px 1fr; gap: 6px 12px; }
+.fiche-aide dt { font-weight: 600; color: var(--text-secondary); }
+.fiche-aide dd { margin: 0; }
+@media (max-width: 600px) { .fiche-aide dl { grid-template-columns: 1fr; } .fiche-aide dd { margin-bottom: 6px; } .fiche-aide { scroll-margin-top: 190px; } .retour-aide { position: static; } }

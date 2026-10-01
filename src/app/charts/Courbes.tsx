@@ -1,4 +1,6 @@
 import { useId, useState } from 'react';
+import type { CleAide } from '../aide';
+import { BoutonAide } from '../aideContexte';
 import { useFenetre } from '../fenetre';
 import { EVENEMENTS } from '../../engine/donnees/evenements';
 import { graduations, useLargeur } from './useLargeur';
@@ -37,6 +39,8 @@ export interface Bande {
 
 export interface Props {
   titre: string;
+  /** Fiche d'aide associée (icône « ? » à côté du titre). */
+  cleAide?: CleAide;
   bande?: Bande | Bande[];
   sousTitre?: string;
   series: Serie[];
@@ -118,6 +122,7 @@ function decouper(valeurs: ReadonlyArray<{ x: number; y: number }>, min: number,
 /** Graphique en courbes avec réticule et info-bulle au survol (une seule échelle verticale). */
 export function Courbes({
   titre,
+  cleAide,
   sousTitre,
   series: seriesBrutes,
   bande,
@@ -205,7 +210,10 @@ export function Courbes({
   return (
     <figure className="graphique" aria-labelledby={idTitre}>
       <figcaption id={idTitre}>
-        <span className="graphique-titre">{titre}</span>
+        <span className="graphique-titre">
+          {titre}
+          {cleAide && <BoutonAide cle={cleAide} />}
+        </span>
         {sousTitre && <span className="graphique-sous-titre">{sousTitre}</span>}
       </figcaption>
       {(series.length > 1 || bandes.length > 0) && (

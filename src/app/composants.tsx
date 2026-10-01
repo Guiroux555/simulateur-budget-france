@@ -1,4 +1,6 @@
 import { useId, type ReactNode } from 'react';
+import type { CleAide } from './aide';
+import { BoutonAide } from './aideContexte';
 
 interface CurseurProps {
   libelle: string;
@@ -12,15 +14,20 @@ interface CurseurProps {
   /** Valeur de référence, signalée sous le curseur. */
   reference?: number;
   desactive?: boolean;
+  /** Fiche d'aide associée (icône « ? »). */
+  cleAide?: CleAide;
 }
 
-export function Curseur({ libelle, valeur, min, max, pas, onChange, format, aide, reference, desactive }: CurseurProps) {
+export function Curseur({ libelle, valeur, min, max, pas, onChange, format, aide, reference, desactive, cleAide }: CurseurProps) {
   const id = useId();
   const posRef = reference === undefined ? null : ((reference - min) / (max - min)) * 100;
   return (
     <div className={`curseur${desactive ? ' desactive' : ''}`}>
       <div className="curseur-entete">
-        <label htmlFor={id}>{libelle}</label>
+        <label htmlFor={id}>
+          {libelle}
+          {cleAide && <BoutonAide cle={cleAide} />}
+        </label>
         <output htmlFor={id}>{format(valeur)}</output>
       </div>
       <div className="curseur-piste">
