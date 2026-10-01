@@ -14,6 +14,8 @@ import { AGE_MAX, NB_AGES, PROFIL_MIGRATIONS, sommeAges, tableMortalite } from '
 
 /** Naissances annuelles approximatives (milliers), France entière. Points interpolés linéairement. */
 const NAISSANCES_MILLIERS: Array<[number, number]> = [
+  [1830, 980],
+  [1860, 980],
   [1880, 920],
   [1900, 830],
   [1913, 790],
@@ -50,6 +52,8 @@ const NAISSANCES_MILLIERS: Array<[number, number]> = [
 
 /** Espérance de vie à la naissance (deux sexes) de la période, ordres de grandeur. */
 const ESPERANCE_VIE_HISTORIQUE: Array<[number, number]> = [
+  [1830, 38],
+  [1860, 40],
   [1880, 42],
   [1900, 46],
   [1913, 50],
@@ -100,8 +104,8 @@ function interp(points: Array<[number, number]>, x: number): number {
 const pyramidesBrutes = new Map<number, Float64Array>();
 
 function construirePyramide(): Float64Array {
-  // Départ en 1880 pour que les générations âgées des années 1980 soient présentes.
-  const debut = 1880;
+  // Départ en 1830 pour que les générations âgées de l'après-guerre soient présentes.
+  const debut = 1830;
   let population = new Float64Array(NB_AGES);
   for (let annee = debut; annee < 2025; annee++) {
     if (annee >= ANNEE_DEBUT_RECONSTITUTION) pyramidesBrutes.set(annee, Float64Array.from(population));
@@ -131,9 +135,70 @@ function construirePyramide(): Float64Array {
 let pyramide: Float64Array | null = null;
 
 /** Première année de la reconstitution historique des pyramides. */
-export const ANNEE_DEBUT_RECONSTITUTION = 1985;
+export const ANNEE_DEBUT_RECONSTITUTION = 1945;
 
 let historiques: Map<number, Float64Array> | null = null;
+
+/**
+ * Part des 65 ans et plus dans la population (INSEE, ordres de grandeur) : sert à recaler les âges
+ * élevés des pyramides reconstituées, que la mortalité simplifiée du XIXᵉ siècle sous-estime.
+ */
+const PART_65_PLUS: Array<[number, number]> = [
+  [1946, 0.111],
+  [1950, 0.114],
+  [1960, 0.116],
+  [1970, 0.128],
+  [1975, 0.134],
+  [1985, 0.128],
+  [1990, 0.14],
+  [2000, 0.16],
+  [2010, 0.168],
+  [2024, 0.217],
+];
+
+/** Population totale (millions, France y compris DOM, ordres de grandeur INSEE). */
+const POPULATION_TOTALE: Array<[number, number]> = [
+  [1946, 41.0],
+  [1950, 42.6],
+  [1960, 46.5],
+  [1970, 51.7],
+  [1975, 53.7],
+  [1985, 56.6],
+  [1990, 58.0],
+  [2000, 60.5],
+  [2010, 64.6],
+  [2020, 67.3],
+  [2024, 68.4],
+];
+
+function recalerAgesEleves(population: Float64Array, annee: number): void {
+  const cible = interp(PART_65_PLUS, annee);
+  // Poids progressif de 55 à 65 ans pour éviter une marche dans la pyramide.
+  const poids = (a: number) => (a >= 65 ? 1 : a <= 55 ? 0 : (a - 55) / 10);
+  let concernes = 0;
+  let total = 0;
+  let plus65 = 0;
+  for (let a = 0; a < NB_AGES; a++) {
+    total += population[a];
+    concernes += population[a] * poids(a);
+    if (a >= 65) plus65 += population[a];
+  }
+  // Facteur f appliqué aux âges pondérés tel que la part des 65 ans et plus atteigne la cible.
+  let lo = 0.5;
+  let hi = 3;
+  for (let i = 0; i < 50; i++) {
+    const f = (lo + hi) / 2;
+    const nouveau65 = plus65 * f;
+    const nouveauTotal = total + (concernes * (f - 1));
+    if (nouveau65 / nouveauTotal < cible) lo = f;
+    else hi = f;
+  }
+  const f = (lo + hi) / 2;
+  for (let a = 55; a < NB_AGES; a++) population[a] *= 1 + (f - 1) * poids(a);
+  // Puis mise à l'échelle de l'ensemble sur la population totale connue.
+  const facteurTotal = (interp(POPULATION_TOTALE, annee) * 1e6) / sommeAges(population, 0, AGE_MAX);
+  for (let a = 0; a < NB_AGES; a++) population[a] *= facteurTotal;
+}
 
 /**
  * Pyramides au 1er janvier de 1985 à 2024, reconstituées par **rétro-projection** de la pyramide
@@ -164,8 +229,10 @@ export function pyramidesHistoriques(): Map<number, Float64Array> {
     }
     const facteur = b > 0 ? r / b : 1;
     for (let a = limite + 1; a < NB_AGES; a++) courante[a] = brute[a] * facteur;
+    // Rétro-projection conservée pour l'année suivante ; recalage appliqué à une copie.
+    suivante = Float64Array.from(courante);
+    recalerAgesEleves(courante, annee);
     resultat.set(annee, courante);
-    suivante = courante;
   }
   historiques = resultat;
   return resultat;

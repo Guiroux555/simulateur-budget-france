@@ -1,5 +1,5 @@
 /**
- * Pyramides 1985-2024 réparties entre actifs en emploi, retraités et autres, pour prolonger
+ * Pyramides 1945-2024 réparties entre actifs en emploi, retraités et autres, pour prolonger
  * l'animation de la pyramide dans le passé. Reconstitution approximative : population
  * rétro-projetée depuis 2025, départs selon l'âge moyen observé (DREES), chômage observé,
  * puis effectif d'actifs recalé sur le nombre observé de cotisants par retraité.
@@ -17,6 +17,10 @@ export type EtatPyramide = Pick<
 
 /** Taux de chômage observé (INSEE, au sens du BIT, ordres de grandeur). */
 const CHOMAGE_OBSERVE = [
+  [1950, 0.02],
+  [1970, 0.025],
+  [1975, 0.04],
+  [1980, 0.065],
   [1985, 0.1],
   [1990, 0.085],
   [1994, 0.105],
@@ -67,7 +71,7 @@ export function ratioActifsInactifs(e: Pick<EtatPyramide, 'population' | 'cotisa
   return e.cotisants / (e.population - e.cotisants);
 }
 
-/** Série reconstituée 1985-2024 du rapport actifs en emploi / inactifs. */
+/** Série reconstituée 1945-2024 du rapport actifs en emploi / inactifs. */
 export function serieActifsInactifsHistorique(): Array<{ x: number; y: number }> {
   return [...etatsPyramidesHistoriques().values()].sort((a, b) => a.annee - b.annee).map((e) => ({ x: e.annee, y: ratioActifsInactifs(e) }));
 }

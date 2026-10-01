@@ -10,6 +10,7 @@ import { ANNEE_MESURES, PARAMETRES_REFERENCE, versScenario, type ParametresUI } 
 import { appliquerPreset, PRESETS } from '../presets';
 import { REFORMES } from '../../engine/donnees/historique';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique } from '../historique';
+import { useFenetre } from '../fenetre';
 import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { avecTendanceObservee, LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
@@ -67,14 +68,17 @@ export function GrandPublic(props: Props) {
 
 function Comprendre({ reference, historique }: Props) {
   const referenceTendance = useMemo(() => simuler(versScenario(avecTendanceObservee(PARAMETRES_REFERENCE))), []);
-  const [annee, setAnnee] = useState(2025);
+  const fenetre = useFenetre();
+  const debutPyramide = Math.max(ANNEE_DEBUT_HISTORIQUE, fenetre.debut);
+  const finPyramide = fenetre.fin;
+  const [anneeChoisie, setAnnee] = useState(2025);
+  const annee = Math.min(finPyramide, Math.max(debutPyramide, anneeChoisie));
   const [lecture, setLecture] = useState(false);
   useEffect(() => {
     if (!lecture) return;
-    const t = setInterval(() => setAnnee((a) => (a >= 2070 ? (setLecture(false), 2070) : a + 1)), 160);
+    const t = setInterval(() => setAnnee((a) => (a >= finPyramide ? (setLecture(false), finPyramide) : Math.max(a, debutPyramide) + 1)), 160);
     return () => clearInterval(t);
-  }, [lecture]);
-  const debutPyramide = historique ? ANNEE_DEBUT_HISTORIQUE : 2025;
+  }, [lecture, debutPyramide, finPyramide]);
   const r = annee < 2025 ? etatsPyramidesHistoriques().get(annee)! : an(reference, annee);
   const debut = reference.annees[0];
   const fin = an(reference, 2070);
@@ -116,14 +120,14 @@ function Comprendre({ reference, historique }: Props) {
         <div>
           <Pyramide resultat={r} />
           <div className="controle-annee">
-            <button type="button" className="bouton secondaire" onClick={() => (annee >= 2070 && setAnnee(debutPyramide), setLecture(!lecture))}>
+            <button type="button" className="bouton secondaire" onClick={() => (annee >= finPyramide && setAnnee(debutPyramide), setLecture(!lecture))}>
               {lecture ? '❚❚ Pause' : '▶ Animer'}
             </button>
             <input
               type="range"
               min={debutPyramide}
-              max={2070}
-              value={Math.max(annee, debutPyramide)}
+              max={finPyramide}
+              value={Math.min(finPyramide, Math.max(annee, debutPyramide))}
               aria-label="Année affichée"
               onChange={(e) => (setLecture(false), setAnnee(Number(e.target.value)))}
             />
@@ -196,7 +200,7 @@ function Comprendre({ reference, historique }: Props) {
         part des années vécues sans incapacité reste de 52 % — une hypothèse, pas une prévision.
       </p>
 
-      <Encadre titre="Quarante ans de réformes">
+      <Encadre titre="Les réformes depuis la naissance de la répartition">
         <ol className="frise">
           {REFORMES.map((r) => (
             <li key={r.annee}>

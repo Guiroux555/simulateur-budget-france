@@ -1,18 +1,27 @@
 import { useEffect, useMemo, useState } from 'react';
 import { equilibre, simuler } from '../engine';
 import { depuisUrl, PARAMETRES_REFERENCE, versScenario, versUrl, type ParametresUI } from './parametres';
+import { ANNEE_PROJECTION, ControleFenetre, FENETRE_DEFAUT, FENETRE_MAX, FENETRE_MIN, FenetreContext, type Fenetre } from './fenetre';
 import { Expert } from './vues/Expert';
 import { GrandPublic } from './vues/GrandPublic';
 
 type Mode = 'decouvrir' | 'expert';
 
-function lireUrl(): { mode: Mode; parametres: ParametresUI; historique: boolean } {
+function lireUrl(): { mode: Mode; parametres: ParametresUI; fenetre: Fenetre } {
   const h = new URLSearchParams(window.location.hash.slice(1));
   return {
     mode: h.get('mode') === 'expert' ? 'expert' : 'decouvrir',
-    historique: h.get('historique') !== '0',
+    fenetre: lireFenetre(h.get('f')),
     parametres: { ...PARAMETRES_REFERENCE, ...depuisUrl(h.get('s') ?? '') },
   };
+}
+
+function lireFenetre(valeur: string | null): Fenetre {
+  const m = valeur?.match(/^(\d{4})-(\d{4})$/);
+  if (!m) return FENETRE_DEFAUT;
+  const debut = Math.max(FENETRE_MIN, Number(m[1]));
+  const fin = Math.min(FENETRE_MAX, Number(m[2]));
+  return fin - debut >= 10 ? { debut, fin } : FENETRE_DEFAUT;
 }
 
 export function App() {
@@ -20,7 +29,9 @@ export function App() {
   const [mode, setMode] = useState<Mode>(initial.mode);
   const [parametres, setParametres] = useState<ParametresUI>(initial.parametres);
   const [copie, setCopie] = useState(false);
-  const [historique, setHistorique] = useState(initial.historique);
+  const [fenetre, setFenetre] = useState<Fenetre>(initial.fenetre);
+  const historique = fenetre.debut < ANNEE_PROJECTION;
+  const setHistorique = (v: boolean) => setFenetre(v ? FENETRE_DEFAUT : { debut: ANNEE_PROJECTION, fin: fenetre.fin });
 
   const reference = useMemo(() => simuler(versScenario(PARAMETRES_REFERENCE)), []);
   const scenario = useMemo(() => simuler(versScenario(parametres)), [parametres]);
@@ -28,13 +39,14 @@ export function App() {
 
   useEffect(() => {
     const s = versUrl(parametres);
-    const hash = `mode=${mode}${historique ? '' : '&historique=0'}${s ? `&s=${s}` : ''}`;
+    const f = fenetre.debut === FENETRE_DEFAUT.debut && fenetre.fin === FENETRE_DEFAUT.fin ? '' : `&f=${fenetre.debut}-${fenetre.fin}`;
+    const hash = `mode=${mode}${f}${s ? `&s=${s}` : ''}`;
     try {
       history.replaceState(null, '', `#${hash}`);
     } catch {
       /* environnement sans historique (aperçu) */
     }
-  }, [mode, parametres, historique]);
+  }, [mode, parametres, fenetre]);
 
   const copierLien = async () => {
     try {
@@ -64,17 +76,20 @@ export function App() {
               Mode expert
             </button>
           </div>
-          <label className="case">
-            <input type="checkbox" checked={historique} onChange={(e) => setHistorique(e.target.checked)} />
-            Afficher 1985-2024 et les réformes
-          </label>
+
           <button type="button" className="bouton secondaire" onClick={copierLien}>
             {copie ? 'Lien copié ✓' : 'Copier le lien du scénario'}
           </button>
         </div>
       </header>
 
-      <main>{mode === 'decouvrir' ? <GrandPublic {...props} /> : <Expert {...props} />}</main>
+      <div className="barre-fenetre">
+        <ControleFenetre fenetre={fenetre} setFenetre={setFenetre} />
+      </div>
+
+      <FenetreContext.Provider value={fenetre}>
+        <main>{mode === 'decouvrir' ? <GrandPublic {...props} /> : <Expert {...props} />}</main>
+      </FenetreContext.Provider>
 
       <footer className="pied">
         <p>

@@ -1,5 +1,7 @@
 /**
- * Historique 1985-2024 et réformes des retraites.
+ * Historique 1945-2024 et réformes des retraites. Avant 1985, points très approximatifs
+ * (ordres de grandeur : 4 cotisants par retraité vers 1960, dépenses ≈ 5 % du PIB à la fin des
+ * années 1950, croissance de la productivité ≈ 5 %/an pendant les Trente Glorieuses).
  *
  * ⚠️ Les séries chiffrées sont des **points d'ancrage approximatifs** (comptes rendus des
  * rapports du COR, DREES, Cour des comptes), interpolés entre deux points. Les séries
@@ -20,6 +22,10 @@ export const HISTORIQUE = {
   /** Dépenses de retraite, tous régimes, en % du PIB. */
   depensesPctPib: {
     points: [
+      [1950, 0.03],
+      [1959, 0.054],
+      [1970, 0.065],
+      [1980, 0.095],
       [1985, 0.106],
       [1990, 0.11],
       [1995, 0.119],
@@ -67,6 +73,9 @@ export const HISTORIQUE = {
   /** Pension moyenne / revenu d'activité moyen (définition COR). */
   pensionRelative: {
     points: [
+      [1960, 0.33],
+      [1970, 0.37],
+      [1980, 0.42],
       [1985, 0.44],
       [1990, 0.46],
       [1995, 0.48],
@@ -82,6 +91,10 @@ export const HISTORIQUE = {
   /** Croissance de la productivité apparente du travail (moyenne glissante sur 5 ans). */
   productivite: {
     points: [
+      [1950, 0.05],
+      [1960, 0.05],
+      [1973, 0.045],
+      [1980, 0.028],
       [1985, 0.02],
       [1990, 0.018],
       [1995, 0.015],
@@ -99,6 +112,10 @@ export const HISTORIQUE = {
   /** Nombre de cotisants pour un retraité. */
   ratioCotisantsRetraites: {
     points: [
+      [1950, 4.5],
+      [1960, 4.0],
+      [1970, 3.0],
+      [1980, 2.6],
       [1985, 2.4],
       [1990, 2.3],
       [1995, 2.2],
@@ -115,6 +132,9 @@ export const HISTORIQUE = {
   /** Âge moyen conjoncturel de départ à la retraite (DREES). */
   ageMoyenDepart: {
     points: [
+      [1950, 64.5],
+      [1970, 64.0],
+      [1980, 63.0],
       [1985, 61.0],
       [1990, 61.0],
       [1995, 61.0],
@@ -134,6 +154,10 @@ export const HISTORIQUE = {
   /** Espérance de vie à 60 ans, moyenne hommes-femmes (INSEE). */
   esperanceVie60: {
     points: [
+      [1950, 17.0],
+      [1960, 17.6],
+      [1970, 18.5],
+      [1980, 19.8],
       [1985, 20.7],
       [1990, 21.4],
       [1995, 22.3],
@@ -164,13 +188,15 @@ export const HISTORIQUE = {
   /** Âge légal d'ouverture des droits (régime général), par année civile. */
   ageLegal: {
     points: [
-      [1985, 60],
+      [1945, 65],
+      [1982, 65],
+      [1983, 60],
       [2011, 60],
       [2017, 62],
       [2023, 62],
       [2025, 62.75],
     ],
-    source: 'Législation (réformes de 2010 et 2023)',
+    source: 'Législation : âge du taux plein de 65 ans de 1945 à 1982 (départ possible dès 60 ans avec forte minoration), 60 ans à partir de 1983, réformes de 2010 et 2023',
   },
 } satisfies Record<string, SerieHistorique>;
 
@@ -205,8 +231,54 @@ export interface Reforme {
   mesures: string[];
 }
 
-/** Principales réformes des retraites depuis 1982. */
+/** Principales réformes des retraites depuis la naissance de la répartition. */
 export const REFORMES: Reforme[] = [
+  {
+    annee: 1941,
+    court: 'AVTS',
+    nom: 'Allocation aux vieux travailleurs salariés',
+    mesures: [
+      'Les cotisations des assurances sociales (1930), placées jusque-là en capitalisation, servent à payer directement les pensions : naissance de la répartition',
+      'Les réserves avaient été laminées par l’inflation et la crise des années 1930',
+    ],
+  },
+  {
+    annee: 1945,
+    court: 'Sécurité sociale',
+    nom: 'Création de la Sécurité sociale',
+    mesures: [
+      'Ordonnances d’octobre 1945 : assurance vieillesse par répartition pour les salariés (régime général)',
+      'Pension de 20 % du salaire à 60 ans, 40 % à 65 ans après 30 ans d’assurance',
+      'Les régimes existants (fonctionnaires, mineurs, cheminots, marins…) sont maintenus',
+    ],
+  },
+  {
+    annee: 1947,
+    court: 'Agirc',
+    nom: 'Création de l’Agirc',
+    mesures: ['Régime complémentaire des cadres, créé et géré par les partenaires sociaux'],
+  },
+  {
+    annee: 1956,
+    court: 'Minimum vieillesse',
+    nom: 'Fonds national de solidarité',
+    mesures: ['Création du minimum vieillesse, financé par l’impôt, pour les personnes âgées aux faibles ressources'],
+  },
+  {
+    annee: 1961,
+    court: 'Arrco',
+    nom: 'Création de l’Arrco',
+    mesures: ['Régime complémentaire des salariés non cadres ; généralisation des complémentaires en 1972'],
+  },
+  {
+    annee: 1971,
+    court: 'Boulin',
+    nom: 'Loi Boulin',
+    mesures: [
+      'Durée d’assurance pour le taux plein portée à 37,5 ans (150 trimestres)',
+      'Taux plein relevé à 50 % du salaire des 10 meilleures années',
+    ],
+  },
   {
     annee: 1983,
     court: 'Retraite à 60 ans',

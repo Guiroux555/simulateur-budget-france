@@ -16,6 +16,9 @@ const GOMPERTZ_C = 0.105;
 /** Mortalité infantile (quotient à 0 an) selon l'espérance de vie, interpolée sur l'historique français. */
 function quotientInfantile(e0: number): number {
   const points: Array<[number, number]> = [
+    [38, 0.18],
+    [46, 0.14],
+    [54, 0.09],
     [60, 0.06],
     [66, 0.05],
     [72, 0.018],

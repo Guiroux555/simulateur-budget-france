@@ -320,3 +320,10 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .pourquoi-regimes summary { cursor: pointer; font-weight: 700; }
 .pourquoi-regimes ul { margin: 10px 0 0; padding-left: 1.2rem; display: flex; flex-direction: column; gap: 6px; }
 .fiche-histoire { background: var(--surface-2); border-radius: 8px; padding: 8px 10px; font-size: 0.88rem; }
+.barre-fenetre { position: sticky; top: 0; z-index: 5; background: var(--surface-0); padding: 6px 0 10px; margin-bottom: 4px; }
+.controle-fenetre { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; font-size: 0.9rem; }
+.controle-fenetre select { padding: 4px 6px; }
+.bouton.zoom { padding: 2px 10px; font-size: 1.1rem; line-height: 1.4; }
+.presets-fenetre { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 8px; }
+.presets-fenetre button { border: 1px solid var(--bordure); background: var(--surface-1); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-size: 0.82rem; }
+.presets-fenetre button.actif { border-color: var(--accent); color: var(--accent); font-weight: 600; }

@@ -86,7 +86,7 @@ Les tests (`npm test`) verrouillent ces écarts pour détecter toute dérive.
 - Prochaine étape « données » : importer la pyramide INSEE au 1er janvier 2025 par sexe et âge
   détaillé, les quotients de mortalité projetés de l'INSEE et les séries détaillées du COR.
 
-## 5. Historique 1985-2024 et réformes
+## 5. Historique 1945-2024 et réformes
 
 `src/engine/donnees/historique.ts` contient, pour la mise en perspective, des **points d'ancrage
 approximatifs** (dépenses et solde en % du PIB, cotisants par retraité, âge moyen conjoncturel de
@@ -196,3 +196,22 @@ PIB en 2070, cohérent avec le COR 2026 : ≈ −2 %). Cotisants par retraité :
 4,53 au début des années 1980, 1,54 en 2020, 1,44 en 2022), puis évolution d'ensemble du modèle ;
 régimes spéciaux en extinction (fermés aux nouveaux embauchés). Contributions d'équilibre de l'État
 et des employeurs publics : 1,9 % du PIB en 2025, 1,1 % en 2070 (COR 2026).
+
+
+### Extension à 1945 (naissance de la répartition)
+
+L'historique remonte à 1945 (création de la Sécurité sociale ; la répartition date de 1941 avec
+l'allocation aux vieux travailleurs salariés). Réformes ajoutées : AVTS (1941), Sécurité sociale
+(1945), Agirc (1947), minimum vieillesse (1956), Arrco (1961), loi Boulin (1971). Les séries
+1945-1985 sont des ordres de grandeur (≈ 4 cotisants par retraité vers 1960, dépenses ≈ 5 % du PIB
+à la fin des années 1950, productivité ≈ 5 %/an pendant les Trente Glorieuses, âge du taux plein
+de 65 ans jusqu'en 1982). Les pyramides 1945-2024 sont rétro-projetées depuis 2025, raccordées à
+une projection historique démarrant en 1830 (mortalité infantile historique), puis recalées sur la
+part des 65 ans et plus et la population totale de l'INSEE (41,0 M et 11,1 % en 1946).
+
+### Fenêtre de temps
+
+Un sélecteur « Période » (boutons − / +, années de début et de fin, préréglages « Depuis 1945 »,
+« 40 ans + projection », « Projection seule », « Court terme ») règle la période affichée par tous
+les graphiques en courbes, la pyramide animée et l'onglet « Dans le temps » des régimes. Elle est
+conservée dans le lien permanent (paramètre `f`).

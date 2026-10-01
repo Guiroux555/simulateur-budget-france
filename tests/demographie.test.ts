@@ -40,13 +40,13 @@ describe('pyramide 2025', () => {
   });
 });
 
-describe('pyramides reconstituées 1985-2024', () => {
-  it('couvrent 40 ans, sans effectif négatif, avec une population croissante', async () => {
+describe('pyramides reconstituées 1945-2024', () => {
+  it('couvrent 80 ans, sans effectif négatif, avec une population croissante', async () => {
     const { pyramidesHistoriques } = await import('../src/engine/donnees/population2025');
     const h = pyramidesHistoriques();
-    expect(h.size).toBe(40);
+    expect(h.size).toBe(80);
     let precedente = 0;
-    for (let annee = 1985; annee <= 2024; annee++) {
+    for (let annee = 1946; annee <= 2024; annee++) {
       const p = h.get(annee)!;
       expect(Math.min(...p)).toBeGreaterThanOrEqual(0);
       const total = sommeAges(p, 0, 105);
@@ -59,5 +59,9 @@ describe('pyramides reconstituées 1985-2024', () => {
     expect(sommeAges(p1985, 0, 105) / 1e6).toBeLessThan(59);
     expect(sommeAges(p1985, 65, 105) / sommeAges(p1985, 0, 105)).toBeGreaterThan(0.11);
     expect(sommeAges(p1985, 65, 105) / sommeAges(p1985, 0, 105)).toBeLessThan(0.14);
+    // Après-guerre : ≈ 41 M d'habitants et ≈ 11 % de 65 ans et plus en 1946.
+    const p1946 = h.get(1946)!;
+    expect(sommeAges(p1946, 0, 105) / 1e6).toBeCloseTo(41, 0);
+    expect(sommeAges(p1946, 65, 105) / sommeAges(p1946, 0, 105)).toBeCloseTo(0.111, 2);
   });
 });

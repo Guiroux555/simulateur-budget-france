@@ -2,7 +2,7 @@ import { HISTORIQUE, REFORMES, RESSOURCES_HISTORIQUES } from '../engine/donnees/
 import type { ResultatAnnee, ResultatSimulation } from '../engine';
 import type { RepereReforme, Serie } from './charts/Courbes';
 
-export const ANNEE_DEBUT_HISTORIQUE = 1985;
+export const ANNEE_DEBUT_HISTORIQUE = 1945;
 export const ANNEE_PROJECTION = 2025;
 
 const SERIES = { ...HISTORIQUE, ressourcesPctPib: RESSOURCES_HISTORIQUES };

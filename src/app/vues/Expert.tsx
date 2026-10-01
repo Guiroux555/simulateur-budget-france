@@ -9,6 +9,7 @@ import { ans, effortFinancement, milliards, nombre, pct, points } from '../forma
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, versScenario, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
+import { useFenetre } from '../fenetre';
 import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHistorique } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { avecTendanceObservee, LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';
@@ -39,8 +40,9 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
     { id: `ref-${id}`, nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, f), pointille: true },
     { id: `moi-${id}`, nom: 'Scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, f) },
   ];
-  const debutPyramide = historique ? ANNEE_DEBUT_HISTORIQUE : 2025;
-  const anneePyr = Math.max(anneePyramide, debutPyramide);
+  const fenetre = useFenetre();
+  const debutPyramide = Math.max(ANNEE_DEBUT_HISTORIQUE, fenetre.debut);
+  const anneePyr = Math.min(fenetre.fin, Math.max(anneePyramide, debutPyramide));
   const rPyr = anneePyr < 2025 ? etatsPyramidesHistoriques().get(anneePyr)! : scenario.annees.find((r) => r.annee === anneePyr)!;
   const refPyr = anneePyr < 2025 ? undefined : reference.annees.find((x) => x.annee === anneePyr);
 
@@ -229,7 +231,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
               <div>
                 <Pyramide resultat={rPyr} reference={refPyr} hauteur={280} />
                 <div className="controle-annee">
-                  <input type="range" min={debutPyramide} max={2070} value={anneePyr} aria-label="Année de la pyramide" onChange={(e) => setAnneePyramide(Number(e.target.value))} />
+                  <input type="range" min={debutPyramide} max={fenetre.fin} value={anneePyr} aria-label="Année de la pyramide" onChange={(e) => setAnneePyramide(Number(e.target.value))} />
                   <span className="annee">{anneePyr}</span>
                 </div>
               </div>

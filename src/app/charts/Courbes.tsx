@@ -1,4 +1,5 @@
 import { useId, useState } from 'react';
+import { useFenetre } from '../fenetre';
 import { graduations, useLargeur } from './useLargeur';
 
 export interface Serie {
@@ -97,11 +98,27 @@ function placerEtiquettes(reformes: RepereReforme[], sx: (x: number) => number, 
   });
 }
 
+/** Restreint une série à [min, max], en interpolant les points aux bornes. */
+function decouper(valeurs: ReadonlyArray<{ x: number; y: number }>, min: number, max: number) {
+  const out: Array<{ x: number; y: number }> = [];
+  for (let i = 0; i < valeurs.length; i++) {
+    const v = valeurs[i];
+    const p = valeurs[i - 1];
+    if (p && p.x < min && v.x > min) out.push({ x: min, y: p.y + ((v.y - p.y) * (min - p.x)) / (v.x - p.x) });
+    if (v.x >= min && v.x <= max) out.push(v);
+    if (p && p.x < max && v.x > max) {
+      out.push({ x: max, y: p.y + ((v.y - p.y) * (max - p.x)) / (v.x - p.x) });
+      break;
+    }
+  }
+  return out;
+}
+
 /** Graphique en courbes avec réticule et info-bulle au survol (une seule échelle verticale). */
 export function Courbes({
   titre,
   sousTitre,
-  series,
+  series: seriesBrutes,
   bande,
   format,
   formatAxe,
@@ -121,13 +138,19 @@ export function Courbes({
   const setSurvol = (x: number | null) => (onSurvol ? onSurvol(x) : setSurvolLocal(x));
   const idTitre = useId();
 
-  const tousX = series.flatMap((s) => s.valeurs.map((v) => v.x));
-  const xMin = domaineX?.[0] ?? Math.min(...tousX);
-  const xMax = domaineX?.[1] ?? Math.max(...tousX);
+  // Fenêtre de temps choisie par l'utilisateur : les séries sont coupées à ses bornes.
+  const fenetre = useFenetre();
+  const tousX = seriesBrutes.flatMap((s) => s.valeurs.map((v) => v.x));
+  const xMin = Math.max(domaineX?.[0] ?? Math.min(...tousX), fenetre.debut);
+  const xMax = Math.min(domaineX?.[1] ?? Math.max(...tousX), fenetre.fin);
+  const couper = (v: ReadonlyArray<{ x: number; y: number }>) => decouper(v, xMin, xMax);
+  const series = seriesBrutes.map((s) => ({ ...s, valeurs: couper(s.valeurs) })).filter((s) => s.valeurs.length > 0);
   const reformesVisibles = reformes.filter((r) => r.annee >= xMin && r.annee <= xMax);
   const haut = MARGE.haut + (reformesVisibles.length ? HAUTEUR_REFORMES : 0);
 
-  const bandes = bande === undefined ? [] : Array.isArray(bande) ? bande : [bande];
+  const bandes = (bande === undefined ? [] : Array.isArray(bande) ? bande : [bande])
+    .map((b) => ({ ...b, bas: couper(b.bas), haut: couper(b.haut) }))
+    .filter((b) => b.bas.length > 0 && b.haut.length > 0);
   const tousY = [...series, ...bandes.flatMap((b) => [{ valeurs: b.bas }, { valeurs: b.haut }])].flatMap((s) => s.valeurs.map((v) => v.y));
   let yMin = Math.min(...tousY);
   let yMax = Math.max(...tousY);
