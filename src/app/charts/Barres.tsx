@@ -10,6 +10,10 @@ export interface Barre {
   complement?: { valeur: number; couleur: string; libelle: string; texte?: string };
   /** Texte additionnel de l'info-bulle. */
   detail?: string;
+  /** Texte remplaçant la valeur formatée en bout de barre. */
+  texte?: string;
+  /** Seconde mesure comparable (même unité), dessinée en barre claire sous la principale. */
+  secondaire?: { valeur: number; texte: string } | null;
 }
 
 interface Props {
@@ -21,7 +25,7 @@ interface Props {
   repere?: { valeur: number; libelle: string };
   selection?: string | null;
   onSelect?: (id: string) => void;
-  legende?: Array<{ libelle: string; couleur: string; motif?: boolean }>;
+  legende?: Array<{ libelle: string; couleur: string; motif?: boolean; clair?: boolean }>;
 }
 
 const HAUTEUR_BARRE = 26;
@@ -34,17 +38,22 @@ export function Barres({ titre, sousTitre, barres, format, repere, selection, on
   const [survol, setSurvol] = useState<string | null>(null);
   const idTitre = useId();
   const etroit = largeur < 560;
-  const gauche = etroit ? 8 : Math.min(260, largeur * 0.36);
-  const hauteurLigne = HAUTEUR_BARRE + ECART + (etroit ? 16 : 0);
+  const gauche = etroit ? 16 : Math.min(260, largeur * 0.36);
+  const avecSecondaire = barres.some((b) => b.secondaire);
+  const hBarre = avecSecondaire ? 17 : HAUTEUR_BARRE;
+  const hSecondaire = 11;
+  const hauteurLigne = hBarre + (avecSecondaire ? hSecondaire + 3 : 0) + ECART + (etroit ? 16 : 0);
   const hauteur = MARGE.haut + barres.length * hauteurLigne + MARGE.bas;
 
-  const valeurs = barres.flatMap((b) => [b.valeur, b.valeur + (b.complement?.valeur ?? 0)]);
+  const valeurs = barres.flatMap((b) => [b.valeur, b.valeur + (b.complement?.valeur ?? 0), b.secondaire?.valeur ?? 0]);
   const min = Math.min(0, ...valeurs, repere?.valeur ?? 0);
   const max = Math.max(0, ...valeurs, repere?.valeur ?? 0);
   const ticks = graduations(min, max, Math.max(3, Math.floor((largeur - gauche) / 110)));
   const x0 = ticks[0];
   const x1 = ticks[ticks.length - 1];
-  const l = largeur - gauche - MARGE.droite;
+  // Place pour les étiquettes en bout de barre (plus longues avec la mesure secondaire).
+  const droite = avecSecondaire ? 170 : MARGE.droite;
+  const l = largeur - gauche - droite;
   const sx = (v: number) => gauche + ((v - x0) / (x1 - x0 || 1)) * l;
   const idMotif = `motif-${idTitre.replace(/:/g, '')}`;
 
@@ -60,7 +69,11 @@ export function Barres({ titre, sousTitre, barres, format, repere, selection, on
             <li key={e.libelle}>
               <span
                 className="pastille carree"
-                style={{ background: e.motif ? `repeating-linear-gradient(45deg, ${e.couleur} 0 2px, transparent 2px 5px)` : e.couleur, outline: e.motif ? `1px solid ${e.couleur}` : undefined }}
+                style={{
+                  background: e.motif ? `repeating-linear-gradient(45deg, ${e.couleur} 0 2px, transparent 2px 5px)` : e.couleur,
+                  outline: e.motif || e.clair ? `1px solid ${e.couleur}` : undefined,
+                  opacity: e.clair ? 0.45 : undefined,
+                }}
               />
               {e.libelle}
             </li>
@@ -115,20 +128,20 @@ export function Barres({ titre, sousTitre, barres, format, repere, selection, on
                 <rect x={0} y={yLigne} width={largeur} height={hauteurLigne} fill="transparent" />
                 <text
                   x={etroit ? 8 : gauche - 10}
-                  y={etroit ? yLigne + 10 : y + HAUTEUR_BARRE / 2}
+                  y={etroit ? yLigne + 10 : y + hBarre / 2}
                   textAnchor={etroit ? 'start' : 'end'}
                   dominantBaseline="middle"
                   className={`etiquette-barre${actif ? ' active' : ''}`}
                 >
                   {b.libelle}
                 </text>
-                {b.valeur !== 0 && <rect x={xa} y={y} width={Math.max(1, xb - xa)} height={HAUTEUR_BARRE} rx={3} fill={b.couleur} />}
+                {b.valeur !== 0 && <rect x={xa} y={y} width={Math.max(1, xb - xa)} height={hBarre} rx={3} fill={b.couleur} />}
                 {b.complement && b.complement.valeur !== 0 && (
                   <rect
                     x={sx(Math.min(b.valeur, fin))}
                     y={y}
                     width={Math.abs(sx(fin) - sx(b.valeur))}
-                    height={HAUTEUR_BARRE}
+                    height={hBarre}
                     rx={3}
                     fill={`url(#${idMotif})`}
                     style={{ color: b.complement.couleur }}
@@ -137,13 +150,31 @@ export function Barres({ titre, sousTitre, barres, format, repere, selection, on
                 )}
                 <text
                   x={sx(Math.max(0, fin, b.valeur)) + 6}
-                  y={y + HAUTEUR_BARRE / 2}
+                  y={y + hBarre / 2}
                   dominantBaseline="middle"
                   className="valeur-barre"
                 >
-                  {format(b.valeur)}
+                  {b.texte ?? format(b.valeur)}
                   {b.complement && b.complement.valeur !== 0 ? ` (${b.complement.texte ?? `+${format(b.complement.valeur)}`})` : ''}
                 </text>
+                {b.secondaire && (
+                  <g>
+                    <rect
+                      x={sx(0)}
+                      y={y + hBarre + 3}
+                      width={Math.max(1, sx(b.secondaire.valeur) - sx(0))}
+                      height={hSecondaire}
+                      rx={2}
+                      fill={b.couleur}
+                      fillOpacity={0.3}
+                      stroke={b.couleur}
+                      strokeWidth={1}
+                    />
+                    <text x={sx(b.secondaire.valeur) + 6} y={y + hBarre + 3 + hSecondaire / 2} dominantBaseline="middle" className="valeur-barre secondaire">
+                      {b.secondaire.texte}
+                    </text>
+                  </g>
+                )}
                 {actif && b.detail && <title>{b.detail}</title>}
               </g>
             );

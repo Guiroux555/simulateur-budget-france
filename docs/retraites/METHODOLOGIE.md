@@ -161,5 +161,10 @@ de grandeur 2024 (Sénat PLF 2025-2026, Cour des comptes, COR, DSS, caisses) ; c
 par différence pour retrouver les totaux (dépenses ≈ 400 Md€, solde −1,7 Md€). Deux présentations
 du solde : comptable (convention du COR, subventions comprises) et hors subventions d'équilibre
 (≈ 5,9 Md€ en 2025 pour les régimes spéciaux). La contribution de l'État employeur aux pensions
-des fonctionnaires est traitée comme une cotisation d'employeur. Cette section est descriptive :
+des fonctionnaires est traitée comme une cotisation d'employeur. Le graphique « Dépenses et retraités par régime » compare la part de chaque régime dans les
+dépenses et la part des retraités de droit direct qui en perçoivent une pension (DREES, fin 2023 :
+17,2 M au total, 14,2 M à la CNAV, 12,2 M à l'Agirc-Arrco, 1,2 M à la MSA non-salariés ; fonction
+publique et régimes spéciaux répartis par estimation). Les fiches indiquent le montant moyen versé
+par le régime à chacun de ses retraités (dépenses / retraités, réversions comprises) : c'est la part
+versée par ce régime, pas la pension totale des personnes. Cette section est descriptive :
 le modèle de projection reste agrégé (tous régimes).

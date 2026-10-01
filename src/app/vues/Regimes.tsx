@@ -31,6 +31,10 @@ const mdsSigne = (v: number) => (v > 0 ? `+${mds(v)}` : mds(v));
 
 type Convention = 'comptable' | 'hors-subventions';
 
+/** Montant moyen versé par ce régime à chacun de ses retraités (réversions comprises), en € par mois. */
+const pensionMoyenne = (r: Regime) =>
+  r.retraites === null ? '—' : `≈ ${(Math.round((r.depenses * 1e9) / (r.retraites * 1e6) / 12 / 10) * 10).toLocaleString('fr-FR')} €`;
+
 /** Section « Les régimes » : poids, solde, démographie et règles de chaque grand régime. */
 export function Regimes({ integre = false }: { integre?: boolean }) {
   const [selection, setSelection] = useState<string | null>(null);
@@ -89,16 +93,28 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
 
       <div className="grille-2">
         <Barres
-          titre="Répartition des dépenses 2024"
-          sousTitre="Pensions versées, en milliards d’euros — cliquez sur un régime pour le détail"
+          titre="Dépenses et retraités par régime"
+          sousTitre="Barre pleine : part des dépenses 2024 ; barre claire : part des retraités qui perçoivent une pension de ce régime (une même personne peut relever de plusieurs régimes, le total dépasse donc 100 %) — cliquez sur un régime pour le détail"
           barres={parDepenses.map((r) => ({
             id: r.id,
             libelle: r.sigle,
-            valeur: r.depenses,
+            valeur: (100 * r.depenses) / TOTAUX_2024.depenses,
+            texte: `${virgule((100 * r.depenses) / TOTAUX_2024.depenses, 0)} % · ${mds(r.depenses)}`,
             couleur: couleur(r),
+            secondaire:
+              r.retraites === null
+                ? null
+                : {
+                    valeur: (100 * r.retraites) / TOTAUX_2024.retraites,
+                    texte: `${virgule((100 * r.retraites) / TOTAUX_2024.retraites, 0)} % des retraités (${virgule(r.retraites, r.retraites < 1 ? 2 : 1)} M)`,
+                  },
             detail: `${r.nom} : ${mds(r.depenses)}, soit ${virgule((100 * r.depenses) / TOTAUX_2024.depenses)} % des dépenses`,
           }))}
-          format={(v) => `${virgule(v, 0)}`}
+          format={(v) => `${virgule(v, 0)} %`}
+          legende={[
+            { libelle: 'Part des dépenses', couleur: 'var(--text-secondary)' },
+            { libelle: 'Part des retraités concernés', couleur: 'var(--text-secondary)', clair: true },
+          ]}
           selection={selection}
           onSelect={choisir}
         />
@@ -125,6 +141,14 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
           onSelect={choisir}
         />
       </div>
+
+      <p className="note">
+        Comment lire : le régime général verse une pension à 83 % des retraités mais ne pèse que 42 % des dépenses, car
+        beaucoup n’y ont validé qu’une partie de leur carrière et touchent le reste d’autres régimes (complémentaire,
+        fonction publique…). À l’inverse, un régime de fonctionnaires couvre à la fois la base et le complément : il pèse
+        davantage dans les dépenses que dans le nombre de retraités. Le montant moyen versé par chaque régime figure sur
+        les fiches ci-dessous (réversions comprises).
+      </p>
 
       <Barres
         titre="Cotisants pour un retraité, par régime"
@@ -175,6 +199,14 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
               <div>
                 <dt>Solde</dt>
                 <dd>{r.solde === 0 ? 'Équilibré' : mdsSigne(r.solde)}</dd>
+              </div>
+              <div>
+                <dt>Retraités</dt>
+                <dd>{r.retraites === null ? '—' : `${virgule(r.retraites, r.retraites < 1 ? 2 : 1)} M`}</dd>
+              </div>
+              <div>
+                <dt>Versé / retraité / mois</dt>
+                <dd>{pensionMoyenne(r)}</dd>
               </div>
               <div>
                 <dt>Cotisants / retraité</dt>

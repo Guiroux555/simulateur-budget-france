@@ -26,6 +26,11 @@ export interface Regime {
   solde: number;
   /** Financement de l'État au-delà des cotisations (subvention d'équilibre), Md€ ; 0 si aucun. */
   subventionEtat: number;
+  /**
+   * Retraités de droit direct percevant une pension de ce régime, fin 2023, en millions
+   * (DREES). Une même personne peut relever de plusieurs régimes. null si non pertinent.
+   */
+  retraites: number | null;
   /** Cotisants pour un retraité (ordre de grandeur, année indiquée dans `sources`). */
   ratioDemographique: number | null;
   /** Mode de calcul de la pension, en une phrase. */
@@ -60,6 +65,7 @@ export const REGIMES: Regime[] = [
     depenses: 166,
     solde: -3.6,
     subventionEtat: 0,
+    retraites: 14.2,
     ratioDemographique: 1.41,
     calcul: '50 % du salaire annuel moyen des 25 meilleures années (dans la limite du plafond de la Sécurité sociale), proratisé selon la durée cotisée',
     avantages: [
@@ -85,6 +91,7 @@ export const REGIMES: Regime[] = [
     depenses: 98.1,
     solde: 1.6,
     subventionEtat: 0,
+    retraites: 12.2,
     ratioDemographique: 1.5,
     calcul: 'Régime par points : cotisations converties en points (prix d’achat), pension = points × valeur de service',
     avantages: [
@@ -109,6 +116,7 @@ export const REGIMES: Regime[] = [
     depenses: 62,
     solde: 0,
     subventionEtat: 0,
+    retraites: 2.0,
     ratioDemographique: 0.9,
     calcul: '75 % du traitement indiciaire des 6 derniers mois (hors primes) pour une carrière complète, proratisé selon la durée',
     avantages: [
@@ -135,6 +143,7 @@ export const REGIMES: Regime[] = [
     depenses: 27,
     solde: -3.0,
     subventionEtat: 0,
+    retraites: 1.4,
     ratioDemographique: 1.5,
     calcul: '75 % du traitement indiciaire des 6 derniers mois (hors primes) pour une carrière complète',
     avantages: [
@@ -159,6 +168,7 @@ export const REGIMES: Regime[] = [
     depenses: 16,
     solde: 0,
     subventionEtat: 5.9,
+    retraites: 0.65,
     ratioDemographique: 0.6,
     calcul: 'Le plus souvent 75 % de la rémunération des 6 derniers mois, avec des règles propres à chaque régime',
     avantages: [
@@ -186,6 +196,7 @@ export const REGIMES: Regime[] = [
     depenses: 8,
     solde: 0,
     subventionEtat: 0,
+    retraites: 1.2,
     ratioDemographique: 0.35,
     calcul: 'Pension forfaitaire et proportionnelle (points) au régime de base, complétée par un régime complémentaire obligatoire',
     avantages: [
@@ -207,6 +218,7 @@ export const REGIMES: Regime[] = [
     depenses: 6,
     solde: 1.0,
     subventionEtat: 0,
+    retraites: 0.4,
     ratioDemographique: 2.0,
     calcul: 'Régime de base par points commun (CNAVPL) et régimes complémentaires propres à chaque profession',
     avantages: [
@@ -230,6 +242,7 @@ export const REGIMES: Regime[] = [
     depenses: 16.9,
     solde: 2.3,
     subventionEtat: 0,
+    retraites: null,
     ratioDemographique: null,
     calcul: 'Régimes par points',
     avantages: [
@@ -247,9 +260,12 @@ export const REGIMES: Regime[] = [
 /** Totaux 2024 tous régimes (COR). */
 export const TOTAUX_2024 = {
   depenses: 400,
+  /** Retraités de droit direct, tous régimes, fin 2023 (millions, DREES). */
+  retraites: 17.2,
   /** Solde 2024 hors produits financiers, Md€. */
   solde: -1.7,
-  source: 'COR, rapport juin 2025 (dépenses ≈ 400 Md€, solde −1,7 Md€)',
+  source:
+    'COR, rapport juin 2025 (dépenses ≈ 400 Md€, solde −1,7 Md€) ; DREES, Les retraités et les retraites (17,2 M de retraités de droit direct fin 2023, dont 14,2 M à la CNAV, 12,2 M à l’Agirc-Arrco, 1,2 M à la MSA non-salariés, ≈ 3,8 M dans la fonction publique)',
 };
 
 export const COMPENSATION_DEMOGRAPHIQUE =
