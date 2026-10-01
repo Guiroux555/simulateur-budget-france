@@ -1,0 +1,25 @@
+{
+  "source": "Conseil d'orientation des retraites, rapport annuel « Évolutions et perspectives des retraites en France », juin 2026 — scénario de référence",
+  "url": "https://www.cor-retraites.fr/rapports-du-cor/rapport-annuel-cor-juin-2026-evolutions-perspectives-retraites-france",
+  "statut": "Chiffres repris de comptes rendus de presse du rapport (le PDF n'était pas accessible depuis l'environnement de développement) — à vérifier sur le rapport et ses annexes.",
+  "hypotheses": {
+    "productiviteLongTerme": 0.007,
+    "chomageLongTerme": 0.07,
+    "feconditeDes2028": 1.45,
+    "soldeMigratoireDes2026": 150000
+  },
+  "cibles": {
+    "depensesPctPib": { "2025": 0.141, "2045": 0.142, "2070": 0.153 },
+    "ressourcesPctPib": { "2025": 0.139, "2070": 0.129 },
+    "soldePctPib": { "2030": -0.002, "2045": -0.009, "2070": -0.024 },
+    "depenses2025MdEuros": 422,
+    "pensionRelative": { "2025": 0.546, "2070": 0.453 },
+    "rapportDemographique20_64sur65plus": { "2025": 2.5, "2070": 1.62 },
+    "ageMoyenDepartEquilibre": { "2030": 64.2, "2045": 65.6, "2070": 67.6 },
+    "hausseTauxPrelevementEquilibre2070": 0.056
+  },
+  "autresSources": [
+    { "fait": "Suspension de la réforme 2023 par la LFSS 2026 : coût ≈ 1,8 Md€/an sur 2026-2032 selon le COR", "url": "https://www.ifrap.org/retraite/retraites-la-suspension-va-couter-des-milliards" },
+    { "fait": "Solde 2030 −0,2 pt de PIB, 2070 −1,4 pt dans le rapport COR 2025", "url": "https://www.cor-retraites.fr/sites/default/files/2025-06/RA_2025_def_publi.pdf" }
+  ]
+}

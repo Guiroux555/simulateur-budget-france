@@ -1,9 +1,21 @@
 # Simulateur de financement des retraites — Idéation
 
-> Statut : **idéation** (aucun code encore). Objectif du document : cadrer le produit, le modèle
+> Statut : **idéation validée** — décisions de cadrage en §0 ; moteur de calcul v0 disponible
+> (voir [`METHODOLOGIE.md`](METHODOLOGIE.md)). Objectif du document : cadrer le produit, le modèle
 > économique sous-jacent, les données et un périmètre de MVP avant toute implémentation.
 > Les chiffres cités sont des **ordres de grandeur** à recalibrer sur les sources officielles
 > (COR, INSEE, DREES, Cour des comptes) lors de la phase données.
+
+---
+
+## 0. Décisions de cadrage (octobre 2026)
+
+| Question | Décision |
+|---|---|
+| Public prioritaire | **Les deux**, avec deux présentations distinctes sur le même moteur : un parcours guidé grand public (quelques curseurs, explications) et un mode expert (toutes les hypothèses et tous les leviers, export). |
+| Niveau de détail | **Système pris dans son ensemble** (tous régimes agrégés, base + complémentaires). |
+| Comparateur des programmes 2027 | **Dans un second temps**, après une première version pédagogique. |
+| Cadre du projet | **Projet personnel**, avec un objectif de neutralité : aucune orientation politique, mêmes hypothèses pour tous, sources affichées. |
 
 ---
 
@@ -203,15 +215,20 @@ simulateur budgétaire plus large (santé, dette, fiscalité) partageant le mêm
 7. 4-5 scénarios-types documentés (statu quo, réforme 2023 complète, retour à 62 ans,
    capitalisation partielle, sous-indexation).
 
-**Exclu du MVP** : cas-types individuels, Monte-Carlo, comparateur complet des candidats,
-détail par régime (fonction publique, régimes spéciaux, Agirc-Arrco séparé).
+Deux présentations sur le même moteur :
+- **Grand public** : parcours en 3 étapes (« comprendre le déséquilibre » → « choisir mes leviers »
+  → « voir qui paie »), 4-5 curseurs, vocabulaire simple, chaque chiffre expliqué.
+- **Expert** : tous les paramètres, trajectoires année par année, export CSV, lien permanent.
+
+**Exclu du MVP** : cas-types individuels, Monte-Carlo, comparateur des candidats (V2),
+détail par régime (hors périmètre : le système est traité dans son ensemble).
 
 ## 11. Feuille de route indicative
 
 | Phase | Contenu | Échéance indicative |
 |---|---|---|
-| 0 | Collecte données + note de méthode + prototype tableur du modèle | T4 2026 |
-| 1 | Moteur TS calibré COR + tests | T4 2026 |
+| 0 | Collecte données + note de méthode | T4 2026 — **v0 faite** (données officielles à importer) |
+| 1 | Moteur TS calibré COR + tests | T4 2026 — **v0 faite** |
 | 2 | MVP web (§10) | Janvier 2027 |
 | 3 | Comparateur de programmes, à mesure de leur publication | Février – mars 2027 |
 | 4 | Vue générationnelle, cas-types, Monte-Carlo capitalisation | Mars 2027 |
@@ -230,11 +247,7 @@ détail par régime (fonction publique, régimes spéciaux, Agirc-Arrco séparé
   comme hypothèses réglables plutôt que de les ignorer.
 - **Mise à jour** : rapport COR de juin 2027 sortira après l'élection ; prévoir un rafraîchissement
   rapide des données.
-- **Questions à trancher**
-  1. Public prioritaire du MVP : grand public (parcours guidé) ou experts (tous les curseurs) ?
-  2. Portée : système agrégé seulement, ou distinguer base / complémentaire dès le début ?
-  3. Comparateur de candidats dans le MVP, ou après une V1 « pédagogique » ?
-  4. Hébergement et nom de domaine ; projet personnel ou collectif (association, média partenaire) ?
+- Questions de cadrage : tranchées, voir §0. Reste ouvert : hébergement et nom de domaine.
 
 ## 13. Sources de référence
 
