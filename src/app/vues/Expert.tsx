@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useDeferredValue, useMemo, useState } from 'react';
 import type { EquilibreAnnee, ResultatAnnee, ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
 import { Pyramide } from '../charts/Pyramide';
@@ -7,6 +7,8 @@ import { ans, effortFinancement, milliards, nombre, pct, points } from '../forma
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { avecHistorique, serieObservee } from '../historique';
+import { fourchette } from '../sensibilite';
+import { Sensibilite } from './Sensibilite';
 
 interface Props {
   parametres: ParametresUI;
@@ -23,7 +25,9 @@ const dec = (d: number) => (v: number) => v.toFixed(d).replace('.', ',');
 export function Expert({ parametres: p, setParametres, reference, scenario, equilibreScenario, historique }: Props) {
   const maj = (m: Partial<ParametresUI>) => setParametres({ ...p, ...m });
   const [anneePyramide, setAnneePyramide] = useState(2050);
-  const [vueTableau, setVueTableau] = useState(false);
+  const [vue, setVue] = useState<'graphiques' | 'tableau' | 'sensibilite'>('graphiques');
+  const pDiffere = useDeferredValue(p);
+  const { pessimiste, optimiste } = useMemo(() => fourchette(pDiffere), [pDiffere]);
   const mode = p.capitalisationTaux > 0 ? p.capitalisationMode : undefined;
   const compare = (id: string, f: (r: ResultatAnnee) => number) => [
     { id: `ref-${id}`, nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, f), pointille: true },
@@ -122,23 +126,38 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
 
       <div className="expert-resultats">
         <div className="barre-outils">
-          <button type="button" className={`bouton secondaire${vueTableau ? '' : ' actif'}`} onClick={() => setVueTableau(false)}>
-            Graphiques
-          </button>
-          <button type="button" className={`bouton secondaire${vueTableau ? ' actif' : ''}`} onClick={() => setVueTableau(true)}>
-            Tableau
-          </button>
+          {(
+            [
+              ['graphiques', 'Graphiques'],
+              ['sensibilite', 'Sensibilité aux hypothèses'],
+              ['tableau', 'Tableau'],
+            ] as const
+          ).map(([id, libelle]) => (
+            <button key={id} type="button" className={`bouton secondaire${vue === id ? ' actif' : ''}`} aria-pressed={vue === id} onClick={() => setVue(id)}>
+              {libelle}
+            </button>
+          ))}
           <button type="button" className="bouton secondaire" onClick={() => exporterCsv(scenario, equilibreScenario)}>
             Exporter en CSV
           </button>
         </div>
 
-        {vueTableau ? (
-          <TableauDonnees scenario={scenario} equilibre={equilibreScenario} mode={mode} />
-        ) : (
+        {vue === 'sensibilite' && <Sensibilite parametres={p} />}
+        {vue === 'tableau' && <TableauDonnees scenario={scenario} equilibre={equilibreScenario} mode={mode} />}
+        {vue === 'graphiques' && (
           <>
             <div className="grille-graphiques">
-              <Courbes titre="Solde" sousTitre="% du PIB" {...avecHistorique(historique, 'soldePctPib', compare('solde', (r) => r.soldePctPib))} format={(v) => pct(v)} zero reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]} />
+              <Courbes
+                titre="Solde"
+                sousTitre="% du PIB"
+                {...avecHistorique(historique, 'soldePctPib', compare('solde', (r) => r.soldePctPib))}
+                bande={{
+                  nom: 'Fourchette d’hypothèses',
+                  couleur: 'var(--series-1)',
+                  bas: serie(pessimiste, (r) => r.soldePctPib),
+                  haut: serie(optimiste, (r) => r.soldePctPib),
+                }}
+                format={(v) => pct(v)} zero reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]} />
               <Courbes
                 titre="Dépenses et ressources du scénario"
                 sousTitre="% du PIB"

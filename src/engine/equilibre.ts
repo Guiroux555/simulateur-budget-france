@@ -44,10 +44,12 @@ function ageEquilibre(r: ResultatAnnee, simulation: ResultatSimulation, partMass
 
 /**
  * @param soldeCible solde visé en part de PIB (0 = équilibre ; −0.005 = déficit toléré de 0,5 pt)
+ * @param annees restreint le calcul à certaines années (par défaut : toutes)
  */
-export function equilibre(simulation: ResultatSimulation, soldeCible = 0): EquilibreAnnee[] {
+export function equilibre(simulation: ResultatSimulation, soldeCible = 0, annees?: ReadonlyArray<number>): EquilibreAnnee[] {
   const partMasse = partMasseSalariale(simulation);
-  return simulation.annees.map((r) => {
+  const retenues = annees ? simulation.annees.filter((r) => annees.includes(r.annee)) : simulation.annees;
+  return retenues.map((r) => {
     const ecartSolde = soldeCible - r.soldePctPib;
     return {
       annee: r.annee,

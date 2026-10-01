@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import type { EquilibreAnnee, ResultatSimulation } from '../../engine';
 import { Courbes } from '../charts/Courbes';
 import { Pyramide } from '../charts/Pyramide';
@@ -8,6 +8,8 @@ import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../param
 import { appliquerPreset, PRESETS } from '../presets';
 import { REFORMES } from '../../engine/donnees/historique';
 import { avecHistorique, REPERES_REFORMES, serieObservee } from '../historique';
+import { fourchette } from '../sensibilite';
+import { Sensibilite } from './Sensibilite';
 
 interface Props {
   parametres: ParametresUI;
@@ -215,6 +217,8 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
   const presetActif = PRESETS.find((x) => JSON.stringify(appliquerPreset(x)) === JSON.stringify(p))?.id;
   const eq = (a: number) => equilibreScenario.find((e) => e.annee === a)!;
   const gel = p.anneesGel.includes(ANNEE_MESURES);
+  const pDiffere = useDeferredValue(p);
+  const { pessimiste, optimiste } = useMemo(() => fourchette(pDiffere), [pDiffere]);
 
   return (
     <section>
@@ -295,18 +299,45 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
               </select>
             }
           />
-          <Choix
-            libelle="Hypothèse de croissance (productivité)"
-            valeur={p.productivite}
-            options={[
-              { valeur: 0.4, libelle: '0,4 %' },
-              { valeur: 0.7, libelle: '0,7 % (COR)' },
-              { valeur: 1.0, libelle: '1,0 %' },
-              { valeur: 1.3, libelle: '1,3 %' },
-            ]}
-            onChange={(v) => maj({ productivite: v })}
-            aide="Ce n’est pas une mesure : c’est une incertitude qui pèse autant que les choix politiques."
-          />
+          <fieldset className="groupe-hypotheses">
+            <legend>Hypothèses (incertitudes, pas des mesures)</legend>
+            <Choix
+              libelle="Productivité"
+              valeur={p.productivite}
+              options={[
+                { valeur: 0.4, libelle: '0,4 %' },
+                { valeur: 0.7, libelle: '0,7 % (COR)' },
+                { valeur: 1.0, libelle: '1,0 %' },
+                { valeur: 1.3, libelle: '1,3 %' },
+              ]}
+              onChange={(v) => maj({ productivite: v })}
+            />
+            <Choix
+              libelle="Chômage"
+              valeur={p.chomage}
+              options={[
+                { valeur: 4.5, libelle: '4,5 %' },
+                { valeur: 7, libelle: '7 % (COR)' },
+                { valeur: 10, libelle: '10 %' },
+              ]}
+              onChange={(v) => maj({ chomage: v })}
+            />
+            <Choix
+              libelle="Natalité (enfants par femme)"
+              valeur={p.fecondite}
+              options={[
+                { valeur: 1.3, libelle: '1,3' },
+                { valeur: 1.45, libelle: '1,45 (COR)' },
+                { valeur: 1.6, libelle: '1,6' },
+                { valeur: 1.8, libelle: '1,8' },
+              ]}
+              onChange={(v) => maj({ fecondite: v })}
+            />
+            <p className="aide">
+              La zone colorée du graphique montre l’éventail des résultats entre les hypothèses les plus défavorables et
+              les plus favorables.
+            </p>
+          </fieldset>
         </div>
 
         <div className="resultats">
@@ -332,6 +363,12 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
               { id: 'ref', nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, (x) => x.soldePctPib), pointille: true },
               { id: 'moi', nom: 'Mon scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, (x) => x.soldePctPib) },
             ])}
+            bande={{
+              nom: 'Mon scénario, hypothèses défavorables à favorables',
+              couleur: 'var(--series-1)',
+              bas: serie(pessimiste, (x) => x.soldePctPib),
+              haut: serie(optimiste, (x) => x.soldePctPib),
+            }}
             format={(v) => pct(v)}
             zero
             reperes={[{ x: ANNEE_MESURES, libelle: 'mesures' }]}
@@ -376,6 +413,8 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
           </button>
         </div>
       </div>
+      <h3>Et si les hypothèses changent ?</h3>
+      <Sensibilite parametres={p} />
       <div className="resume-mobile" aria-hidden="true">
         {ANNEES_CLES.map((a) => (
           <div key={a}>

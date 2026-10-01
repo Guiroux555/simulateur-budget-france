@@ -12,6 +12,10 @@
   --series-1: #2a78d6;
   --series-2: #eb6834;
   --ref: #7a7974;
+  --ord-1: #86b6ef;
+  --ord-2: #3987e5;
+  --ord-3: #1c5cab;
+  --ord-4: #0d366b;
   --hist: #4a4945;
   --zone-observee: rgb(0 0 0 / 0.035);
   --grille: #e6e4de;
@@ -37,6 +41,10 @@
     --series-1: #3987e5;
     --series-2: #d95926;
     --ref: #9a9993;
+    --ord-1: #1c5cab;
+    --ord-2: #3987e5;
+    --ord-3: #86b6ef;
+    --ord-4: #cde2fb;
     --hist: #d6d5cd;
     --zone-observee: rgb(255 255 255 / 0.04);
     --grille: #2e2e2c;
@@ -56,6 +64,10 @@
   --series-1: #3987e5;
   --series-2: #d95926;
   --ref: #9a9993;
+  --ord-1: #1c5cab;
+  --ord-2: #3987e5;
+  --ord-3: #86b6ef;
+  --ord-4: #cde2fb;
   --hist: #d6d5cd;
   --zone-observee: rgb(255 255 255 / 0.04);
   --grille: #2e2e2c;
@@ -147,6 +159,13 @@ section { background: var(--surface-1); border: 1px solid var(--bordure); border
 .frise-annee { font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; }
 .frise-nom { font-weight: 600; }
 .frise ul { margin: 2px 0 0; padding-left: 1.1rem; color: var(--text-secondary); font-size: 0.9rem; }
+.groupe-hypotheses { border: 1px dashed var(--bordure); border-radius: var(--rayon); padding: 12px; display: flex; flex-direction: column; gap: 12px; margin: 0; }
+.groupe-hypotheses > legend { font-weight: 700; padding: 0 6px; }
+.grille-sensibilite { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); gap: 24px 20px; margin-top: 12px; }
+.bloc-sensibilite { min-width: 0; }
+.bloc-sensibilite .tableau th { white-space: normal; vertical-align: bottom; }
+.bloc-sensibilite .tableau td { padding-left: 6px; padding-right: 6px; }
+.ligne-retenue td { font-weight: 700; }
 .bascule-historique { margin-left: auto; }
 .reticule { stroke: var(--text-muted); stroke-width: 1; }
 .point-survol { stroke: var(--surface-1); stroke-width: 2; }

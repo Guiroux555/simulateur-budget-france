@@ -93,3 +93,19 @@ Woerth, Touraine, Agirc-Arrco, 2023, suspension LFSS 2026). Les graphiques relie
 ils ne sont pas utilisés par le modèle. À remplacer par les séries annuelles officielles (base de
 données du rapport annuel du COR, Panorama DREES « Les retraités et les retraites »). Les
 définitions diffèrent légèrement de celles du modèle, d'où de petites marches entre 2024 et 2025.
+
+## 6. Sensibilité aux hypothèses
+
+L'interface simule le scénario choisi sous plusieurs hypothèses, toutes choses égales par ailleurs
+(`src/app/sensibilite.ts`) :
+
+| Hypothèse | Valeurs testées | Référence COR |
+|---|---|---|
+| Productivité (long terme) | 0,4 / 0,7 / 1,0 / 1,3 %/an | 0,7 % |
+| Chômage (à partir de 2030) | 4,5 / 7 / 10 % | 7 % |
+| Natalité (à partir de 2028) | 1,30 / 1,45 / 1,60 / 1,80 enfant par femme | 1,45 |
+
+La « fourchette » du graphique principal combine les valeurs extrêmes les plus défavorables
+(0,4 %, 10 %, 1,30) et les plus favorables (1,3 %, 4,5 %, 1,80). Ordres de grandeur dans le
+scénario de référence : l'écart de solde en 2070 entre hypothèses extrêmes atteint ≈ 3,7 pts de PIB
+pour la productivité, ≈ 2,2 pts pour la natalité et ≈ 0,9 pt pour le chômage.
