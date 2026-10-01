@@ -143,3 +143,16 @@ retient une hypothèse plus favorable, de l'ordre de 1,2 %/an en moyenne jusqu'e
 Le solde avant 2002 (date de début de la série du COR) et la pension relative historique sont des
 ordres de grandeur. La dette cumulée n'a pas d'historique : elle est par construction cumulée à
 partir de 2025.
+
+## 7. Les régimes
+
+La section « Les régimes » (`src/engine/donnees/regimes.ts`) décrit les grands régimes (régime
+général, Agirc-Arrco, fonctionnaires de l'État, CNRACL, régimes spéciaux, exploitants agricoles,
+professions libérales, autres complémentaires) : dépenses 2024, solde, cotisants par retraité,
+subventions de l'État, règles de calcul, avantages et contreparties. Les montants sont des ordres
+de grandeur 2024 (Sénat PLF 2025-2026, Cour des comptes, COR, DSS, caisses) ; certains sont estimés
+par différence pour retrouver les totaux (dépenses ≈ 400 Md€, solde −1,7 Md€). Deux présentations
+du solde : comptable (convention du COR, subventions comprises) et hors subventions d'équilibre
+(≈ 5,9 Md€ en 2025 pour les régimes spéciaux). La contribution de l'État employeur aux pensions
+des fonctionnaires est traitée comme une cotisation d'employeur. Cette section est descriptive :
+le modèle de projection reste agrégé (tous régimes).

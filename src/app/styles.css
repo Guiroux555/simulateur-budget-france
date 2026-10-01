@@ -12,6 +12,8 @@
   --series-1: #2a78d6;
   --series-2: #eb6834;
   --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
   --ref: #7a7974;
   --ord-1: #86b6ef;
   --ord-2: #3987e5;
@@ -43,6 +45,8 @@
     --series-1: #3987e5;
     --series-2: #d95926;
     --series-3: #199e70;
+    --series-4: #c98500;
+    --series-5: #d55181;
     --ref: #9a9993;
     --ord-1: #1c5cab;
     --ord-2: #3987e5;
@@ -68,6 +72,8 @@
   --series-1: #3987e5;
   --series-2: #d95926;
   --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
   --ref: #9a9993;
   --ord-1: #1c5cab;
   --ord-2: #3987e5;
@@ -262,3 +268,24 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .sources summary { cursor: pointer; color: var(--accent); }
 .sources p { margin: 6px 0; }
 .sources ul { margin: 0; padding-left: 1.1rem; }
+.libelle-outil { font-size: 0.88rem; color: var(--text-secondary); align-self: center; }
+.etiquette-barre { fill: var(--text-secondary); font-size: 12.5px; }
+.etiquette-barre.active { fill: var(--text-primary); font-weight: 700; }
+.valeur-barre { fill: var(--text-primary); font-size: 12px; font-variant-numeric: tabular-nums; }
+.ligne-barre.cliquable { cursor: pointer; }
+.ligne-barre:focus { outline: none; }
+.ligne-barre:focus-visible > rect:first-child { stroke: var(--accent); stroke-width: 2; }
+.fiches-regimes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 360px), 1fr)); gap: 16px; margin-top: 8px; }
+.fiche-regime { border: 1px solid var(--bordure); border-top: 4px solid; border-radius: var(--rayon); padding: 14px 16px; background: var(--surface-1); font-size: 0.92rem; }
+.fiche-regime h4 { margin: 2px 0; font-size: 1.05rem; }
+.fiche-famille { font-size: 0.78rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.03em; }
+.fiche-sigle { font-size: 0.82rem; color: var(--text-secondary); }
+.fiche-chiffres { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; margin: 10px 0; padding: 8px; background: var(--surface-2); border-radius: 8px; }
+.fiche-chiffres div { min-width: 0; }
+.fiche-chiffres dt { font-size: 0.72rem; color: var(--text-muted); }
+.fiche-chiffres dd { margin: 0; font-weight: 700; font-variant-numeric: tabular-nums; }
+.fiche-titre-liste { font-weight: 700; margin: 8px 0 2px; }
+.liste-avantages, .liste-contreparties { margin: 0 0 6px; padding-left: 1.1rem; color: var(--text-secondary); }
+.liste-avantages li::marker { content: '+  '; color: var(--excedent); font-weight: 700; }
+.liste-contreparties li::marker { content: '−  '; color: var(--text-muted); font-weight: 700; }
+@media (max-width: 520px) { .fiche-chiffres { grid-template-columns: repeat(2, 1fr); } }

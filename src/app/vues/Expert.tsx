@@ -13,6 +13,7 @@ import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHist
 import { fourchette } from '../sensibilite';
 import { avecTendanceObservee, LIBELLE_TENDANCE, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
+import { Regimes } from './Regimes';
 
 interface Props {
   parametres: ParametresUI;
@@ -29,7 +30,7 @@ const dec = (d: number) => (v: number) => v.toFixed(d).replace('.', ',');
 export function Expert({ parametres: p, setParametres, reference, scenario, equilibreScenario, historique }: Props) {
   const maj = (m: Partial<ParametresUI>) => setParametres({ ...p, ...m });
   const [anneePyramide, setAnneePyramide] = useState(2050);
-  const [vue, setVue] = useState<'graphiques' | 'tableau' | 'sensibilite'>('graphiques');
+  const [vue, setVue] = useState<'graphiques' | 'tableau' | 'sensibilite' | 'regimes'>('graphiques');
   const pDiffere = useDeferredValue(p);
   const { pessimiste, optimiste } = useMemo(() => fourchette(pDiffere), [pDiffere]);
   const scenarioTendance = useMemo(() => simuler(versScenario(avecTendanceObservee(pDiffere))), [pDiffere]);
@@ -153,6 +154,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
             [
               ['graphiques', 'Graphiques'],
               ['sensibilite', 'Sensibilité aux hypothèses'],
+              ['regimes', 'Régimes'],
               ['tableau', 'Tableau'],
             ] as const
           ).map(([id, libelle]) => (
@@ -165,6 +167,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
           </button>
         </div>
 
+        {vue === 'regimes' && <Regimes />}
         {vue === 'sensibilite' && <Sensibilite parametres={p} historique={historique} />}
         {vue === 'tableau' && <TableauDonnees scenario={scenario} equilibre={equilibreScenario} mode={mode} />}
         {vue === 'graphiques' && (

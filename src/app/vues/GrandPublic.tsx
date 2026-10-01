@@ -14,6 +14,7 @@ import { etatsPyramidesHistoriques, ratioActifsInactifs, serieActifsInactifsHist
 import { fourchette } from '../sensibilite';
 import { avecTendanceObservee, LIBELLE_TENDANCE_COURT, TENDANCE_OBSERVEE } from '../productivite';
 import { Sensibilite } from './Sensibilite';
+import { Regimes } from './Regimes';
 
 interface Props {
   parametres: ParametresUI;
@@ -25,7 +26,7 @@ interface Props {
   setHistorique: (v: boolean) => void;
 }
 
-const ETAPES = ['Comprendre', 'Choisir mes mesures', 'Qui paie ?'] as const;
+const ETAPES = ['Comprendre', 'Choisir mes mesures', 'Qui paie ?', 'Les régimes'] as const;
 const ANNEES_CLES = [2030, 2045, 2070] as const;
 
 const an = (s: ResultatSimulation, a: number) => s.annees.find((r) => r.annee === a)!;
@@ -48,6 +49,7 @@ export function GrandPublic(props: Props) {
       {etape === 0 && <Comprendre {...props} />}
       {etape === 1 && <Choisir {...props} />}
       {etape === 2 && <QuiPaie {...props} />}
+      {etape === 3 && <Regimes />}
       <div className="navigation-etapes">
         {etape > 0 && (
           <button type="button" className="bouton secondaire" onClick={() => setEtape(etape - 1)}>
