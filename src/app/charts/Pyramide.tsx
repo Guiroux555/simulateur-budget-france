@@ -1,11 +1,11 @@
 import { useId, useState } from 'react';
-import type { ResultatAnnee } from '../../engine';
+import type { EtatPyramide } from '../pyramidesHistoriques';
 import { graduations, useLargeur } from './useLargeur';
 
 interface Props {
-  resultat: ResultatAnnee;
+  resultat: EtatPyramide;
   /** Résultat de la même année dans le scénario de référence, pour comparer le ratio. */
-  reference?: ResultatAnnee;
+  reference?: EtatPyramide;
   hauteur?: number;
 }
 
@@ -32,7 +32,8 @@ export function Pyramide({ resultat: r, reference, hauteur = 320 }: Props) {
   const ages = population.length;
   const l = largeur - MARGE.gauche - MARGE.droite;
   const h = hauteur - MARGE.haut - MARGE.bas;
-  const ticksX = graduations(0, Math.max(...population) * 1.05, Math.max(2, Math.floor(l / 110)));
+  // Échelle fixe pour que l’animation 1985-2070 reste comparable d’une année à l’autre.
+  const ticksX = graduations(0, Math.max(1_000_000, ...population), Math.max(2, Math.floor(l / 110)));
   const xMax = ticksX[ticksX.length - 1];
   const sx = (v: number) => MARGE.gauche + (v / xMax) * l;
   const hBarre = h / ages;
@@ -49,7 +50,9 @@ export function Pyramide({ resultat: r, reference, hauteur = 320 }: Props) {
     <figure className="graphique" aria-labelledby={idTitre}>
       <figcaption id={idTitre}>
         <span className="graphique-titre">Population par âge en {r.annee}</span>
-        <span className="graphique-sous-titre">Effectifs par âge simple, sexes confondus</span>
+        <span className="graphique-sous-titre">
+          Effectifs par âge simple, sexes confondus{r.reconstitue ? ' — année passée reconstituée (ordres de grandeur)' : ''}
+        </span>
       </figcaption>
 
       <div className="ratio-pyramide" aria-live="polite">

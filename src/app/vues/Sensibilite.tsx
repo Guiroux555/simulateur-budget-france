@@ -1,5 +1,6 @@
 import { useDeferredValue, useMemo } from 'react';
 import { Courbes } from '../charts/Courbes';
+import { avecHistorique } from '../historique';
 import { ans, pct, pctSigne } from '../format';
 import type { ParametresUI } from '../parametres';
 import { ageEquilibre, HYPOTHESES, variantes, type DefinitionHypothese } from '../sensibilite';
@@ -12,7 +13,7 @@ function couleursOrdinales(n: number): string[] {
 
 const ANNEES = [2045, 2070] as const;
 
-function BlocHypothese({ parametres, def }: { parametres: ParametresUI; def: DefinitionHypothese }) {
+function BlocHypothese({ parametres, def, historique }: { parametres: ParametresUI; def: DefinitionHypothese; historique: boolean }) {
   const vars = useMemo(() => variantes(parametres, def), [parametres, def]);
   const couleurs = couleursOrdinales(vars.length);
   const ages = useMemo(() => vars.map((v) => ageEquilibre(v.simulation, 2070, parametres.soldeCible / 100)), [vars, parametres.soldeCible]);
@@ -24,13 +25,17 @@ function BlocHypothese({ parametres, def }: { parametres: ParametresUI; def: Def
       <Courbes
         titre={`${def.titre} : solde selon l’hypothèse`}
         sousTitre={def.explication}
-        series={vars.map((v, i) => ({
-          id: String(v.valeur),
-          nom: v.libelle + (v.retenue ? ' ← retenue' : ''),
-          couleur: couleurs[i],
-          valeurs: v.simulation.annees.map((r) => ({ x: r.annee, y: r.soldePctPib })),
-          epaisseur: v.retenue ? 3 : 1.75,
-        }))}
+        {...avecHistorique(
+          historique,
+          'soldePctPib',
+          vars.map((v, i) => ({
+            id: String(v.valeur),
+            nom: v.libelle + (v.retenue ? ' ← retenue' : ''),
+            couleur: couleurs[i],
+            valeurs: v.simulation.annees.map((r) => ({ x: r.annee, y: r.soldePctPib })),
+            epaisseur: v.retenue ? 3 : 1.75,
+          })),
+        )}
         format={(v) => pct(v)}
         zero
         hauteur={230}
@@ -71,7 +76,7 @@ function BlocHypothese({ parametres, def }: { parametres: ParametresUI; def: Def
 }
 
 /** Le scénario choisi, simulé sous plusieurs hypothèses de productivité, de chômage et de natalité. */
-export function Sensibilite({ parametres: immediats }: { parametres: ParametresUI }) {
+export function Sensibilite({ parametres: immediats, historique }: { parametres: ParametresUI; historique: boolean }) {
   // Les 11 simulations suivent les curseurs sans bloquer la saisie.
   const parametres = useDeferredValue(immediats);
   return (
@@ -83,7 +88,7 @@ export function Sensibilite({ parametres: immediats }: { parametres: ParametresU
       </p>
       <div className="grille-sensibilite">
         {HYPOTHESES.map((def) => (
-          <BlocHypothese key={def.cle} parametres={parametres} def={def} />
+          <BlocHypothese key={def.cle} parametres={parametres} def={def} historique={historique} />
         ))}
       </div>
     </div>

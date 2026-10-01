@@ -113,3 +113,18 @@ La « fourchette » du graphique principal combine les valeurs extrêmes les plu
 (0,4 %, 10 %, 1,30) et les plus favorables (1,3 %, 4,5 %, 1,80). Ordres de grandeur dans le
 scénario de référence : l'écart de solde en 2070 entre hypothèses extrêmes atteint ≈ 3,7 pts de PIB
 pour la productivité, ≈ 2,2 pts pour la natalité et ≈ 0,9 pt pour le chômage.
+
+### Pyramides 1985-2024
+
+Les pyramides passées sont **reconstituées par rétro-projection** de la pyramide 2025 : chaque
+génération est « rajeunie » d'un an en retirant les migrants et en réintégrant les décès de
+l'année (mortalité et migrations historiques approximatives). Les âges élevés, dont la génération
+a disparu avant 2025, sont raccordés à une projection historique démarrant en 1880. Retraités et
+actifs en emploi y sont répartis selon l'âge moyen de départ observé (DREES) et le chômage observé,
+puis le nombre d'actifs est recalé sur le rapport cotisants / retraités observé. Population 1985
+reconstituée : 57,8 M (INSEE : ≈ 56,5 M), dont 12,5 % de 65 ans et plus. À remplacer par les
+pyramides INSEE annuelles.
+
+Le solde avant 2002 (date de début de la série du COR) et la pension relative historique sont des
+ordres de grandeur. La dette cumulée n'a pas d'historique : elle est par construction cumulée à
+partir de 2025.

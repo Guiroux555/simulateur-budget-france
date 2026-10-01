@@ -7,7 +7,8 @@ import { Curseur } from '../composants';
 import { ans, effortFinancement, milliards, nombre, pct, points } from '../format';
 import { ANNEE_MESURES, PARAMETRES_REFERENCE as REF, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
-import { avecHistorique, serieObservee } from '../historique';
+import { ANNEE_DEBUT_HISTORIQUE, avecHistorique, serieObservee } from '../historique';
+import { etatsPyramidesHistoriques } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { Sensibilite } from './Sensibilite';
 
@@ -34,7 +35,10 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
     { id: `ref-${id}`, nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, f), pointille: true },
     { id: `moi-${id}`, nom: 'Scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, f) },
   ];
-  const rPyr = scenario.annees.find((r) => r.annee === anneePyramide)!;
+  const debutPyramide = historique ? ANNEE_DEBUT_HISTORIQUE : 2025;
+  const anneePyr = Math.max(anneePyramide, debutPyramide);
+  const rPyr = anneePyr < 2025 ? etatsPyramidesHistoriques().get(anneePyr)! : scenario.annees.find((r) => r.annee === anneePyr)!;
+  const refPyr = anneePyr < 2025 ? undefined : reference.annees.find((x) => x.annee === anneePyr);
 
   return (
     <div className="expert">
@@ -143,7 +147,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
           </button>
         </div>
 
-        {vue === 'sensibilite' && <Sensibilite parametres={p} />}
+        {vue === 'sensibilite' && <Sensibilite parametres={p} historique={historique} />}
         {vue === 'tableau' && <TableauDonnees scenario={scenario} equilibre={equilibreScenario} mode={mode} />}
         {vue === 'graphiques' && (
           <>
@@ -163,13 +167,13 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                 titre="Dépenses et ressources du scénario"
                 sousTitre="% du PIB"
                 {...avecHistorique(historique, null, [
-                  ...(historique ? [serieObservee('depensesPctPib', 'Dépenses observées')] : []),
+                  ...(historique ? [serieObservee('depensesPctPib', 'Dépenses observées'), { ...serieObservee('ressourcesPctPib', 'Ressources observées'), couleur: 'var(--ref)' }] : []),
                   { id: 'dep', nom: 'Dépenses', couleur: 'var(--series-2)', valeurs: serie(scenario, (r) => r.depensesPctPib) },
                   { id: 'res', nom: 'Ressources', couleur: 'var(--series-1)', valeurs: serie(scenario, (r) => r.ressourcesPctPib) },
                 ])}
                 format={(v) => pct(v)}
               />
-              <Courbes titre="Pension relative (y c. capitalisation)" sousTitre="Pension moyenne / revenu d’activité moyen" series={compare('prel', (r) => r.pensionRelativeTotale)} format={(v) => pct(v, 0)} />
+              <Courbes titre="Pension relative (y c. capitalisation)" sousTitre="Pension moyenne / revenu d’activité moyen" {...avecHistorique(historique, 'pensionRelative', compare('prel', (r) => r.pensionRelativeTotale))} format={(v) => pct(v, 0)} />
               <GraphiqueAges simulation={scenario} reference={reference} historique={historique} hauteur={320} />
               <Courbes titre="Cotisants par retraité" {...avecHistorique(historique, 'ratioCotisantsRetraites', compare('ratio', (r) => r.ratioCotisantsRetraites))} format={dec(2)} />
               <Courbes titre="Dette cumulée du système" sousTitre="% du PIB" series={compare('dette', (r) => r.detteCumuleePctPib)} format={(v) => pct(v, 0)} zero />
@@ -182,10 +186,10 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                 />
               )}
               <div>
-                <Pyramide resultat={rPyr} reference={reference.annees.find((x) => x.annee === anneePyramide)} hauteur={280} />
+                <Pyramide resultat={rPyr} reference={refPyr} hauteur={280} />
                 <div className="controle-annee">
-                  <input type="range" min={2025} max={2070} value={anneePyramide} aria-label="Année de la pyramide" onChange={(e) => setAnneePyramide(Number(e.target.value))} />
-                  <span className="annee">{anneePyramide}</span>
+                  <input type="range" min={debutPyramide} max={2070} value={anneePyr} aria-label="Année de la pyramide" onChange={(e) => setAnneePyramide(Number(e.target.value))} />
+                  <span className="annee">{anneePyr}</span>
                 </div>
               </div>
             </div>

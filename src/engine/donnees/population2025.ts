@@ -14,6 +14,11 @@ import { AGE_MAX, NB_AGES, PROFIL_MIGRATIONS, sommeAges, tableMortalite } from '
 
 /** Naissances annuelles approximatives (milliers), France entière. Points interpolés linéairement. */
 const NAISSANCES_MILLIERS: Array<[number, number]> = [
+  [1880, 920],
+  [1900, 830],
+  [1913, 790],
+  [1915, 420],
+  [1918, 430],
   [1919, 450],
   [1920, 830],
   [1930, 760],
@@ -45,6 +50,9 @@ const NAISSANCES_MILLIERS: Array<[number, number]> = [
 
 /** Espérance de vie à la naissance (deux sexes) de la période, ordres de grandeur. */
 const ESPERANCE_VIE_HISTORIQUE: Array<[number, number]> = [
+  [1880, 42],
+  [1900, 46],
+  [1913, 50],
   [1920, 54],
   [1940, 58],
   [1946, 63],
@@ -88,10 +96,15 @@ function interp(points: Array<[number, number]>, x: number): number {
   return points[points.length - 1][1];
 }
 
+/** Pyramides « brutes » (non recalées) au 1er janvier, conservées pour la reconstitution historique. */
+const pyramidesBrutes = new Map<number, Float64Array>();
+
 function construirePyramide(): Float64Array {
-  const debut = 2025 - AGE_MAX;
+  // Départ en 1880 pour que les générations âgées des années 1980 soient présentes.
+  const debut = 1880;
   let population = new Float64Array(NB_AGES);
   for (let annee = debut; annee < 2025; annee++) {
+    if (annee >= ANNEE_DEBUT_RECONSTITUTION) pyramidesBrutes.set(annee, Float64Array.from(population));
     const q = tableMortalite(interp(ESPERANCE_VIE_HISTORIQUE, annee));
     const solde = annee >= 1946 ? interp(SOLDE_MIGRATOIRE_HISTORIQUE, annee) : 0;
     const suivante = new Float64Array(NB_AGES);
@@ -116,6 +129,47 @@ function construirePyramide(): Float64Array {
 }
 
 let pyramide: Float64Array | null = null;
+
+/** Première année de la reconstitution historique des pyramides. */
+export const ANNEE_DEBUT_RECONSTITUTION = 1985;
+
+let historiques: Map<number, Float64Array> | null = null;
+
+/**
+ * Pyramides au 1er janvier de 1985 à 2024, reconstituées par **rétro-projection** de la pyramide
+ * 2025 (on « rajeunit » chaque génération en retirant les migrants et en ajoutant les décès).
+ * Pour les âges élevés, dont la génération a disparu avant 2025, on raccorde la projection
+ * historique brute. Reconstitution approximative, à remplacer par les pyramides INSEE.
+ */
+export function pyramidesHistoriques(): Map<number, Float64Array> {
+  if (historiques) return historiques;
+  const p2025 = pyramide2025(); // remplit aussi pyramidesBrutes
+  const resultat = new Map<number, Float64Array>();
+  let suivante = p2025;
+  for (let annee = 2024; annee >= ANNEE_DEBUT_RECONSTITUTION; annee--) {
+    const q = tableMortalite(interp(ESPERANCE_VIE_HISTORIQUE, annee));
+    const solde = interp(SOLDE_MIGRATOIRE_HISTORIQUE, annee);
+    const brute = pyramidesBrutes.get(annee)!;
+    const courante = new Float64Array(NB_AGES);
+    const limite = Math.min(100, AGE_MAX - 1 - (2025 - annee));
+    for (let a = 0; a <= limite; a++) {
+      courante[a] = Math.max(0, (suivante[a + 1] - solde * PROFIL_MIGRATIONS[a + 1]) / (1 - q[a]));
+    }
+    // Raccord des âges élevés sur la projection brute, mise à l'échelle à la frontière.
+    let r = 0;
+    let b = 0;
+    for (let a = limite - 4; a <= limite; a++) {
+      r += courante[a];
+      b += brute[a];
+    }
+    const facteur = b > 0 ? r / b : 1;
+    for (let a = limite + 1; a < NB_AGES; a++) courante[a] = brute[a] * facteur;
+    resultat.set(annee, courante);
+    suivante = courante;
+  }
+  historiques = resultat;
+  return resultat;
+}
 
 /** Population par âge simple (0 à 105 ans et plus) au 1er janvier 2025. */
 export function pyramide2025(): Float64Array {

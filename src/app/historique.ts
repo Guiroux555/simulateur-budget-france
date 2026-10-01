@@ -1,11 +1,12 @@
-import { HISTORIQUE, REFORMES } from '../engine/donnees/historique';
+import { HISTORIQUE, REFORMES, RESSOURCES_HISTORIQUES } from '../engine/donnees/historique';
 import type { ResultatAnnee, ResultatSimulation } from '../engine';
 import type { RepereReforme, Serie } from './charts/Courbes';
 
 export const ANNEE_DEBUT_HISTORIQUE = 1985;
 export const ANNEE_PROJECTION = 2025;
 
-type CleHistorique = keyof typeof HISTORIQUE;
+const SERIES = { ...HISTORIQUE, ressourcesPctPib: RESSOURCES_HISTORIQUES };
+type CleHistorique = keyof typeof SERIES;
 
 /** Série observée (points d'ancrage approximatifs). */
 export function serieObservee(cle: CleHistorique, nom = 'Observé'): Serie {
@@ -14,7 +15,7 @@ export function serieObservee(cle: CleHistorique, nom = 'Observé'): Serie {
     nom,
     couleur: 'var(--hist)',
     approximatif: true,
-    valeurs: HISTORIQUE[cle].points.filter(([a]) => a >= ANNEE_DEBUT_HISTORIQUE && a < ANNEE_PROJECTION).map(([x, y]) => ({ x, y })),
+    valeurs: SERIES[cle].points.filter(([a]) => a >= ANNEE_DEBUT_HISTORIQUE && a < ANNEE_PROJECTION).map(([x, y]) => ({ x, y })),
   };
 }
 

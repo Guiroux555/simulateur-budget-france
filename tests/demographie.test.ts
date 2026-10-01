@@ -39,3 +39,25 @@ describe('pyramide 2025', () => {
     expect(Math.min(...p)).toBeGreaterThanOrEqual(0);
   });
 });
+
+describe('pyramides reconstituées 1985-2024', () => {
+  it('couvrent 40 ans, sans effectif négatif, avec une population croissante', async () => {
+    const { pyramidesHistoriques } = await import('../src/engine/donnees/population2025');
+    const h = pyramidesHistoriques();
+    expect(h.size).toBe(40);
+    let precedente = 0;
+    for (let annee = 1985; annee <= 2024; annee++) {
+      const p = h.get(annee)!;
+      expect(Math.min(...p)).toBeGreaterThanOrEqual(0);
+      const total = sommeAges(p, 0, 105);
+      expect(total).toBeGreaterThan(precedente);
+      precedente = total;
+    }
+    // Ordres de grandeur INSEE : ≈ 56-58 M d'habitants et ≈ 13 % de 65 ans et plus en 1985.
+    const p1985 = h.get(1985)!;
+    expect(sommeAges(p1985, 0, 105) / 1e6).toBeGreaterThan(55);
+    expect(sommeAges(p1985, 0, 105) / 1e6).toBeLessThan(59);
+    expect(sommeAges(p1985, 65, 105) / sommeAges(p1985, 0, 105)).toBeGreaterThan(0.11);
+    expect(sommeAges(p1985, 65, 105) / sommeAges(p1985, 0, 105)).toBeLessThan(0.14);
+  });
+});

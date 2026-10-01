@@ -37,9 +37,15 @@ export const HISTORIQUE = {
     ],
     source: 'COR (rapports annuels), FIPECO ; 2020 : 14,7 %, 2024 : 13,9 % ; +2 pts de PIB entre 1995 et 2024 ; 1985-1990 approximatifs',
   },
-  /** Solde du système de retraite, en % du PIB (série COR disponible à partir de 2002). */
+  /** Solde du système de retraite, en % du PIB (série COR à partir de 2002 ; avant : très approximatif). */
   soldePctPib: {
     points: [
+      [1985, 0.0],
+      [1990, -0.001],
+      [1993, -0.004],
+      [1995, -0.003],
+      [1998, -0.001],
+      [2000, 0.002],
       [2002, 0.001],
       [2005, -0.001],
       [2008, -0.004],
@@ -55,7 +61,23 @@ export const HISTORIQUE = {
       [2023, 0.001],
       [2024, -0.001],
     ],
-    source: 'COR ; 2010 : −0,7 %, 2018 : −0,1 %, 2023 : +0,1 %, 2024 : −0,1 % ; années intermédiaires approximatives',
+    source:
+      'COR ; 2010 : −0,7 %, 2018 : −0,1 %, 2023 : +0,1 %, 2024 : −0,1 % ; années intermédiaires approximatives ; avant 2002 (déficits du régime général du début des années 1990, excédents vers 2000) : ordres de grandeur seulement',
+  },
+  /** Pension moyenne / revenu d'activité moyen (définition COR). */
+  pensionRelative: {
+    points: [
+      [1985, 0.44],
+      [1990, 0.46],
+      [1995, 0.48],
+      [2000, 0.49],
+      [2005, 0.5],
+      [2010, 0.515],
+      [2015, 0.525],
+      [2020, 0.54],
+      [2024, 0.545],
+    ],
+    source: 'COR (rapports annuels) ; progression liée à l’arrivée de générations aux carrières plus complètes (effet noria) ; ordres de grandeur',
   },
   /** Nombre de cotisants pour un retraité. */
   ratioCotisantsRetraites: {
@@ -121,6 +143,23 @@ export const HISTORIQUE = {
     source: 'Législation (réformes de 2010 et 2023)',
   },
 } satisfies Record<string, SerieHistorique>;
+
+function interpoler(points: ReadonlyArray<Point>, x: number): number {
+  for (let i = 1; i < points.length; i++) {
+    if (x <= points[i][0]) {
+      const [x0, y0] = points[i - 1];
+      const [x1, y1] = points[i];
+      return y0 + ((y1 - y0) * (x - x0)) / (x1 - x0);
+    }
+  }
+  return points[points.length - 1][1];
+}
+
+/** Ressources du système en % du PIB, déduites des dépenses et du solde (ressources = dépenses + solde). */
+export const RESSOURCES_HISTORIQUES: SerieHistorique = {
+  points: HISTORIQUE.soldePctPib.points.map(([a, solde]) => [a, interpoler(HISTORIQUE.depensesPctPib.points, a) + solde] as const),
+  source: 'Calcul : dépenses + solde',
+};
 
 export interface Reforme {
   annee: number;

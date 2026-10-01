@@ -8,7 +8,8 @@ import { ans, effortFinancement, milliards, pct, pctSigne, points } from '../for
 import { ANNEE_MESURES, PARAMETRES_REFERENCE, type ParametresUI } from '../parametres';
 import { appliquerPreset, PRESETS } from '../presets';
 import { REFORMES } from '../../engine/donnees/historique';
-import { avecHistorique } from '../historique';
+import { ANNEE_DEBUT_HISTORIQUE, avecHistorique } from '../historique';
+import { etatsPyramidesHistoriques } from '../pyramidesHistoriques';
 import { fourchette } from '../sensibilite';
 import { Sensibilite } from './Sensibilite';
 
@@ -69,7 +70,8 @@ function Comprendre({ reference, historique }: Props) {
     const t = setInterval(() => setAnnee((a) => (a >= 2070 ? (setLecture(false), 2070) : a + 1)), 160);
     return () => clearInterval(t);
   }, [lecture]);
-  const r = an(reference, annee);
+  const debutPyramide = historique ? ANNEE_DEBUT_HISTORIQUE : 2025;
+  const r = annee < 2025 ? etatsPyramidesHistoriques().get(annee)! : an(reference, annee);
   const debut = reference.annees[0];
   const fin = an(reference, 2070);
 
@@ -105,14 +107,14 @@ function Comprendre({ reference, historique }: Props) {
         <div>
           <Pyramide resultat={r} />
           <div className="controle-annee">
-            <button type="button" className="bouton secondaire" onClick={() => (annee >= 2070 && setAnnee(2025), setLecture(!lecture))}>
+            <button type="button" className="bouton secondaire" onClick={() => (annee >= 2070 && setAnnee(debutPyramide), setLecture(!lecture))}>
               {lecture ? '❚❚ Pause' : '▶ Animer'}
             </button>
             <input
               type="range"
-              min={2025}
+              min={debutPyramide}
               max={2070}
-              value={annee}
+              value={Math.max(annee, debutPyramide)}
               aria-label="Année affichée"
               onChange={(e) => (setLecture(false), setAnnee(Number(e.target.value)))}
             />
@@ -403,7 +405,7 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
         </div>
       </div>
       <h3>Et si les hypothèses changent ?</h3>
-      <Sensibilite parametres={p} />
+      <Sensibilite parametres={p} historique={historique} />
       <div className="resume-mobile" aria-hidden="true">
         {ANNEES_CLES.map((a) => (
           <div key={a}>
@@ -418,7 +420,7 @@ function Choisir({ parametres: p, setParametres, reference, scenario, equilibreS
 
 const GENERATIONS = [1965, 1975, 1985, 1995, 2005] as const;
 
-function QuiPaie({ parametres, reference, scenario }: Props) {
+function QuiPaie({ parametres, reference, scenario, historique }: Props) {
   const mode = parametres.capitalisationTaux > 0 ? parametres.capitalisationMode : undefined;
   const lignes: Array<{ libelle: string; aide: string; f: (r: ResultatSimulation['annees'][number], m?: string) => string }> = [
     { libelle: 'Âge moyen de départ', aide: 'Les actifs travaillent plus ou moins longtemps.', f: (r) => ans(r.ageMoyenDepart) },
@@ -475,10 +477,10 @@ function QuiPaie({ parametres, reference, scenario }: Props) {
         <Courbes
           titre="Niveau de vie relatif des retraités"
           sousTitre="Pension moyenne / revenu d’activité moyen"
-          series={[
+          {...avecHistorique(historique, 'pensionRelative', [
             { id: 'ref', nom: 'Législation actuelle', couleur: 'var(--ref)', valeurs: serie(reference, (x) => x.pensionRelativeTotale), pointille: true },
             { id: 'moi', nom: 'Mon scénario', couleur: 'var(--series-1)', valeurs: serie(scenario, (x) => x.pensionRelativeTotale) },
-          ]}
+          ])}
           format={(v) => pct(v, 0)}
         />
         <Courbes
