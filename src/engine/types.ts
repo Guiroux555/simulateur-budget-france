@@ -68,6 +68,8 @@ export interface Leviers {
   ajustementPensionLiquidation: Trajectoire;
   /** Variation du taux d'emploi des 55-69 ans non retraités (points, fraction). */
   hausseEmploiSeniors: Trajectoire;
+  /** Variation du taux d'activité des 20-64 ans non retraités (points, fraction) : agit sur le rapport actifs/inactifs. */
+  hausseActivite: Trajectoire;
   capitalisation: LevierCapitalisation | null;
 }
 

@@ -169,7 +169,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
           </button>
         </div>
 
-        {vue === 'regimes' && <Regimes reference={reference} />}
+        {vue === 'regimes' && <Regimes reference={reference} parametres={p} />}
         {vue === 'sensibilite' && <Sensibilite parametres={p} historique={historique} />}
         {vue === 'tableau' && <TableauDonnees scenario={scenario} equilibre={equilibreScenario} mode={mode} />}
         {vue === 'graphiques' && (

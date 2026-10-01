@@ -74,6 +74,7 @@ export const LEVIERS_NEUTRES: Leviers = {
   anneesGel: [],
   ajustementPensionLiquidation: nulle,
   hausseEmploiSeniors: nulle,
+  hausseActivite: nulle,
   capitalisation: null,
 };
 

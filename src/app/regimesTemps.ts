@@ -18,6 +18,8 @@ export interface SerieRegime {
   annees: Array<{
     annee: number;
     part: number;
+    /** Part avant les leviers des régimes par points (sert à estimer les effectifs). */
+    partBase: number;
     depensesPctPib: number;
     soldePctPib: number;
     ratio: number | null;
@@ -34,13 +36,29 @@ export interface SerieRegime {
   }>;
 }
 
+/** Leviers propres aux régimes par points (Agirc-Arrco, professions libérales, Ircantec…). */
+export interface LeviersRegimes {
+  /** Revalorisation annuelle de la valeur de service du point par rapport à l'inflation (fraction ; −0.01 = prix − 1 pt). */
+  revalorisationPoint: number;
+  /** Variation du rendement des nouveaux points acquis (fraction ; −0.1 = 10 % de droits en moins par euro cotisé). */
+  rendementPoint: number;
+}
+
+export const LEVIERS_REGIMES_NEUTRES: LeviersRegimes = { revalorisationPoint: 0, rendementPoint: 0 };
+
+/** Régimes fonctionnant par points. */
+export const REGIMES_PAR_POINTS = new Set(['agirc-arrco', 'liberaux', 'autres-complementaires']);
+const ANNEE_EFFET = 2026;
+
 export interface RegimesDansLeTemps {
   regimes: SerieRegime[];
+  /** Totaux tous régimes, leviers par points compris (% du PIB). */
+  totaux: Array<{ annee: number; soldePctPib: number; depensesPctPib: number }>;
 }
 
 const interp = (p: ReadonlyArray<Point>, x: number) => valeurA(p, x);
 
-export function regimesDansLeTemps(simulation: ResultatSimulation): RegimesDansLeTemps {
+export function regimesDansLeTemps(simulation: ResultatSimulation, leviers: LeviersRegimes = LEVIERS_REGIMES_NEUTRES): RegimesDansLeTemps {
   const sim = (a: number) => simulation.annees.find((r) => r.annee === a)!;
   const totalDepenses = (a: number) => (a < ANNEE_BASCULE ? interp(HISTORIQUE.depensesPctPib.points, a) : sim(a).depensesPctPib);
   const totalSolde = (a: number) => (a < ANNEE_BASCULE ? interp(HISTORIQUE.soldePctPib.points, a) : sim(a).soldePctPib);
@@ -70,6 +88,7 @@ export function regimesDansLeTemps(simulation: ResultatSimulation): RegimesDansL
       return {
         annee: a,
         part,
+        partBase: part,
         depensesPctPib: (part / 100) * dep,
         soldePctPib: solde,
         ratio,
@@ -84,8 +103,9 @@ export function regimesDansLeTemps(simulation: ResultatSimulation): RegimesDansL
     for (const l of lignes) if (l.residuel) l.soldePctPib = totalSolde(a) - soldeAutres;
     lignes.forEach(({ residuel: _r, ...l }, i) => series[i].annees.push(l));
   }
+  const totaux = appliquerLeviersPoints(series, leviers, totalDepenses, totalSolde);
   enrichir(series, simulation);
-  return { regimes: series };
+  return { regimes: series, totaux };
 }
 
 /** PIB en volume, Md€ de 2025 (ordres de grandeur INSEE) avant la période projetée. */
@@ -120,7 +140,7 @@ function enrichir(series: SerieRegime[], simulation: ResultatSimulation) {
     const l2024 = serie.annees.find((l) => l.annee === 2024)!;
     const couverture2024 = regime.cotisations / regime.depenses;
     for (const l of serie.annees) {
-      const retraites = regime.retraites * (l.part / l2024.part) * (retraitesTotal(l.annee) / r2024);
+      const retraites = regime.retraites * (l.partBase / l2024.partBase) * (retraitesTotal(l.annee) / r2024);
       const depenses = l.depensesPctPib * pib(l.annee); // Md€ 2025
       let couverture = couverture2024;
       if (AUTONOMES.has(serie.id)) couverture = couverture2024 + l.soldePctPib / l.depensesPctPib - l2024.soldePctPib / l2024.depensesPctPib;
@@ -134,4 +154,38 @@ function enrichir(series: SerieRegime[], simulation: ResultatSimulation) {
       l.cotisationMoyenne = cotisants ? (couverture * depenses * 1e3) / cotisants : null;
     }
   }
+}
+
+/**
+ * Effet des leviers des régimes par points : la valeur du point (revalorisation des pensions en cours)
+ * agit sur toutes les pensions, le rendement sur les droits acquis à partir de 2026 (montée en charge
+ * sur 40 ans). À cotisations inchangées, l'écart de dépenses se reporte sur le solde du régime.
+ */
+function appliquerLeviersPoints(
+  series: SerieRegime[],
+  leviers: LeviersRegimes,
+  totalDepenses: (a: number) => number,
+  totalSolde: (a: number) => number,
+) {
+  const totaux: RegimesDansLeTemps['totaux'] = [];
+  for (let a = ANNEE_DEBUT_REGIMES; a <= ANNEE_FIN_REGIMES; a++) {
+    let ecartDepenses = 0;
+    const lignes = series.map((s) => s.annees.find((l) => l.annee === a)!);
+    if (a >= ANNEE_EFFET) {
+      const n = a - ANNEE_EFFET + 1;
+      const facteur = Math.pow(1 + leviers.revalorisationPoint, n) * (1 + leviers.rendementPoint * Math.min(1, n / 40));
+      series.forEach((s, i) => {
+        if (!REGIMES_PAR_POINTS.has(s.id)) return;
+        const l = lignes[i];
+        const nouvelles = l.depensesPctPib * facteur;
+        ecartDepenses += nouvelles - l.depensesPctPib;
+        l.soldePctPib -= nouvelles - l.depensesPctPib;
+        l.depensesPctPib = nouvelles;
+      });
+    }
+    const depenses = totalDepenses(a) + ecartDepenses;
+    for (const l of lignes) l.part = (100 * l.depensesPctPib) / depenses;
+    totaux.push({ annee: a, depensesPctPib: depenses, soldePctPib: totalSolde(a) - ecartDepenses });
+  }
+  return totaux;
 }

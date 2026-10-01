@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import type { ResultatSimulation } from '../../engine';
 import { REGIMES } from '../../engine/donnees/regimes';
 import { STATUT_REGIMES_TEMPS } from '../../engine/donnees/regimesTemps';
@@ -7,9 +7,14 @@ import { Courbes, type Serie } from '../charts/Courbes';
 import { useFenetre } from '../fenetre';
 import { REPERES_REFORMES } from '../historique';
 import { ANNEE_DEBUT_REGIMES, ANNEE_FIN_REGIMES, regimesDansLeTemps } from '../regimesTemps';
+import { PARAMETRES_REFERENCE, type ParametresUI } from '../parametres';
+import { PanneauInteractif } from './PanneauInteractif';
+import { criteresDepuis, simulerInteractif, type CriteresInteractifs } from '../interactif';
 
 interface Props {
   reference: ResultatSimulation;
+  /** Paramètres de départ du mode interactif. */
+  parametres?: ParametresUI;
   couleur: (id: string) => string;
   selection: string | null;
   onSelect: (id: string) => void;
@@ -19,8 +24,16 @@ const virgule = (v: number, d = 1) => v.toFixed(d).replace('.', ',');
 const pctPib = (v: number) => `${v < 0 ? '−' : v > 0 ? '+' : ''}${virgule(Math.abs(v * 100), 2)} %`;
 
 /** Les graphiques par régime à une année choisie (2000-2070) et leur évolution. */
-export function RegimesTemps({ reference, couleur, selection, onSelect }: Props) {
-  const donnees = useMemo(() => regimesDansLeTemps(reference), [reference]);
+export function RegimesTemps({ reference, parametres = PARAMETRES_REFERENCE, couleur, selection, onSelect }: Props) {
+  const depart = useMemo(() => criteresDepuis(parametres), [parametres]);
+  const [interactif, setInteractif] = useState(false);
+  const [criteres, setCriteres] = useState<CriteresInteractifs>(depart);
+  const criteresDifferes = useDeferredValue(criteres);
+  const resultatInteractif = useMemo(
+    () => (interactif ? simulerInteractif(parametres, criteresDifferes) : null),
+    [interactif, parametres, criteresDifferes],
+  );
+  const donnees = useMemo(() => resultatInteractif?.regimes ?? regimesDansLeTemps(reference), [resultatInteractif, reference]);
   const fenetre = useFenetre();
   const min = Math.max(ANNEE_DEBUT_REGIMES, Math.min(fenetre.debut, ANNEE_FIN_REGIMES - 10));
   const max = Math.min(ANNEE_FIN_REGIMES, fenetre.fin);
@@ -56,6 +69,17 @@ export function RegimesTemps({ reference, couleur, selection, onSelect }: Props)
         {STATUT_REGIMES_TEMPS} Projection : législation actuelle, hypothèses du COR. Retraités, cotisants et montants
         moyens par régime sont dérivés des valeurs 2024 et de l’évolution d’ensemble (estimations).
       </p>
+
+      <PanneauInteractif
+        actif={interactif}
+        setActif={setInteractif}
+        base={parametres}
+        depart={depart}
+        criteres={criteres}
+        setCriteres={setCriteres}
+        resultat={resultatInteractif}
+        annee={annee}
+      />
 
       <div className="controle-annee grand">
         <button type="button" className="bouton secondaire" onClick={() => (annee >= max && setAnnee(min), setLecture(!lecture))}>

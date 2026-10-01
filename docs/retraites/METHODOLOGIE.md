@@ -230,3 +230,16 @@ premier (1973-1975) et second (1979-1980) chocs pétroliers, récession de 1993,
 (2008-2009), crise des dettes souveraines (2011-2012), Covid-19 (2020-2021), choc d'inflation
 (2022-2023). Le survol d'une année affiche la crise et son impact (ordres de grandeur INSEE). Une
 case « Crises économiques » dans la barre « Période » permet de les masquer.
+
+## 8. Mode interactif des régimes
+
+Dans l'onglet « Dans le temps », le mode interactif (`src/app/interactif.ts`) recalcule toutes les
+séries par régime avec des critères réglables : productivité, chômage, taux d'activité des 20-64 ans
+(nouveau levier du moteur, `hausseActivite`, qui agit sur le rapport actifs/inactifs), âge légal,
+natalité, et deux leviers des régimes par points (Agirc-Arrco, professions libérales, autres
+complémentaires) : revalorisation de la valeur de service du point par rapport à l'inflation
+(toutes les pensions en cours) et rendement des nouveaux points (droits acquis à partir de 2026,
+montée en charge sur 40 ans). À cotisations inchangées, l'écart de dépenses des régimes par points
+se reporte sur leur solde et sur le solde total. Le graphique « Poids de chaque critère » donne
+l'effet de chaque critère pris isolément sur le solde tous régimes (2035, 2045 ou 2070), et l'effet
+de l'ensemble, qui peut différer de la somme.

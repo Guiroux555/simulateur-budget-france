@@ -54,6 +54,7 @@ export function effectifs(
   ageDepart: (anneeGeneration: number) => number,
   chomage: number,
   hausseEmploiSeniors: number,
+  hausseActivite = 0,
 ): Effectifs {
   const part = new Float64Array(NB_AGES);
   const retraites = new Float64Array(NB_AGES);
@@ -66,6 +67,7 @@ export function effectifs(
     retraites[a] = population[a] * part[a];
     let activite = a < 15 ? 0 : valeurA(CALIBRAGE.activiteParAge, a);
     if (a >= 55 && a < 70) activite = Math.min(0.95, activite + hausseEmploiSeniors);
+    if (a >= 20 && a < 65) activite = Math.max(0, Math.min(0.97, activite + hausseActivite));
     cotisants[a] = population[a] * (1 - part[a]) * activite * (1 - chomage);
   }
   return { partRetraites: part, retraites, cotisants };
@@ -132,7 +134,7 @@ export function simuler(scenario: Scenario): ResultatSimulation {
     if (t > ANNEE_BASE) revenus.set(t, revenuA(t - 1) * (1 + valeurA(hyp.productivite, t)));
     const revenu = revenuA(t);
 
-    const eff = effectifs(population, t, ageDepartLevier, chomage, valeurA(leviers.hausseEmploiSeniors, t));
+    const eff = effectifs(population, t, ageDepartLevier, chomage, valeurA(leviers.hausseEmploiSeniors, t), valeurA(leviers.hausseActivite, t));
     const cotisants = somme(eff.cotisants);
     const retraites = somme(eff.retraites);
     const masse = (cotisants * revenu) / 1e9;

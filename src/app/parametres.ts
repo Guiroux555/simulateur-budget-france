@@ -36,6 +36,7 @@ export interface ParametresUI {
   anneesGel: number[];
   ajustementPensions: number; // % sur les pensions nouvelles
   emploiSeniors: number; // points de taux d'emploi 55-69 ans
+  hausseActivite: number; // points de taux d'activité des 20-64 ans
   capitalisationTaux: number; // points de masse salariale
   capitalisationMode: ModeCapitalisation;
   capitalisationRendement: number; // % réel / an
@@ -64,6 +65,7 @@ export const PARAMETRES_REFERENCE: ParametresUI = {
   anneesGel: [],
   ajustementPensions: 0,
   emploiSeniors: 0,
+  hausseActivite: 0,
   capitalisationTaux: 0,
   capitalisationMode: 'substitutif',
   capitalisationRendement: 3,
@@ -140,6 +142,7 @@ export function versScenario(p: ParametresUI): Scenario {
       anneesGel: p.anneesGel,
       ajustementPensionLiquidation: rampe(p.ajustementPensions / 100, ANNEE_MESURES, ANNEE_MESURES),
       hausseEmploiSeniors: rampe(p.emploiSeniors / 100, ANNEE_MESURES, 2035),
+      hausseActivite: rampe(p.hausseActivite / 100, ANNEE_MESURES, 2035),
       capitalisation:
         p.capitalisationTaux > 0
           ? {

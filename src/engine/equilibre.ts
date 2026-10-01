@@ -24,8 +24,9 @@ function ageEquilibre(r: ResultatAnnee, simulation: ResultatSimulation, partMass
   const population = Float64Array.from(r.pyramide);
   const chomage = valeurA(hypotheses.chomage, r.annee);
   const emploiSeniors = valeurA(leviers.hausseEmploiSeniors, r.annee);
+  const activite = valeurA(leviers.hausseActivite, r.annee);
   const ecart = (age: number) => {
-    const eff = effectifs(population, r.annee, () => age, chomage, emploiSeniors);
+    const eff = effectifs(population, r.annee, () => age, chomage, emploiSeniors, activite);
     const depenses = somme(eff.retraites) * r.pensionMoyenne;
     const pib = (somme(eff.cotisants) * r.revenuActiviteMoyen) / partMasse;
     return (r.ressourcesPctPib - soldeCible) * pib - depenses; // croissant avec l'âge
