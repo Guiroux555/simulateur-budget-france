@@ -4,6 +4,8 @@ import { createContext, useContext } from 'react';
 export interface Fenetre {
   debut: number;
   fin: number;
+  /** Afficher les périodes de crises économiques sur les graphiques historiques. */
+  evenements?: boolean;
 }
 
 export const FENETRE_MIN = 1945;
@@ -37,7 +39,8 @@ export const PRESETS_FENETRE: Array<{ libelle: string; fenetre: Fenetre }> = [
   { libelle: 'Court terme', fenetre: { debut: 2015, fin: 2040 } },
 ];
 
-export function ControleFenetre({ fenetre, setFenetre }: { fenetre: Fenetre; setFenetre: (f: Fenetre) => void }) {
+export function ControleFenetre({ fenetre, setFenetre: changer }: { fenetre: Fenetre; setFenetre: (f: Fenetre) => void }) {
+  const setFenetre = (f: Fenetre) => changer({ ...f, evenements: fenetre.evenements });
   const actif = PRESETS_FENETRE.find((p) => p.fenetre.debut === fenetre.debut && p.fenetre.fin === fenetre.fin);
   return (
     <div className="controle-fenetre" role="group" aria-label="Période affichée par les graphiques">
@@ -63,6 +66,10 @@ export function ControleFenetre({ fenetre, setFenetre }: { fenetre: Fenetre; set
       <button type="button" className="bouton secondaire zoom" onClick={() => setFenetre(zoomer(fenetre, 10))} aria-label="Élargir la période" title="Élargir la période">
         +
       </button>
+      <label className="case">
+        <input type="checkbox" checked={fenetre.evenements !== false} onChange={(e) => changer({ ...fenetre, evenements: e.target.checked })} />
+        Crises économiques
+      </label>
       <div className="presets-fenetre">
         {PRESETS_FENETRE.map((p) => (
           <button key={p.libelle} type="button" className={actif === p ? 'actif' : ''} onClick={() => setFenetre(p.fenetre)}>

@@ -222,3 +222,11 @@ régime sont aussi tracés en courbes. Ils sont dérivés des valeurs 2024 de ch
 retraités ; cotisants = cotisants par retraité × retraités ; couverture suivant le solde pour les
 régimes autonomes (Agirc-Arrco, CNRACL, libéraux) ou le nombre de cotisants (régimes spéciaux,
 exploitants agricoles), constante sinon ; montants en € de 2025 à partir du PIB en volume.
+
+### Crises économiques
+
+Les graphiques historiques représentent en bandes colorées les grandes crises (`src/engine/donnees/evenements.ts`) :
+premier (1973-1975) et second (1979-1980) chocs pétroliers, récession de 1993, crise financière
+(2008-2009), crise des dettes souveraines (2011-2012), Covid-19 (2020-2021), choc d'inflation
+(2022-2023). Le survol d'une année affiche la crise et son impact (ordres de grandeur INSEE). Une
+case « Crises économiques » dans la barre « Période » permet de les masquer.

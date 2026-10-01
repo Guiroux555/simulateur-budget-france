@@ -10,3 +10,16 @@ describe('fenêtre de temps', () => {
     expect(f.fin - f.debut).toBeGreaterThanOrEqual(15);
   });
 });
+
+describe('crises économiques', () => {
+  it('sont ordonnées, bornées et documentées', async () => {
+    const { EVENEMENTS } = await import('../src/engine/donnees/evenements');
+    let precedent = 0;
+    for (const e of EVENEMENTS) {
+      expect(e.fin).toBeGreaterThan(e.debut);
+      expect(e.debut).toBeGreaterThanOrEqual(precedent);
+      expect(e.impact.length).toBeGreaterThan(10);
+      precedent = e.debut;
+    }
+  });
+});

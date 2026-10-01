@@ -22,6 +22,8 @@
   --ord-3: #1c5cab;
   --ord-4: #0d366b;
   --hist: #4a4945;
+  --evenement: rgb(237 161 0 / 0.16);
+  --evenement-texte: #8a5a00;
   --autres: #c9c7c0;
   --zone-observee: rgb(0 0 0 / 0.035);
   --grille: #e6e4de;
@@ -57,6 +59,8 @@
     --ord-3: #86b6ef;
     --ord-4: #cde2fb;
     --hist: #d6d5cd;
+    --evenement: rgb(201 133 0 / 0.2);
+    --evenement-texte: #e0b04a;
     --autres: #55544f;
     --zone-observee: rgb(255 255 255 / 0.04);
     --grille: #2e2e2c;
@@ -86,6 +90,8 @@
   --ord-3: #86b6ef;
   --ord-4: #cde2fb;
   --hist: #d6d5cd;
+  --evenement: rgb(201 133 0 / 0.2);
+  --evenement-texte: #e0b04a;
   --autres: #55544f;
   --zone-observee: rgb(255 255 255 / 0.04);
   --grille: #2e2e2c;
@@ -327,3 +333,7 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .presets-fenetre { display: inline-flex; flex-wrap: wrap; gap: 4px; margin-left: 8px; }
 .presets-fenetre button { border: 1px solid var(--bordure); background: var(--surface-1); border-radius: 999px; padding: 3px 10px; cursor: pointer; font-size: 0.82rem; }
 .presets-fenetre button.actif { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+.evenement rect { fill: var(--evenement); }
+.evenement.actif rect { fill: var(--evenement); stroke: var(--evenement-texte); stroke-width: 1; stroke-dasharray: 2 2; }
+.evenement text { fill: var(--evenement-texte); font-size: 9.5px; font-weight: 600; paint-order: stroke; stroke: var(--surface-1); stroke-width: 3px; }
+.bulle-evenement { font-size: 0.76rem; color: var(--text-secondary); border-left: 3px solid var(--evenement-texte); padding-left: 6px; margin: 2px 0 4px; max-width: 280px; white-space: normal; }

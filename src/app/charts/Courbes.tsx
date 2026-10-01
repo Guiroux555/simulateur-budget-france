@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { useFenetre } from '../fenetre';
+import { EVENEMENTS } from '../../engine/donnees/evenements';
 import { graduations, useLargeur } from './useLargeur';
 
 export interface Serie {
@@ -146,6 +147,24 @@ export function Courbes({
   const couper = (v: ReadonlyArray<{ x: number; y: number }>) => decouper(v, xMin, xMax);
   const series = seriesBrutes.map((s) => ({ ...s, valeurs: couper(s.valeurs) })).filter((s) => s.valeurs.length > 0);
   const reformesVisibles = reformes.filter((r) => r.annee >= xMin && r.annee <= xMax);
+  // Crises économiques : affichées sur les graphiques comportant une période observée.
+  // Étiquettes verticales des crises : une seule par tranche de 13 px pour éviter les chevauchements.
+  const etiquetteLisible = (i: number) => {
+    const centre = (e: (typeof EVENEMENTS)[number]) => (sx(Math.max(xMin, e.debut)) + sx(Math.min(xMax, e.fin))) / 2;
+    let dernier = -Infinity;
+    for (let k = 0; k <= i; k++) {
+      const c = centre(evenementsVisibles[k]);
+      if (c - dernier >= 13) {
+        if (k === i) return true;
+        dernier = c;
+      } else if (k === i) return false;
+    }
+    return false;
+  };
+  const evenementsVisibles =
+    fenetre.evenements !== false && (separation !== undefined || reformes.length > 0)
+      ? EVENEMENTS.filter((e) => e.fin > xMin && e.debut < Math.min(xMax, separation ?? xMax))
+      : [];
   const haut = MARGE.haut + (reformesVisibles.length ? HAUTEUR_REFORMES : 0);
 
   const bandes = (bande === undefined ? [] : Array.isArray(bande) ? bande : [bande])
@@ -220,6 +239,21 @@ export function Courbes({
               </text>
             </g>
           )}
+          {evenementsVisibles.map((e, i) => {
+            const x0 = sx(Math.max(xMin, e.debut));
+            const x1 = sx(Math.min(xMax, e.fin));
+            const actif = survol !== null && survol >= Math.floor(e.debut) && survol <= Math.floor(e.fin);
+            return (
+              <g key={e.nom} className={actif ? 'evenement actif' : 'evenement'}>
+                <rect x={x0} y={haut} width={Math.max(2, x1 - x0)} height={h} />
+                {h > 120 && etiquetteLisible(i) && (
+                  <text x={(x0 + x1) / 2} y={haut + 4} transform={`rotate(90 ${(x0 + x1) / 2} ${haut + 4})`} dominantBaseline="middle">
+                    {e.court}
+                  </text>
+                )}
+              </g>
+            );
+          })}
           {ticks.map((t) => (
             <g key={t}>
               <line x1={MARGE.gauche} x2={largeur - MARGE.droite} y1={sy(t)} y2={sy(t)} className={zero && t === 0 ? 'axe-zero' : 'grille'} />
@@ -305,6 +339,13 @@ export function Courbes({
           >
             <div className="bulle-titre">{survol}</div>
             {reformeSurvolee && <div className="bulle-reforme">{reformeSurvolee.nom}</div>}
+            {evenementsVisibles
+              .filter((e) => survol >= Math.floor(e.debut) && survol <= Math.floor(e.fin))
+              .map((e) => (
+                <div key={e.nom} className="bulle-evenement">
+                  <strong>{e.nom}</strong> — {e.impact}
+                </div>
+              ))}
             {bandes.map((bd) => {
               const b = valeurEn({ id: '', nom: '', couleur: '', valeurs: bd.bas }, survol);
               const h = valeurEn({ id: '', nom: '', couleur: '', valeurs: bd.haut }, survol);
