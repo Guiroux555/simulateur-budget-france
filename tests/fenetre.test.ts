@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { FENETRE_MAX, FENETRE_MIN, zoomer } from '../src/app/fenetre';
+import { FENETRE_MAX, FENETRE_MIN, zoomer } from '../src/commun/fenetre';
 
 describe('fenêtre de temps', () => {
   it('s’élargit sans dépasser les bornes', () => {
@@ -13,7 +13,7 @@ describe('fenêtre de temps', () => {
 
 describe('crises économiques', () => {
   it('sont ordonnées, bornées et documentées', async () => {
-    const { EVENEMENTS } = await import('../src/engine/donnees/evenements');
+    const { EVENEMENTS } = await import('../src/socle/donnees/evenements');
     let precedent = 0;
     for (const e of EVENEMENTS) {
       expect(e.fin).toBeGreaterThan(e.debut);

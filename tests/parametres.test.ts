@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { simuler } from '../src/engine/modele';
-import { scenarioReference } from '../src/engine/reference';
-import { depuisUrl, PARAMETRES_REFERENCE, versScenario, versUrl } from '../src/app/parametres';
-import { appliquerPreset, PRESETS } from '../src/app/presets';
+import { simuler } from '../src/modules/retraites/engine/modele';
+import { scenarioReference } from '../src/modules/retraites/engine/reference';
+import { depuisUrl, PARAMETRES_REFERENCE, versScenario, versUrl } from '../src/modules/retraites/app/parametres';
+import { appliquerPreset, PRESETS } from '../src/modules/retraites/app/presets';
 
 describe('paramètres de l’interface', () => {
   it('les paramètres par défaut reproduisent le scénario de référence du moteur', () => {

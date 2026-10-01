@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { REGIMES, TOTAUX_2024 } from '../src/engine/donnees/regimes';
+import { REGIMES, TOTAUX_2024 } from '../src/modules/retraites/engine/donnees/regimes';
 
 describe('données par régime', () => {
   it('la somme des dépenses retrouve le total 2024', () => {
@@ -35,9 +35,9 @@ describe('cotisations et population par régime', () => {
 
 describe('régimes dans le temps (estimations)', () => {
   it('les parts somment à 100 % et les soldes retrouvent le solde total chaque année', async () => {
-    const { regimesDansLeTemps } = await import('../src/app/regimesTemps');
-    const { simuler } = await import('../src/engine/modele');
-    const { scenarioReference } = await import('../src/engine/reference');
+    const { regimesDansLeTemps } = await import('../src/modules/retraites/app/regimesTemps');
+    const { simuler } = await import('../src/modules/retraites/engine/modele');
+    const { scenarioReference } = await import('../src/modules/retraites/engine/reference');
     const sim = simuler(scenarioReference());
     const d = regimesDansLeTemps(sim);
     for (const a of [2000, 2024, 2045, 2070]) {

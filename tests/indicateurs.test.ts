@@ -3,8 +3,8 @@
  * seul doit déplacer la chaîne démographie → emploi → pensions → solde dans le sens attendu.
  */
 import { describe, expect, it } from 'vitest';
-import { simuler } from '../src/engine';
-import { PARAMETRES_REFERENCE, versScenario, type ParametresUI } from '../src/app/parametres';
+import { simuler } from '../src/modules/retraites/engine';
+import { PARAMETRES_REFERENCE, versScenario, type ParametresUI } from '../src/modules/retraites/app/parametres';
 
 const en2070 = (p: Partial<ParametresUI> = {}) =>
   simuler(versScenario({ ...PARAMETRES_REFERENCE, ...p })).annees.find((r) => r.annee === 2070)!;
