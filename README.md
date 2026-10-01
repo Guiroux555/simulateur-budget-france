@@ -14,8 +14,16 @@ fonds de réserve).
 - Idéation et décisions de cadrage : [`docs/retraites/IDEATION.md`](docs/retraites/IDEATION.md)
 - Note de méthode et calibrage : [`docs/retraites/METHODOLOGIE.md`](docs/retraites/METHODOLOGIE.md)
 
+Interface web : deux présentations sur le même moteur — **Découvrir** (parcours guidé en
+3 étapes : comprendre, choisir ses mesures, qui paie ?) et **Mode expert** (toutes les hypothèses
+et leviers, effort d'équilibre par levier, tableau, export CSV). L'état du scénario est encodé
+dans l'URL (lien partageable).
+
 ```bash
 npm install
+npm run dev           # interface web sur http://localhost:5173
+npm run build         # site statique dans dist/ (hébergeable sur GitHub Pages)
+npm run build:fichier-unique   # un seul fichier HTML autonome
 npm test              # tests unitaires et de calibrage
 npm run calibration   # compare le modèle aux chiffres du COR
 npm run typecheck

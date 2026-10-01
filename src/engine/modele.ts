@@ -10,7 +10,7 @@
  *     retraités entrent avec une pension calculée sur leurs revenus d'activité passés ;
  *  5. PIB proportionnel à la masse des revenus d'activité ; ressources en % du PIB.
  */
-import { avancerPopulation, NB_AGES, sommeAges, tableMortalite } from './demographie';
+import { avancerPopulation, esperanceVieA, NB_AGES, sommeAges, tableMortalite } from './demographie';
 import { pyramide2025 } from './donnees/population2025';
 import { AGE_LEGAL_REFERENCE, ANNEE_BASE, CALIBRAGE } from './reference';
 import { valeurA } from './trajectoire';
@@ -155,11 +155,12 @@ export function simuler(scenario: Scenario): ResultatSimulation {
     }
 
     // Pensions par âge.
+    let liquidation = pensionLiquidationBase;
     if (t > ANNEE_BASE) {
       const indexation = indexationReelle(leviers, hyp, t);
       const gainAge =
         CALIBRAGE.gainPensionParAnnee * (ageMoyenDepart(leviers, t) - ageDepartRef(t) - CALIBRAGE.transmissionDuree * valeurA(leviers.dureeSupplementaire, t));
-      const liquidation =
+      liquidation =
         coefLiquidation *
         revenuA(t - K) *
         (1 + gainAge) *
@@ -209,6 +210,8 @@ export function simuler(scenario: Scenario): ResultatSimulation {
       revenuActiviteMoyen: revenu,
       pensionMoyenne,
       pensionRelative: pensionMoyenne / revenu,
+      pensionLiquidationRelative: liquidation / revenu,
+      esperanceVieADepart: esperanceVieA(tableMortalite(valeurA(hyp.esperanceVie, t)), Math.round(ageMoyenDepart(leviers, t))),
       pensionRelativeTotale: ((depenses + rentesIndividuelles) * 1e9) / retraites / revenu,
       pib,
       depenses,
@@ -223,6 +226,7 @@ export function simuler(scenario: Scenario): ResultatSimulation {
       rentesCapitalisation: rentes,
       cotisationsCapitalisation: cotisationsCap,
       pyramide: Array.from(population),
+      pyramideRetraites: Array.from(eff.retraites),
     });
 
     // Passage à l'année suivante.

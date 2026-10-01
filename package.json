@@ -6,14 +6,27 @@
   "description": "Simulateurs ouverts des finances publiques françaises — module retraites",
   "license": "MIT",
   "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build",
+    "build:fichier-unique": "vite build --mode fichier-unique",
+    "preview": "vite preview",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
     "calibration": "tsx scripts/calibration.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.1",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vite-plugin-singlefile": "^2.3.3",
     "vitest": "^5.0.3"
+  },
+  "dependencies": {
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
   }
 }

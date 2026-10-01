@@ -229,7 +229,7 @@ détail par régime (hors périmètre : le système est traité dans son ensembl
 |---|---|---|
 | 0 | Collecte données + note de méthode | T4 2026 — **v0 faite** (données officielles à importer) |
 | 1 | Moteur TS calibré COR + tests | T4 2026 — **v0 faite** |
-| 2 | MVP web (§10) | Janvier 2027 |
+| 2 | MVP web (§10) | Janvier 2027 — **v0 faite** (deux présentations, lien permanent) |
 | 3 | Comparateur de programmes, à mesure de leur publication | Février – mars 2027 |
 | 4 | Vue générationnelle, cas-types, Monte-Carlo capitalisation | Mars 2027 |
 | 5 | Relecture par des économistes indépendants, lancement public | Avant le 1er tour (avril 2027) |

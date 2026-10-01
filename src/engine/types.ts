@@ -99,6 +99,10 @@ export interface ResultatAnnee {
   pensionMoyenne: number;
   /** Pension moyenne par répartition / revenu d'activité moyen. */
   pensionRelative: number;
+  /** Pension d'un nouveau retraité de l'année / revenu d'activité moyen (répartition seule). */
+  pensionLiquidationRelative: number;
+  /** Espérance de vie à l'âge moyen de départ (table de l'année) : durée de retraite attendue. */
+  esperanceVieADepart: number;
   /** Idem, en incluant la rente de capitalisation éventuelle. */
   pensionRelativeTotale: number;
   pib: number;
@@ -119,6 +123,8 @@ export interface ResultatAnnee {
   cotisationsCapitalisation: number;
   /** Population par âge simple (0 à 105 ans et plus). */
   pyramide: number[];
+  /** Retraités par âge simple. */
+  pyramideRetraites: number[];
 }
 
 export interface ResultatSimulation {
