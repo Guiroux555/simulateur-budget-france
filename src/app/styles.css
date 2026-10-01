@@ -346,20 +346,27 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .grille-interactif legend { font-weight: 700; font-size: 0.9rem; padding: 0 4px; }
 .poids-criteres { margin-top: 8px; }
 
-/* Mode interactif sur toute la page : tiroir de curseurs fixé en bas de l'écran. */
-.panneau-interactif.tiroir {
-  position: fixed; bottom: 0; left: 50%; transform: translateX(-50%); z-index: 6;
-  width: min(100% - 16px, 1208px); margin: 0; max-height: 40vh; overflow-y: auto; padding: 10px 16px;
-  border-radius: var(--rayon) var(--rayon) 0 0; border-bottom: none;
-  box-shadow: 0 -6px 20px color-mix(in srgb, var(--text-primary) 14%, transparent);
-}
-.panneau-interactif.tiroir .note { margin: 6px 0 8px; }
-.panneau-interactif.tiroir.replie { padding-top: 8px; padding-bottom: 8px; }
+/* Mode interactif sur toute la page : curseurs dans un menu à gauche (tiroir en bas sur mobile). */
+.mise-en-page-interactif { display: grid; grid-template-columns: 290px minmax(0, 1fr); gap: 14px; align-items: start; }
+.menu-interactif { position: sticky; top: 64px; max-height: calc(100vh - 76px); overflow-y: auto; }
+.menu-interactif .panneau-interactif { margin: 0; padding: 10px 12px; }
+.panneau-interactif.tiroir .grille-interactif { grid-template-columns: 1fr; gap: 10px; }
 .panneau-interactif.tiroir .grille-interactif fieldset { gap: 6px; padding: 6px 10px; }
 .panneau-interactif.tiroir .curseur .aide { display: none; }
 .panneau-interactif.tiroir h3 { font-size: 1rem; }
-.resume-criteres { font-size: 0.82rem; color: var(--text-secondary); flex: 1 1 200px; }
-.panneau-interactif.tiroir.replie h3 { margin-right: 0; }
-section.avec-tiroir { padding-bottom: 42vh; }
+.panneau-interactif.tiroir .panneau-interactif-entete .bouton { padding: 5px 9px; font-size: 0.82rem; }
+.panneau-interactif.tiroir .note { margin: 6px 0 8px; }
+.resume-criteres { font-size: 0.82rem; color: var(--text-secondary); flex: 1 1 100%; order: 5; }
 .note.interactif-actif { border-left: 3px solid var(--accent); padding-left: 8px; }
-@media (max-width: 700px) { .panneau-interactif.tiroir { max-height: 50vh; width: 100%; } }
+.bouton-reduire { display: none; }
+@media (max-width: 860px) {
+  .mise-en-page-interactif { display: block; }
+  .menu-interactif { position: static; max-height: none; overflow: visible; }
+  .menu-interactif .panneau-interactif.tiroir {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 6; max-height: 50vh; overflow-y: auto;
+    border-radius: var(--rayon) var(--rayon) 0 0; border-bottom: none;
+    box-shadow: 0 -6px 20px color-mix(in srgb, var(--text-primary) 14%, transparent);
+  }
+  .bouton-reduire { display: inline-block; }
+  section.avec-tiroir { padding-bottom: 52vh; }
+}

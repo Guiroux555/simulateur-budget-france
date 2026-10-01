@@ -92,6 +92,12 @@ function Comprendre({ reference, historique }: Props) {
     comparer ? [{ id: `${id}-actuel`, nom: 'Législation actuelle (COR)', couleur, valeurs: serie(reference, f), pointille: true, epaisseur: 1.5 }] : [];
 
   return (
+    <div className={interactif.actif ? 'mise-en-page-interactif' : undefined}>
+    {interactif.actif && (
+      <aside className="menu-interactif">
+        <PanneauInteractif mode={interactif} annee={annee} portee="page" />
+      </aside>
+    )}
     <section className={interactif.actif ? 'avec-tiroir' : undefined}>
       <h2>Comment fonctionne le système ?</h2>
       <p className="chapeau">
@@ -105,12 +111,14 @@ function Comprendre({ reference, historique }: Props) {
         </button>
       </p>
 
-      <PanneauInteractif
-        mode={interactif}
-        annee={annee}
-        portee="page"
-        descriptionFerme="Toute la page se recalcule : productivité, chômage, taux d’activité, âge de départ, natalité, valeur et rendement du point… et le poids de chacun sur le solde."
-      />
+      {!interactif.actif && (
+        <PanneauInteractif
+          mode={interactif}
+          annee={annee}
+          portee="page"
+          descriptionFerme="Toute la page se recalcule : productivité, chômage, taux d’activité, âge de départ, natalité, valeur et rendement du point… et le poids de chacun sur le solde."
+        />
+      )}
 
       {interactif.actif ? (
         <ResultatsInteractifs mode={interactif} libelleTuile="Solde en" />
@@ -274,6 +282,7 @@ function Comprendre({ reference, historique }: Props) {
 
       <Regimes integre reference={reference} parametres={PARAMETRES_REFERENCE} modePage={interactif} />
     </section>
+    </div>
   );
 }
 

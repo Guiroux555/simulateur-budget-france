@@ -57,7 +57,7 @@ export function PanneauInteractif({ mode, annee, portee = 'onglet', descriptionF
       <h3>Mode interactif</h3>
       {portee === 'page' && replie && <span className="resume-criteres">{resumeCriteres(c, depart)}</span>}
       {portee === 'page' && (
-        <button type="button" className="bouton secondaire" aria-expanded={!replie} onClick={() => setReplie(!replie)}>
+        <button type="button" className="bouton secondaire bouton-reduire" aria-expanded={!replie} onClick={() => setReplie(!replie)}>
           {replie ? '▴ Afficher les curseurs' : '▾ Réduire'}
         </button>
       )}
@@ -137,8 +137,8 @@ export function PanneauInteractif({ mode, annee, portee = 'onglet', descriptionF
         {!replie && (
           <>
             <p className="note">
-              Toute la page suit ces critères (projection dès 2025, mesures en 2028) ; repère sous chaque curseur : législation
-              actuelle.
+              Toute la page suit ces critères (projection dès 2025, mesures en 2028). Repère sous chaque curseur :
+              législation actuelle.
             </p>
             {curseurs}
           </>

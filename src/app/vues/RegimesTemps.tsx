@@ -69,7 +69,7 @@ export function RegimesTemps({ reference, parametres = PARAMETRES_REFERENCE, mod
       {modePage ? (
         modePage.actif && (
           <p className="note interactif-actif">
-            Mode interactif actif : ces graphiques suivent les curseurs en bas de l’écran (à partir de 2025).
+            Mode interactif actif : ces graphiques suivent les curseurs du menu (à partir de 2025).
           </p>
         )
       ) : (
