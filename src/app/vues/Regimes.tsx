@@ -4,19 +4,26 @@ import {
   LIBELLES_FAMILLES,
   REGIMES,
   TOTAUX_2024,
-  type FamilleRegime,
   type Regime,
 } from '../../engine/donnees/regimes';
 import { Barres } from '../charts/Barres';
 import { Encadre, Tuile } from '../composants';
 
-const COULEURS_FAMILLES: Record<FamilleRegime, string> = {
-  prive: 'var(--series-1)',
-  complementaire: 'var(--series-2)',
-  'fonction-publique': 'var(--series-3)',
-  special: 'var(--series-5)',
-  'non-salaries': 'var(--series-4)',
+/**
+ * Une couleur fixe par régime, la même dans tous les graphiques et sur les fiches
+ * (ordre de la palette catégorielle ; « autres » en gris, comme un regroupement).
+ */
+const COULEURS_REGIMES: Record<string, string> = {
+  cnav: 'var(--series-1)',
+  'agirc-arrco': 'var(--series-2)',
+  fpe: 'var(--series-3)',
+  'msa-exploitants': 'var(--series-4)',
+  speciaux: 'var(--series-5)',
+  cnracl: 'var(--series-6)',
+  liberaux: 'var(--series-7)',
+  'autres-complementaires': 'var(--ref)',
 };
+const couleur = (r: Regime) => COULEURS_REGIMES[r.id] ?? 'var(--ref)';
 
 const virgule = (v: number, d = 1) => v.toFixed(d).replace('.', ',');
 const mds = (v: number) => `${v < 0 ? '−' : ''}${virgule(Math.abs(v), Math.abs(v) < 10 && v % 1 !== 0 ? 1 : 0)} Md€`;
@@ -33,8 +40,6 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
   const subventions = REGIMES.reduce((s, r) => s + r.subventionEtat, 0);
   const soldeAffiche = (r: Regime) => (convention === 'comptable' ? r.solde : r.solde - r.subventionEtat);
   const soldeTotal = TOTAUX_2024.solde - (convention === 'comptable' ? 0 : subventions);
-  const familles = Object.keys(LIBELLES_FAMILLES) as FamilleRegime[];
-  const legendeFamilles = familles.map((f) => ({ libelle: LIBELLES_FAMILLES[f], couleur: COULEURS_FAMILLES[f] }));
   const regimeSelectionne = REGIMES.find((r) => r.id === selection);
 
   return (
@@ -90,11 +95,10 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
             id: r.id,
             libelle: r.sigle,
             valeur: r.depenses,
-            couleur: COULEURS_FAMILLES[r.famille],
+            couleur: couleur(r),
             detail: `${r.nom} : ${mds(r.depenses)}, soit ${virgule((100 * r.depenses) / TOTAUX_2024.depenses)} % des dépenses`,
           }))}
           format={(v) => `${virgule(v, 0)}`}
-          legende={legendeFamilles}
           selection={selection}
           onSelect={choisir}
         />
@@ -102,25 +106,21 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
           titre="Solde 2024 par régime"
           sousTitre={
             convention === 'comptable'
-              ? 'Milliards d’euros ; hachuré : subvention d’équilibre de l’État incluse dans les ressources'
-              : 'Milliards d’euros, hors subventions d’équilibre de l’État'
+              ? 'Milliards d’euros — à gauche de zéro : déficit, à droite : excédent ; hachuré : subvention d’équilibre de l’État'
+              : 'Milliards d’euros, hors subventions d’équilibre de l’État — à gauche de zéro : déficit, à droite : excédent'
           }
           barres={parDepenses.map((r) => ({
             id: r.id,
             libelle: r.sigle,
             valeur: soldeAffiche(r),
-            couleur: soldeAffiche(r) < 0 ? 'var(--deficit)' : 'var(--excedent)',
+            couleur: couleur(r),
             complement:
               convention === 'comptable' && r.subventionEtat > 0
-                ? { valeur: r.subventionEtat, couleur: 'var(--text-muted)', libelle: 'Subvention de l’État', texte: `État ${virgule(r.subventionEtat)}` }
+                ? { valeur: r.subventionEtat, couleur: couleur(r), libelle: 'Subvention de l’État', texte: `État ${virgule(r.subventionEtat)}` }
                 : undefined,
           }))}
           format={(v) => (v === 0 ? '0' : mdsSigne(v).replace(' Md€', ''))}
-          legende={[
-            { libelle: 'Excédent', couleur: 'var(--excedent)' },
-            { libelle: 'Déficit', couleur: 'var(--deficit)' },
-            ...(convention === 'comptable' ? [{ libelle: 'Subvention d’équilibre de l’État', couleur: 'var(--text-muted)', motif: true }] : []),
-          ]}
+          legende={convention === 'comptable' ? [{ libelle: 'Subvention d’équilibre de l’État', couleur: 'var(--text-muted)', motif: true }] : undefined}
           selection={selection}
           onSelect={choisir}
         />
@@ -132,7 +132,7 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
         barres={[...REGIMES]
           .filter((r) => r.ratioDemographique !== null)
           .sort((a, b) => (b.ratioDemographique ?? 0) - (a.ratioDemographique ?? 0))
-          .map((r) => ({ id: r.id, libelle: r.sigle, valeur: r.ratioDemographique!, couleur: COULEURS_FAMILLES[r.famille] }))}
+          .map((r) => ({ id: r.id, libelle: r.sigle, valeur: r.ratioDemographique!, couleur: couleur(r) }))}
         format={(v) => virgule(v, 2)}
         repere={{ valeur: 1, libelle: '1 cotisant pour 1 retraité' }}
         selection={selection}
@@ -154,7 +154,7 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
       )}
       <div className="fiches-regimes">
         {(regimeSelectionne ? [regimeSelectionne] : parDepenses).map((r) => (
-          <article key={r.id} className="fiche-regime" style={{ borderTopColor: COULEURS_FAMILLES[r.famille] }}>
+          <article key={r.id} className="fiche-regime" style={{ borderTopColor: couleur(r) }}>
             <header>
               <span className="fiche-famille">{LIBELLES_FAMILLES[r.famille]}</span>
               <h4>{r.nom}</h4>
