@@ -31,6 +31,10 @@ export interface Regime {
    * (DREES). Une même personne peut relever de plusieurs régimes. null si non pertinent.
    */
   retraites: number | null;
+  /** Cotisations encaissées (salariés + employeurs, y compris l'État employeur), Md€, ordre de grandeur. */
+  cotisations: number | null;
+  /** Cotisants, en millions (ordre de grandeur). */
+  cotisants: number | null;
   /** Cotisants pour un retraité (ordre de grandeur, année indiquée dans `sources`). */
   ratioDemographique: number | null;
   /** Mode de calcul de la pension, en une phrase. */
@@ -66,6 +70,8 @@ export const REGIMES: Regime[] = [
     solde: -3.6,
     subventionEtat: 0,
     retraites: 14.2,
+    cotisations: 125,
+    cotisants: 20.0,
     ratioDemographique: 1.41,
     calcul: '50 % du salaire annuel moyen des 25 meilleures années (dans la limite du plafond de la Sécurité sociale), proratisé selon la durée cotisée',
     avantages: [
@@ -92,6 +98,8 @@ export const REGIMES: Regime[] = [
     solde: 1.6,
     subventionEtat: 0,
     retraites: 12.2,
+    cotisations: 101.4,
+    cotisants: 18.3,
     ratioDemographique: 1.5,
     calcul: 'Régime par points : cotisations converties en points (prix d’achat), pension = points × valeur de service',
     avantages: [
@@ -117,6 +125,8 @@ export const REGIMES: Regime[] = [
     solde: 0,
     subventionEtat: 0,
     retraites: 2.0,
+    cotisations: 62,
+    cotisants: 1.8,
     ratioDemographique: 0.9,
     calcul: '75 % du traitement indiciaire des 6 derniers mois (hors primes) pour une carrière complète, proratisé selon la durée',
     avantages: [
@@ -144,6 +154,8 @@ export const REGIMES: Regime[] = [
     solde: -3.0,
     subventionEtat: 0,
     retraites: 1.4,
+    cotisations: 24.4,
+    cotisants: 2.2,
     ratioDemographique: 1.5,
     calcul: '75 % du traitement indiciaire des 6 derniers mois (hors primes) pour une carrière complète',
     avantages: [
@@ -169,6 +181,8 @@ export const REGIMES: Regime[] = [
     solde: 0,
     subventionEtat: 5.9,
     retraites: 0.65,
+    cotisations: 5,
+    cotisants: 0.4,
     ratioDemographique: 0.6,
     calcul: 'Le plus souvent 75 % de la rémunération des 6 derniers mois, avec des règles propres à chaque régime',
     avantages: [
@@ -197,6 +211,8 @@ export const REGIMES: Regime[] = [
     solde: 0,
     subventionEtat: 0,
     retraites: 1.2,
+    cotisations: 2.5,
+    cotisants: 0.42,
     ratioDemographique: 0.35,
     calcul: 'Pension forfaitaire et proportionnelle (points) au régime de base, complétée par un régime complémentaire obligatoire',
     avantages: [
@@ -219,6 +235,8 @@ export const REGIMES: Regime[] = [
     solde: 1.0,
     subventionEtat: 0,
     retraites: 0.4,
+    cotisations: 7,
+    cotisants: 0.8,
     ratioDemographique: 2.0,
     calcul: 'Régime de base par points commun (CNAVPL) et régimes complémentaires propres à chaque profession',
     avantages: [
@@ -243,6 +261,8 @@ export const REGIMES: Regime[] = [
     solde: 2.3,
     subventionEtat: 0,
     retraites: null,
+    cotisations: null,
+    cotisants: null,
     ratioDemographique: null,
     calcul: 'Régimes par points',
     avantages: [
@@ -267,6 +287,20 @@ export const TOTAUX_2024 = {
   source:
     'COR, rapport juin 2025 (dépenses ≈ 400 Md€, solde −1,7 Md€) ; DREES, Les retraités et les retraites (17,2 M de retraités de droit direct fin 2023, dont 14,2 M à la CNAV, 12,2 M à l’Agirc-Arrco, 1,2 M à la MSA non-salariés, ≈ 3,8 M dans la fonction publique)',
 };
+
+/**
+ * Sources et méthodes des cotisations et cotisants par régime.
+ * Agirc-Arrco : cotisations 2024 = 101,4 Md€ (communiqué Agirc-Arrco, mars 2025).
+ * CNRACL : 24,4 Md€ de cotisations pour ≈ 2,2 M de cotisants (2023).
+ * CNAV : estimation à partir des taux (15,45 % sous plafond + 2,42 % déplafonné) et de la masse
+ * salariale du privé (≈ 120-130 Md€), y compris exonérations compensées par l'État.
+ * Fonctionnaires de l'État : cotisations salariales (11,1 %) et contribution de l'État employeur,
+ * dont le taux s'ajuste pour équilibrer le régime (cotisations ≈ pensions par construction).
+ * Régimes spéciaux, exploitants agricoles, professions libérales : ordres de grandeur.
+ * Cotisants : rapport démographique × retraités lorsque l'effectif n'est pas publié.
+ */
+export const SOURCES_COTISATIONS =
+  'Agirc-Arrco (résultats 2024), CNRACL/IGAS (2023-2024), taux légaux de cotisation et masse salariale pour la CNAV, CAS « Pensions » pour l’État ; les autres montants sont des ordres de grandeur';
 
 export const COMPENSATION_DEMOGRAPHIQUE =
   'La compensation démographique transfère chaque année plusieurs milliards d’euros des régimes à la démographie favorable (régime général, professions libérales, fonction publique territoriale) vers ceux qui comptent peu de cotisants par retraité (exploitants agricoles, régimes en extinction).';

@@ -3,6 +3,7 @@ import {
   COMPENSATION_DEMOGRAPHIQUE,
   LIBELLES_FAMILLES,
   REGIMES,
+  SOURCES_COTISATIONS,
   TOTAUX_2024,
   type Regime,
 } from '../../engine/donnees/regimes';
@@ -26,6 +27,7 @@ const COULEURS_REGIMES: Record<string, string> = {
 const couleur = (r: Regime) => COULEURS_REGIMES[r.id] ?? 'var(--ref)';
 
 const virgule = (v: number, d = 1) => v.toFixed(d).replace('.', ',');
+const euros = (v: number) => `${(Math.round(v / 100) * 100).toLocaleString('fr-FR')} €`;
 const mds = (v: number) => `${v < 0 ? '−' : ''}${virgule(Math.abs(v), Math.abs(v) < 10 && v % 1 !== 0 ? 1 : 0)} Md€`;
 const mdsSigne = (v: number) => (v > 0 ? `+${mds(v)}` : mds(v));
 
@@ -41,6 +43,7 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
   const [convention, setConvention] = useState<Convention>('comptable');
   const choisir = (id: string) => setSelection((s) => (s === id ? null : id));
   const parDepenses = [...REGIMES].sort((a, b) => b.depenses - a.depenses);
+  const avecCotisations = parDepenses.filter((r) => r.cotisations !== null && r.cotisants !== null && r.retraites !== null);
   const subventions = REGIMES.reduce((s, r) => s + r.subventionEtat, 0);
   const soldeAffiche = (r: Regime) => (convention === 'comptable' ? r.solde : r.solde - r.subventionEtat);
   const soldeTotal = TOTAUX_2024.solde - (convention === 'comptable' ? 0 : subventions);
@@ -162,6 +165,75 @@ export function Regimes({ integre = false }: { integre?: boolean }) {
         selection={selection}
         onSelect={choisir}
       />
+
+      <h3>Ce que chaque régime encaisse et verse</h3>
+      <p className="note">
+        Pour comparer les régimes sur une base commune : combien cotise en moyenne un actif, combien est versé en moyenne à
+        un retraité, et quelle part des pensions les cotisations couvrent. Pour les fonctionnaires de l’État, les
+        cotisations comprennent la contribution de l’État employeur, dont le taux s’ajuste pour couvrir les pensions (taux
+        de couverture de 100 % par construction).
+      </p>
+      <div className="grille-2">
+        <Barres
+          titre="Part des pensions couverte par les cotisations"
+          sousTitre="Cotisations encaissées / pensions versées, 2024. Sous 100 % : le complément vient d’impôts, de transferts ou de subventions"
+          barres={avecCotisations.map((r) => ({
+            id: r.id,
+            libelle: r.sigle,
+            valeur: (100 * r.cotisations!) / r.depenses,
+            texte: `${virgule((100 * r.cotisations!) / r.depenses, 0)} %`,
+            couleur: couleur(r),
+          }))}
+          format={(v) => `${virgule(v, 0)} %`}
+          repere={{ valeur: 100, libelle: '100 %' }}
+          selection={selection}
+          onSelect={choisir}
+        />
+        <Barres
+          titre="Cotisation moyenne et pension moyenne"
+          sousTitre="Barre pleine : cotisé par actif (salarié + employeur), en € par an ; barre claire : versé par le régime à chacun de ses retraités, en € par an"
+          barres={avecCotisations.map((r) => ({
+            id: r.id,
+            libelle: r.sigle,
+            valeur: (r.cotisations! * 1e3) / r.cotisants!,
+            texte: `${euros((r.cotisations! * 1e3) / r.cotisants!)} cotisés`,
+            couleur: couleur(r),
+            secondaire: { valeur: (r.depenses * 1e3) / r.retraites!, texte: `${euros((r.depenses * 1e3) / r.retraites!)} versés` },
+          }))}
+          format={(v) => `${virgule(v / 1000, 0)} k€`}
+          legende={[
+            { libelle: 'Cotisation par actif', couleur: 'var(--text-secondary)' },
+            { libelle: 'Pension versée par retraité', couleur: 'var(--text-secondary)', clair: true },
+          ]}
+          selection={selection}
+          onSelect={choisir}
+        />
+      </div>
+      <Barres
+        titre="Population concernée"
+        sousTitre="Barre pleine : cotisants ; barre claire : retraités de droit direct, en millions (une même personne peut relever de plusieurs régimes)"
+        barres={avecCotisations.map((r) => ({
+          id: r.id,
+          libelle: r.sigle,
+          valeur: r.cotisants!,
+          texte: `${virgule(r.cotisants!, r.cotisants! < 1 ? 2 : 1)} M cotisants`,
+          couleur: couleur(r),
+          secondaire: { valeur: r.retraites!, texte: `${virgule(r.retraites!, r.retraites! < 1 ? 2 : 1)} M retraités` },
+        }))}
+        format={(v) => `${virgule(v, Number.isInteger(v) ? 0 : 1)} M`}
+        legende={[
+          { libelle: 'Cotisants', couleur: 'var(--text-secondary)' },
+          { libelle: 'Retraités', couleur: 'var(--text-secondary)', clair: true },
+        ]}
+        selection={selection}
+        onSelect={choisir}
+      />
+      <p className="note">
+        Lecture : un régime qui compte peu de cotisants par retraité doit soit prélever davantage sur chaque actif, soit
+        recevoir des ressources extérieures. Les montants par personne sont des moyennes globales (temps partiels, carrières
+        incomplètes et réversions comprises) et non des cas individuels. Sources : {SOURCES_COTISATIONS}. Cotisations et
+        cotisants en partie estimés (ordres de grandeur).
+      </p>
 
       <Encadre titre="Solidarité entre régimes">
         <p>{COMPENSATION_DEMOGRAPHIQUE}</p>

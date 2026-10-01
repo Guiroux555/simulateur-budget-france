@@ -168,3 +168,12 @@ publique et régimes spéciaux répartis par estimation). Les fiches indiquent l
 par le régime à chacun de ses retraités (dépenses / retraités, réversions comprises) : c'est la part
 versée par ce régime, pas la pension totale des personnes. Cette section est descriptive :
 le modèle de projection reste agrégé (tous régimes).
+
+Le bloc « Ce que chaque régime encaisse et verse » compare, pour chaque régime : la part des pensions
+couverte par les cotisations (cotisations / pensions), la cotisation moyenne par cotisant et la
+pension moyenne versée par retraité (en € par an), ainsi que la population concernée (cotisants et
+retraités). Sources : Agirc-Arrco (101,4 Md€ de cotisations en 2024), CNRACL (24,4 Md€ pour ≈ 2,2 M
+de cotisants), taux légaux et masse salariale pour la CNAV (≈ 125 Md€, estimation), CAS « Pensions »
+pour l'État (cotisations ≈ pensions par construction) ; régimes spéciaux, exploitants agricoles et
+professions libérales en ordres de grandeur ; cotisants estimés par rapport démographique × retraités
+quand l'effectif n'est pas publié.

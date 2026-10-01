@@ -18,3 +18,17 @@ describe('données par régime', () => {
     }
   });
 });
+
+describe('cotisations et population par régime', () => {
+  it('fournit cotisations, cotisants et retraités pour les régimes comparés', () => {
+    const compares = REGIMES.filter((r) => r.id !== 'autres-complementaires');
+    for (const r of compares) {
+      expect(r.cotisations).toBeGreaterThan(0);
+      expect(r.cotisants).toBeGreaterThan(0);
+      expect(r.retraites).toBeGreaterThan(0);
+    }
+  });
+  it('les régimes subventionnés couvrent moins de la moitié de leurs pensions par cotisations', () => {
+    for (const r of REGIMES.filter((x) => x.subventionEtat > 0)) expect(r.cotisations! / r.depenses).toBeLessThan(0.5);
+  });
+});
