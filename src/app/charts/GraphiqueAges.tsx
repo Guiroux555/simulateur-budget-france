@@ -1,5 +1,5 @@
 import type { ResultatSimulation } from '../../engine';
-import { HISTORIQUE, PART_SANS_INCAPACITE_65 } from '../../engine/donnees/historique';
+import { AGE_ENTREE_VIE_ACTIVE_PROJETE, HISTORIQUE, PART_SANS_INCAPACITE_65 } from '../../engine/donnees/historique';
 import { ans } from '../format';
 import { ANNEE_DEBUT_HISTORIQUE, ANNEE_PROJECTION, REPERES_REFORMES, serieObservee } from '../historique';
 import { Courbes, type Serie } from './Courbes';
@@ -34,7 +34,7 @@ function annuel(points: ReadonlyArray<readonly [number, number]>, de: number, a:
  * Âge légal, âge moyen de départ et espérance de vie à 60 ans exprimée en âge atteint
  * (60 + espérance de vie à 60 ans) : l'écart entre les deux courbes est la durée moyenne de retraite.
  */
-export function GraphiqueAges({ simulation, reference, historique, hauteur = 340 }: Props) {
+export function GraphiqueAges({ simulation, reference, historique, hauteur = 400 }: Props) {
   const proj = (f: (r: ResultatSimulation['annees'][number]) => number, s = simulation) => s.annees.map((r) => ({ x: r.annee, y: f(r) }));
   const fin = ANNEE_PROJECTION - 1;
   const e60Observee = historique ? annuel(HISTORIQUE.esperanceVie60.points.map(([a, v]) => [a, 60 + v] as const), ANNEE_DEBUT_HISTORIQUE, fin) : [];
@@ -48,7 +48,16 @@ export function GraphiqueAges({ simulation, reference, historique, hauteur = 340
   const santeProjetee = proj((r) => 65 + PART_SANS_INCAPACITE_65 * r.esperanceVie65);
   const sante = [...santeObservee, ...santeProjetee];
 
+  // Âge d'entrée dans la vie active : observé (ordres de grandeur), puis hypothèse de stabilité.
+  const entreeObservee = historique ? annuel(HISTORIQUE.ageEntreeVieActive.points, ANNEE_DEBUT_HISTORIQUE, fin) : [];
+  const entreeProjetee = proj(() => AGE_ENTREE_VIE_ACTIVE_PROJETE);
+  const entree = [...entreeObservee, ...entreeProjetee];
+
   const series: Serie[] = [
+    ...(historique
+      ? [{ id: 'entree-obs', nom: 'Entrée dans la vie active, observée', couleur: 'var(--series-5)', approximatif: true, valeurs: HISTORIQUE.ageEntreeVieActive.points.map(([x, y]) => ({ x, y })) }]
+      : []),
+    { id: 'entree-proj', nom: 'Entrée dans la vie active, hypothèse', couleur: 'var(--series-5)', pointille: true, valeurs: entreeProjetee },
     ...(historique ? [serieObservee('ageMoyenDepart', 'Âge de départ observé')] : []),
     {
       id: 'legal',
@@ -91,19 +100,25 @@ export function GraphiqueAges({ simulation, reference, historique, hauteur = 340
   const hautSante = sante.filter((p) => annees.has(p.x));
   const basSante = depart.filter((p) => anneesSante.has(p.x));
 
+  const anneesEntree = new Set(entree.map((p) => p.x));
+  const hautCarriere = depart.filter((p) => anneesEntree.has(p.x));
+  const xsCarriere = new Set(hautCarriere.map((p) => p.x));
+  const basCarriere = entree.filter((p) => xsCarriere.has(p.x));
+
   return (
     <Courbes
-      titre="Âge de départ et espérance de vie"
-      sousTitre="Zones colorées : durée moyenne de retraite (jusqu’à l’âge atteint en moyenne par les personnes de 60 ans), dont années sans incapacité (espérance de vie sans incapacité à 65 ans, DREES)"
+      titre="Vie active, départ et espérance de vie"
+      sousTitre="Zones colorées : vie active (de l’âge moyen d’entrée à l’âge moyen de départ, indicatif : générations différentes), durée moyenne de retraite (jusqu’à l’âge atteint en moyenne par les personnes de 60 ans), dont années sans incapacité (DREES)"
       series={series}
       bande={[
+        { nom: 'Vie active', couleur: 'var(--series-5)', bas: basCarriere, haut: hautCarriere, formatValeur: (b, h) => ans(h - b), opacite: 0.1 },
         { nom: 'Durée de retraite', couleur: 'var(--series-3)', bas, haut, formatValeur: (b, h) => ans(h - b) },
         { nom: 'dont sans incapacité', couleur: 'var(--series-7)', bas: basSante, haut: hautSante, formatValeur: (b, h) => ans(h - b), opacite: 0.2 },
       ]}
       {...(historique ? { separation: ANNEE_PROJECTION, reformes: REPERES_REFORMES } : {})}
       format={(v) => ans(v)}
       formatAxe={(v) => v.toFixed(0)}
-      domaine={[60, 90]}
+      domaine={[14, 92]}
       hauteur={hauteur}
     />
   );

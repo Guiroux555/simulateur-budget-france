@@ -245,3 +245,13 @@ montée en charge sur 40 ans). À cotisations inchangées, l'écart de dépenses
 se reporte sur leur solde et sur le solde total. Le graphique « Poids de chaque critère » donne
 l'effet de chaque critère pris isolément sur le solde tous régimes (2035, 2045 ou 2070), et l'effet
 de l'ensemble, qui peut différer de la somme.
+
+## 10. Âge d'entrée dans la vie active
+
+Le graphique des âges affiche l'âge moyen d'entrée dans la vie active (premier emploi), placé l'année
+de l'entrée : ≈ 16 ans vers 1950, ≈ 18,5 ans pour la génération 1954, ≈ 21,5 ans pour la génération
+1975, ≈ 22 ans pour la génération 1986 (COR, séance du 25 mai 2023 ; INSEE ; DARES), puis une
+hypothèse de stabilité à 22 ans. Les mesures diffèrent selon les sources (premier emploi, première
+année complète validée). La zone « vie active » (de l'entrée au départ) est indicative : à une même
+date, elle rapproche des générations différentes. Cette série est descriptive : le modèle utilise
+des taux d'activité par âge, pas cet âge moyen.

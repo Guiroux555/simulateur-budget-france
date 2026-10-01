@@ -186,6 +186,25 @@ export const HISTORIQUE = {
     source:
       'DREES, Études et résultats (2023 : 12,0 ans femmes, 10,5 ans hommes ; 2024 : 11,8 et 10,5 ; +1 an et 10-11 mois depuis 2008) ; 2019 approximatif',
   },
+  /**
+   * Âge moyen d'entrée dans la vie active (premier emploi), placé l'année de l'entrée : génération
+   * 1954 ≈ 18,5 ans (vers 1972), 1975 ≈ 21,5 ans (vers 1996), léger recul pour les générations du
+   * début des années 1980, puis ≈ 22 ans (première année complète validée, génération 1986).
+   */
+  ageEntreeVieActive: {
+    points: [
+      [1950, 16.0],
+      [1960, 16.8],
+      [1972, 18.5],
+      [1985, 20.0],
+      [1996, 21.5],
+      [2002, 21.2],
+      [2008, 22.2],
+      [2024, 22.0],
+    ],
+    source:
+      'COR (séance du 25 mai 2023, entrée dans la vie active), INSEE, DARES ; avant la génération 1954 : ordres de grandeur (scolarité obligatoire jusqu’à 14 ans, puis 16 ans) ; mesures différentes selon les sources (premier emploi, première année validée)',
+  },
   /** Âge légal d'ouverture des droits (régime général), par année civile. */
   ageLegal: {
     points: [
@@ -205,6 +224,9 @@ export const HISTORIQUE = {
  * Part des années restant à vivre à 65 ans passées sans incapacité (DREES 2023 : 50,8 % pour les
  * femmes, 52,9 % pour les hommes). Hypothèse de projection : part constante.
  */
+/** Hypothèse de projection : âge d'entrée dans la vie active stable (illustratif, non utilisé par le modèle). */
+export const AGE_ENTREE_VIE_ACTIVE_PROJETE = 22;
+
 export const PART_SANS_INCAPACITE_65 = 0.52;
 
 function interpoler(points: ReadonlyArray<Point>, x: number): number {

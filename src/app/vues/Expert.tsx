@@ -217,7 +217,7 @@ export function Expert({ parametres: p, setParametres, reference, scenario, equi
                 format={(v) => pct(v)}
               />
               <Courbes titre="Pension relative (y c. capitalisation)" sousTitre="Pension moyenne / revenu d’activité moyen" {...avecHistorique(historique, 'pensionRelative', compare('prel', (r) => r.pensionRelativeTotale))} format={(v) => pct(v, 0)} />
-              <GraphiqueAges simulation={scenario} reference={reference} historique={historique} hauteur={320} />
+              <GraphiqueAges simulation={scenario} reference={reference} historique={historique} hauteur={380} />
               <Courbes titre="Cotisants par retraité" {...avecHistorique(historique, 'ratioCotisantsRetraites', compare('ratio', (r) => r.ratioCotisantsRetraites))} format={dec(2)} />
               <Courbes
                 titre="Actifs en emploi pour un inactif"

@@ -188,7 +188,10 @@ function Comprendre({ reference, historique }: Props) {
         que les projections de l’INSEE (≈ 32,7 ans en 2070 contre ≈ 30 ans) : c’est un paramètre de calage, documenté dans la
         note de méthode, qui sera corrigé avec les tables de mortalité officielles. Âge sans incapacité : 65 ans + espérance
         de vie sans incapacité à 65 ans (DREES : ≈ 11,2 ans en 2024, moyenne femmes-hommes) ; projeté en supposant que la
-        part des années vécues sans incapacité reste de 52 % — une hypothèse, pas une prévision.
+        part des années vécues sans incapacité reste de 52 % — une hypothèse, pas une prévision. Âge d’entrée dans la vie
+        active : ≈ 16 ans vers 1950, 18,5 ans pour la génération 1954, 21,5 ans pour la génération 1975, ≈ 22 ans depuis
+        (COR, INSEE, DARES, ordres de grandeur) ; supposé stable ensuite — il est affiché pour situer la durée de vie
+        active, le modèle ne l’utilise pas.
       </p>
 
       <Encadre titre="Les réformes depuis la naissance de la répartition">
