@@ -1,11 +1,23 @@
 # Étendre la méthode « retraites » à tout le budget — Idéation
 
-> Statut : **idéation à valider** — les questions de cadrage à trancher sont en §9.
+> Statut : **idéation validée** — décisions de cadrage en §0 ; une question reste ouverte (§9).
 > Point de départ : le module retraites (voir [`../retraites/IDEATION.md`](../retraites/IDEATION.md)
 > et [`../retraites/METHODOLOGIE.md`](../retraites/METHODOLOGIE.md)). Objectif : dégager de ce
 > module une **méthode reproductible**, puis l'appliquer aux autres grands postes des finances
 > publiques en partageant un socle commun (démographie, macroéconomie, dette).
 > Les chiffres cités sont des **ordres de grandeur** à recalibrer sur les sources officielles.
+
+---
+
+## 0. Décisions de cadrage (octobre 2026)
+
+| Question | Décision |
+|---|---|
+| Ambition | **Une série de modules indépendants** (un par sujet, chacun utilisable seul), et **une page de synthèse** qui rassemble les résultats des scénarios choisis dans chaque module (effet sur le solde public et la dette). |
+| Ordre des modules | **Dette et solde public**, puis **santé**. |
+| Horizon de projection | **Propre à chaque sujet** : 2070 pour les sujets démographiques (retraites, santé, autonomie, éducation), un horizon plus court pour les sujets budgétaires (dette, fiscalité, défense), fixé dans la fiche de chaque module. La page de synthèse affiche la période commune. |
+| Niveau de détail fiscal | **Ouvert** (voir §9). |
+| Identité | **Le « Simulateur des retraites » devient un module du « Simulateur du budget »**, avec une adresse par module. |
 
 ---
 
@@ -170,7 +182,7 @@ projection officielle sur laquelle calibrer.
 | Logement | Bénéficiaires × aide moyenne, indexation des APL | CNAF, compte du logement | Petit module, réutilise les barèmes. |
 | Minima sociaux | Bénéficiaires × montant, revalorisation | DREES (« Minima sociaux et prestations sociales ») | Reçoit les effets de bord des retraites et du chômage. |
 
-## 4. Architecture proposée : un socle, des modules, une consolidation
+## 4. Architecture proposée : un socle, des modules indépendants, une page de synthèse
 
 ```
                         ┌────────────────────────────────────────────┐
@@ -186,10 +198,16 @@ projection officielle sur laquelle calibrer.
           │             │               │              │               │
           └─────────────┴───────┬───────┴──────────────┴───────────────┘
                                 ▼
-                 CONSOLIDATION APU : dépenses, recettes, solde primaire
+                 PAGE DE SYNTHÈSE : lit le scénario choisi dans chaque module,
+                 additionne dépenses et recettes, solde primaire
                                 ▼
                  DETTE : intérêts, boule de neige, stabilisation
 ```
+
+**Indépendance des modules** : chaque module a sa propre page, son propre lien permanent et
+fonctionne seul. Il ne dépend que du socle, jamais d'un autre module. La page de synthèse est un
+consommateur : elle lit le scénario de chaque module (son état encodé dans l'URL) et en récupère un
+**résumé** normalisé.
 
 **Contrat commun d'un module** (interface TypeScript, à préciser) :
 
@@ -198,14 +216,19 @@ projection officielle sur laquelle calibrer.
   (Md€ 2025 et % du PIB) ;
 - `equilibre(resultat, cible)` → le ou les leviers d'équilibre ;
 - `CALIBRAGE` : cibles de la référence officielle, vérifiées par `npm run calibration` ;
+- `resume(resultat)` → ce que lit la page de synthèse : par année, dépenses et recettes en % du PIB
+  et écart à la référence du module, sur l'horizon propre au module ;
 - un historique (séries + réformes) et une note de méthode `docs/<module>/METHODOLOGIE.md`.
 
 **Postes non modélisés** : un poste « reste des APU » suit le PIB (part constante, réglable). La
-consolidation est donc complète dès le premier module ajouté, et se raffine module après module.
+synthèse est donc complète dès le premier module ajouté, et se raffine module après module.
 
-**Couplages entre modules** : passent uniquement par le socle (emploi, démographie) ou par des
-effets explicites et affichés (retraites → chômage / invalidité ; famille → fécondité ; dette →
-intérêts). Pas de bouclage caché.
+**Couplages entre modules** : les modules restant indépendants, ils ne s'appellent pas entre eux.
+Les hypothèses communes (démographie, productivité, chômage) viennent du socle ; la page de synthèse
+signale quand deux modules ont été réglés avec des hypothèses différentes et propose de les
+aligner. Les effets d'un module sur un autre (retraites → chômage / invalidité ; famille →
+fécondité) sont calculés et affichés **dans la page de synthèse**, comme des effets explicites et
+désactivables. Pas de bouclage caché.
 
 **Réorganisation du code** (à faire avant le deuxième module) :
 `src/engine/demographie.ts` et les données historiques communes vers `src/socle/` ; le reste vers
@@ -213,16 +236,18 @@ intérêts). Pas de bouclage caché.
 crises) dans `src/app/commun/`. Les tests de calibrage retraites garantissent que la réorganisation
 ne change aucun résultat.
 
-## 5. Présentation : du sujet isolé au budget d'ensemble
+## 5. Présentation : des modules indépendants, une page de synthèse
 
 - **Une page d'accueil** « Où vont 100 € de dépense publique ? » : répartition par poste, d'où
   vient l'argent, déficit et dette, avec un lien vers chaque module.
-- **Chaque module** garde la structure éprouvée : Découvrir (comprendre → choisir ses mesures →
-  qui paie ?) et Mode expert.
-- **Un « budget d'ensemble »** : l'utilisateur combine des mesures de plusieurs modules et voit
-  l'effet sur le solde public et la dette. Le triangle d'équilibre s'y généralise : « pour
-  stabiliser la dette en 2032, voici l'effort par poste ».
-- **Lien permanent unique** : l'URL encode l'état de tous les modules (un préfixe par module).
+- **Chaque module** est autonome et garde la structure éprouvée : Découvrir (comprendre → choisir
+  ses mesures → qui paie ?) et Mode expert, avec son propre lien permanent.
+- **La page de synthèse** rassemble les scénarios choisis dans chaque module (un module non réglé
+  compte pour sa référence) et montre leur effet cumulé sur le solde public et la dette, poste par
+  poste (cascade). Le triangle d'équilibre s'y généralise : « pour stabiliser la dette en 2032,
+  voici l'effort restant à trouver ». Un bouton « Modifier » renvoie vers le module concerné.
+- **Lien permanent de la synthèse** : il regroupe les liens de chaque module (un préfixe par
+  module) ; ouvrir un module depuis la synthèse conserve le scénario.
 - **Comparateur de programmes 2027** : prévu en phase 3 pour les retraites, il gagne beaucoup à être
   multi-sujets, les programmes chiffrant rarement un seul poste. Les règles de neutralité du
   module retraites (§7 de son idéation) s'appliquent à l'identique.
@@ -231,6 +256,8 @@ ne change aucun résultat.
 
 Critères : poids budgétaire, réutilisation du socle existant, présence dans le débat 2027,
 disponibilité d'une projection officielle pour le calibrage.
+
+Ordre retenu (§0) : dette, puis santé ; les rangs suivants restent indicatifs.
 
 | Rang | Module | Poids | Réutilisation | Débat 2027 | Référence | Justification |
 |---|---|---|---|---|---|---|
@@ -242,7 +269,7 @@ disponibilité d'une projection officielle pour le calibrage.
 | 6 | **Éducation** | ★★ | ★★★ | ★★ | DEPP | Récit du « dividende démographique ». |
 | 7 | Famille, défense, minima sociaux, logement, écologie | ★ | variable | variable | variable | Modules plus légers, en fonction du temps. |
 
-**Recommandation** : commencer par le **socle + module dette** (2-3 semaines), puis la **santé**,
+**Plan retenu** : commencer par le **socle + module dette** (2-3 semaines), puis la **santé**,
 pour disposer avant le premier tour (avril 2027) de trois modules démographiques cohérents
 (retraites, santé, autonomie) reliés à la dette. Les autres sujets suivent après l'élection.
 
@@ -251,9 +278,9 @@ pour disposer avant le premier tour (avril 2027) de trois modules démographique
 | Phase | Contenu | Échéance |
 |---|---|---|
 | A | Extraction du socle, contrat de module, réorganisation sans changement de résultat | Octobre 2026 |
-| B | Module dette + consolidation APU + page « Où vont 100 € » | Novembre 2026 |
+| B | Module dette + page de synthèse + page « Où vont 100 € » | Novembre 2026 |
 | C | Module santé (calibrage LFSS / Ageing Report) | Décembre 2026 – janvier 2027 |
-| D | Module autonomie ; budget d'ensemble | Février 2027 |
+| D | Module autonomie | Février 2027 |
 | E | Comparateur de programmes multi-sujets (en parallèle de la phase 3 retraites) | Mars 2027 |
 | F | Fiscalité macro, chômage, éducation | Après avril 2027 |
 
@@ -270,21 +297,25 @@ pour disposer avant le premier tour (avril 2027) de trois modules démographique
 - **Neutralité** : plus le périmètre s'élargit, plus les choix de présentation (« dépense »,
   « effort », « niche ») sont sensibles. Reprendre le vocabulaire des institutions de référence et
   la charte éditoriale existante.
-- **Complexité de l'interface** : préserver la simplicité du parcours Découvrir ; le budget
-  d'ensemble est une vue de plus, pas un empilement de curseurs.
+- **Complexité de l'interface** : préserver la simplicité du parcours Découvrir ; la page
+  de synthèse affiche des résultats et renvoie vers les modules, elle n'empile pas leurs curseurs.
 - **Données** : la limite « cibles reprises de la presse » du module retraites se reproduira ;
   prévoir dès la phase A un dossier `data/` par source avec date et licence.
 
-## 9. Questions de cadrage à trancher
+## 9. Question restant ouverte : le niveau de détail de la fiscalité
 
-| Question | Options | Proposition |
+Deux façons de simuler les impôts, à choisir au moment du module fiscalité (pas avant mi-2027) :
+
+| | **Approche d'ensemble (macro)** | **Approche par foyer (microsimulation)** |
 |---|---|---|
-| Ambition | (a) Simulateur du budget d'ensemble ; (b) collection de modules indépendants | (a), mais construit module par module (b) |
-| Premier module après les retraites | Dette / santé / fiscalité | Dette, puis santé |
-| Horizon de projection | 2070 partout ; ou horizon propre à chaque sujet (2030 pour le budget annuel) | 2070 pour les modules démographiques, 2035 mis en avant pour la dette et la fiscalité |
-| Niveau de détail fiscal | Macro (élasticités) ou intégration d'OpenFisca / LexImpact | Macro d'abord, liens vers les outils de microsimulation |
-| Calendrier | Tout avant avril 2027 ou modules démographiques d'abord | Retraites + dette + santé avant le premier tour |
-| Nom et identité | « Simulateur des retraites » devient une rubrique d'un « Simulateur du budget » ? | Oui, avec une adresse par module |
+| Principe | Chaque impôt = assiette × taux effectif ; l'assiette suit le PIB (élasticité). | On applique les barèmes à un échantillon représentatif de foyers. |
+| Questions traitées | « Combien rapporte +1 pt de TVA ? », « Quelle hausse de CSG pour financer X ? » | « Qui paie ? Quel décile gagne ou perd ? », effet d'un changement de barème précis. |
+| Effort | Faible, même démarche que les autres modules. | Élevé, données individuelles nécessaires. |
+| Outils existants | — | OpenFisca (moteur ouvert des règles socio-fiscales françaises), LexImpact (interface de l'Assemblée nationale fondée sur OpenFisca), Ines (INSEE-DREES). |
+
+**Proposition** : commencer par l'approche d'ensemble, suffisante pour la page de synthèse, et
+renvoyer vers LexImpact / OpenFisca pour les effets par foyer, sans les refaire. À rediscuter
+quand le module sera engagé.
 
 ## 10. Sources de référence (par domaine)
 
