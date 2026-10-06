@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { projeterDette, REFERENCE_DETTE, SCENARIO_DETTE_REFERENCE } from '../src/modules/dette/engine';
 import { PARAMETRES_REFERENCE, versUrl } from '../src/modules/retraites/app/parametres';
-import { calculerSynthese, resumesDesModules } from '../src/synthese/synthese';
+import { calculerSynthese, resumesDesModules } from '../src/synthese/calcul';
 import { MODULES } from '../src/modules';
 
 describe('page de synthèse', () => {
