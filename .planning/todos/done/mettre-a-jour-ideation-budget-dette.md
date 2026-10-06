@@ -26,3 +26,9 @@ Décisions dans `.planning/notes/branchement-modules-synthese.md`.
 - §4 : ajouter la règle du dénominateur (écart de solde en % du PIB de la référence) et celle du
   reste du budget (constant en % du PIB, seul le dénominateur de la dette profite d'un PIB plus
   élevé) ; reprendre le tableau de calcul de la synthèse de la note.
+
+## Fait (2026-10-06)
+
+Toutes les décisions sont reportées : §0 (horizon, référence, branchement), §3.1 (question,
+horizon, référence DSM, critère de calibrage, intérêt), §4 (schéma, contrat `resume()`, calcul de
+la synthèse, suppression du « reste des APU », couplages), §6-7 (référence DSM), §8 (deux limites).

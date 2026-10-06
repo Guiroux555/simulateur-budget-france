@@ -1,6 +1,7 @@
 # Étendre la méthode « retraites » à tout le budget — Idéation
 
-> Statut : **idéation validée** — décisions de cadrage en §0 ; phase A (socle et contrat de module) faite.
+> Statut : **idéation validée** — décisions de cadrage en §0 (complétées en octobre 2026 pour la
+> dette et la synthèse, voir `.planning/notes/`) ; phase A (socle et contrat de module) faite.
 > Point de départ : le module retraites (voir [`../retraites/IDEATION.md`](../retraites/IDEATION.md)
 > et [`../retraites/METHODOLOGIE.md`](../retraites/METHODOLOGIE.md)). Objectif : dégager de ce
 > module une **méthode reproductible**, puis l'appliquer aux autres grands postes des finances
@@ -15,7 +16,10 @@
 |---|---|
 | Ambition | **Une série de modules indépendants** (un par sujet, chacun utilisable seul), et **une page de synthèse** qui rassemble les résultats des scénarios choisis dans chaque module (effet sur le solde public et la dette). |
 | Ordre des modules | **Dette et solde public**, puis **santé**. |
-| Horizon de projection | **Propre à chaque sujet** : 2070 pour les sujets démographiques (retraites, santé, autonomie, éducation), un horizon plus court pour les sujets budgétaires (dette, fiscalité, défense), fixé dans la fiche de chaque module. La page de synthèse affiche la période commune. |
+| Horizon de projection | **Propre à chaque sujet** : 2070 pour les sujets démographiques (retraites, santé, autonomie, éducation), un horizon plus court pour les sujets budgétaires (dette, fiscalité, défense), fixé dans la fiche de chaque module. La page de synthèse lit la **fenêtre du module dette** dans chaque module. |
+| Horizon de la dette | **Court et glissant** : année en cours + N, avec N égal à l'horizon de la référence de la Commission (10 ans). Pas de projection de la dette jusqu'en 2070. |
+| Référence de la dette | **Debt Sustainability Monitor (DSM) de la Commission européenne**, publié chaque année au premier trimestre ; PSMT, rapports d'avancement et avis du HCFP en contrôle sur les premières années. |
+| Branchement des modules sur la synthèse | **Par écarts** : la synthèse part du scénario de la Commission et y ajoute l'écart de chaque module à sa propre référence (effet sur le solde et effet sur la croissance, affichés séparément). Au repos, elle redonne exactement la Commission. Détails au §4. |
 | Niveau de détail fiscal | **Approche d'ensemble d'abord**, avec des liens vers OpenFisca / LexImpact pour les effets par foyer (voir §9). |
 | Identité | **Le « Simulateur des retraites » devient un module du « Simulateur du budget »**, avec une adresse par module. |
 
@@ -77,7 +81,9 @@ projection officielle sur laquelle calibrer.
 
 ### 3.1 Dette et solde public — le module de synthèse
 
-- **Question** : « Peut-on stabiliser la dette publique, et à quel prix ? »
+- **Question** : « Comment tenir la trajectoire de la dette publique sur les dix prochaines années,
+  et à quel prix ? »
+- **Horizon** : fenêtre glissante, année en cours + 10 ans, alignée sur la référence (§0).
 - **Identité** : dette(t+1) / PIB = dette(t) / PIB × (1 + r) / (1 + g) − solde primaire / PIB.
   L'effet « boule de neige » dépend de l'écart entre taux d'intérêt apparent *r* et croissance
   nominale *g*.
@@ -87,11 +93,18 @@ projection officielle sur laquelle calibrer.
   cible de dette.
 - **Triangle d'équilibre** : solde primaire stabilisant la dette ; année de stabilisation pour un
   effort donné ; taux d'intérêt maximal supportable.
-- **Référence** : plan budgétaire et structurel à moyen terme (PSMT) et ses rapports d'avancement,
-  avis du Haut Conseil des finances publiques, Cour des comptes (« Situation et perspectives des
-  finances publiques »), analyse de soutenabilité de la dette de la Commission européenne.
-- **Intérêt** : c'est le module qui **additionne tous les autres**. Il donne enfin un sens au
-  solde des retraites (« −2,4 % du PIB en 2070 » pèse combien dans la dette ?).
+- **Référence** : scénario de référence du **Debt Sustainability Monitor** de la Commission
+  européenne (projection sur 10 ans, publiée chaque année au premier trimestre ; édition 2025
+  publiée en février 2026, jusqu'en 2036). En contrôle sur les premières années : plan budgétaire
+  et structurel à moyen terme (PSMT 2025-2029, ajustement sur 7 ans jusqu'en 2031) et ses rapports
+  d'avancement, avis du Haut Conseil des finances publiques, Cour des comptes (« Situation et
+  perspectives des finances publiques »).
+- **Critère de calibrage** : à partir des séries de la Commission (*r*, *g*, solde primaire), le
+  moteur retrouve sa trajectoire de dette. Reste à vérifier que la Commission publie ces séries
+  année par année pour la France (fiches pays du DSM, voir `.planning/todos/`).
+- **Intérêt** : c'est le module qui **additionne tous les autres**, par écarts au scénario de la
+  Commission (§4). Les modules démographiques y pèsent par leurs effets sur les dix prochaines
+  années (indexation, montée en charge d'un report d'âge, ONDAM), pas par leur solde de 2070.
 
 ### 3.2 Santé — le cousin direct des retraites
 
@@ -198,8 +211,8 @@ projection officielle sur laquelle calibrer.
           │             │               │              │               │
           └─────────────┴───────┬───────┴──────────────┴───────────────┘
                                 ▼
-                 PAGE DE SYNTHÈSE : lit le scénario choisi dans chaque module,
-                 additionne dépenses et recettes, solde primaire
+                 PAGE DE SYNTHÈSE : part du scénario de la Commission (DSM),
+                 ajoute les écarts de solde et de PIB de chaque module
                                 ▼
                  DETTE : intérêts, boule de neige, stabilisation
 ```
@@ -216,19 +229,37 @@ consommateur : elle lit le scénario de chaque module (son état encodé dans l'
   (Md€ 2025 et % du PIB) ;
 - `equilibre(resultat, cible)` → le ou les leviers d'équilibre ;
 - `CALIBRAGE` : cibles de la référence officielle, vérifiées par `npm run calibration` ;
-- `resume(resultat)` → ce que lit la page de synthèse : par année, dépenses et recettes en % du PIB
-  et écart à la référence du module, sur l'horizon propre au module ;
+- `resume(resultat, reference)` → ce que lit la page de synthèse : par année, dépenses, recettes et
+  solde en % du PIB, et deux écarts à la référence du module (`AnneeResume` dans
+  `src/socle/module.ts`) :
+  - `ecartSoldeReferencePctPib` : écart de solde rapporté au **PIB de la référence** (effet
+    purement budgétaire, sans effet de dénominateur) ;
+  - `ecartPibVolumePct` : écart de PIB en volume, **effet mécanique seulement** (actifs
+    supplémentaires × productivité du socle, sans élasticité comportementale) ;
 - un historique (séries + réformes) et une note de méthode `docs/<module>/METHODOLOGIE.md`.
 
-**Postes non modélisés** : un poste « reste des APU » suit le PIB (part constante, réglable). La
-synthèse est donc complète dès le premier module ajouté, et se raffine module après module.
+**Calcul de la synthèse** : elle part du scénario de référence de la Commission et y ajoute les
+écarts des modules. Au repos (tous les modules à leur référence), elle redonne exactement la
+trajectoire de la Commission.
+
+| Élément | Calcul |
+|---|---|
+| Solde primaire | Celui de la Commission + Σ écarts de solde des modules (en % du PIB de la référence, ramenés au PIB du scénario) |
+| Croissance *g* | Celle de la Commission + Σ écarts de PIB des modules |
+| Dette | L'identité du §3.1 avec ce *g* et ce solde primaire |
+| Affichage | Pour chaque module : effet budgétaire et effet via la croissance, séparés |
+
+**Postes non modélisés** : ils sont déjà dans le scénario de la Commission ; aucun poste « reste
+des APU » n'est nécessaire. Quand un module augmente le PIB, le reste du budget reste **constant
+en % du PIB** : seul le dénominateur de la dette en profite. Hypothèse prudente, juste à long terme.
 
 **Couplages entre modules** : les modules restant indépendants, ils ne s'appellent pas entre eux.
 Les hypothèses communes (démographie, productivité, chômage) viennent du socle ; la page de synthèse
 signale quand deux modules ont été réglés avec des hypothèses différentes et propose de les
 aligner. Les effets d'un module sur un autre (retraites → chômage / invalidité ; famille →
 fécondité) sont calculés et affichés **dans la page de synthèse**, comme des effets explicites et
-désactivables. Pas de bouclage caché.
+désactivables. Pas de bouclage caché. L'effet d'un module sur la croissance est toujours affiché à
+part de son effet budgétaire.
 
 **Organisation du code** (phase A, faite) :
 
@@ -269,7 +300,7 @@ Ordre retenu (§0) : dette, puis santé ; les rangs suivants restent indicatifs.
 
 | Rang | Module | Poids | Réutilisation | Débat 2027 | Référence | Justification |
 |---|---|---|---|---|---|---|
-| 1 | **Dette et solde public** (+ « reste des APU ») | ★★★ | ★★ | ★★★ | PSMT, HCFP | Donne un cadre à tout le reste ; petit modèle. |
+| 1 | **Dette et solde public** | ★★★ | ★★ | ★★★ | DSM (Commission), PSMT, HCFP | Donne un cadre à tout le reste ; petit modèle. |
 | 2 | **Santé** | ★★★ | ★★★ | ★★ | LFSS, Ageing Report | Même démarche par âge que le COR. |
 | 3 | **Autonomie** | ★ | ★★★ | ★★ | DREES, CNSA | Peu coûteux une fois la santé faite (mêmes données par âge). |
 | 4 | **Fiscalité (macro)** | ★★★ | ★ | ★★★ | PLF, CPO | Indispensable au volet « qui paie ? » d'ensemble. |
@@ -286,7 +317,7 @@ pour disposer avant le premier tour (avril 2027) de trois modules démographique
 | Phase | Contenu | Échéance |
 |---|---|---|
 | A | Extraction du socle, contrat de module, réorganisation sans changement de résultat | Octobre 2026 — **faite** |
-| B | Module dette + page de synthèse + page « Où vont 100 € » | Novembre 2026 |
+| B | Module dette (calibrage sur le DSM de la Commission) + page de synthèse + page « Où vont 100 € ». Le contrat de module porte déjà les écarts de solde et de PIB. | Novembre 2026 |
 | C | Module santé (calibrage LFSS / Ageing Report) | Décembre 2026 – janvier 2027 |
 | D | Module autonomie | Février 2027 |
 | E | Comparateur de programmes multi-sujets (en parallèle de la phase 3 retraites) | Mars 2027 |
@@ -307,6 +338,13 @@ pour disposer avant le premier tour (avril 2027) de trois modules démographique
   la charte éditoriale existante.
 - **Complexité de l'interface** : préserver la simplicité du parcours Découvrir ; la page
   de synthèse affiche des résultats et renvoie vers les modules, elle n'empile pas leurs curseurs.
+- **Compatibilité des références** : la synthèse ajoute des écarts au scénario de la Commission,
+  qui contient sa propre hypothèse sur les retraites et la santé (Ageing Report 2024). On suppose
+  que la référence de chaque module (COR de juin 2026 pour les retraites) est compatible avec
+  elle. À vérifier et à documenter module par module.
+- **Effet des réformes sur l'emploi** : dans le module retraites, les seniors maintenus en activité
+  par un report d'âge subissent le chômage moyen et aucun ne passe en invalidité. L'effet sur
+  l'emploi et le PIB est donc surestimé ; le module chômage pourra le corriger.
 - **Données** : la limite « cibles reprises de la presse » du module retraites se reproduira ;
   prévoir dès la phase A un dossier `data/` par source avec date et licence.
 
