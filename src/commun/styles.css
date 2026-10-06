@@ -373,3 +373,4 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .navigation-titre { font-weight: 700; color: var(--text-secondary); }
 .avertissement { border-left: 4px solid var(--series-4); margin: 0 0 16px; }
 .app-navigation { padding-bottom: 0; }
+.liens-postes { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0 16px; font-size: 0.9rem; }

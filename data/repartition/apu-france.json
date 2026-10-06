@@ -1,0 +1,45 @@
+{
+  "annee": 2025,
+  "source": "Insee, comptes de la Nation 2025 (Insee Première n° 2106, mai 2026 ; Informations rapides n° 78, mars 2026)",
+  "url": "https://www.insee.fr/fr/statistiques/8997691",
+  "statut": "à vérifier",
+  "note": "Ces montants ont été recoupés à partir d’extraits des publications de l’Insee et de FIPECO, sans relecture des pages elles-mêmes. La répartition des dépenses est celle de 2024, la dernière publiée par fonction. La part des retraites et le détail des recettes par impôt reposent sur une seule source (FIPECO).",
+  "pibMdEuros": 2991.1,
+  "depensesMdEuros": 1714.1,
+  "recettesMdEuros": 1561.6,
+  "detteMdEuros": 3460.5,
+  "depenses": {
+    "annee": 2024,
+    "source": "Insee, dépenses des administrations publiques par fonction en 2024 (Insee Première n° 2093, février 2026, provisoire)",
+    "url": "https://www.insee.fr/fr/statistiques/8735252",
+    "totalMdEuros": 1672,
+    "postes": [
+      { "id": "vieillesse", "libelle": "Retraites (vieillesse et survie)", "mdEuros": 433, "detail": "Part de la protection sociale, d’après FIPECO (259 € pour 1 000 €)", "page": "retraites" },
+      { "id": "protection-sociale-autre", "libelle": "Autre protection sociale", "mdEuros": 260, "detail": "Maladie et invalidité, famille, chômage, logement, exclusion" },
+      { "id": "sante", "libelle": "Santé", "mdEuros": 261, "detail": "Soins de ville, hôpital, médicaments" },
+      { "id": "services-generaux", "libelle": "Services publics généraux", "mdEuros": 121, "detail": "Fonctionnement des institutions, relations extérieures, recherche fondamentale (hors intérêts)" },
+      { "id": "interets", "libelle": "Intérêts de la dette", "mdEuros": 60, "detail": "Charge d’intérêts, comprise dans les services publics généraux dans la nomenclature", "page": "dette" },
+      { "id": "economie", "libelle": "Affaires économiques", "mdEuros": 166, "detail": "Transports, aides aux entreprises, agriculture, énergie" },
+      { "id": "enseignement", "libelle": "Enseignement", "mdEuros": 149 },
+      { "id": "defense", "libelle": "Défense", "mdEuros": 54 },
+      { "id": "securite", "libelle": "Ordre et sécurité publics", "mdEuros": 52, "detail": "Police, justice, pompiers, prisons" },
+      { "id": "culture", "libelle": "Loisirs, culture et culte", "mdEuros": 43 },
+      { "id": "logement", "libelle": "Logement et équipements collectifs", "mdEuros": 42 },
+      { "id": "environnement", "libelle": "Protection de l’environnement", "mdEuros": 30, "detail": "Déchets, eaux usées, biodiversité" }
+    ]
+  },
+  "recettes": {
+    "annee": 2025,
+    "source": "Insee (total, prélèvements obligatoires, TVA) et FIPECO, « Les finances publiques en 2025 » (détail des prélèvements)",
+    "url": "https://www.fipeco.fr/commentaire/Les%20finances%20publiques%20en%202025",
+    "totalMdEuros": 1561.6,
+    "postes": [
+      { "id": "cotisations", "libelle": "Cotisations sociales", "mdEuros": 443, "detail": "Nettes des allègements" },
+      { "id": "tva", "libelle": "TVA", "mdEuros": 208.8 },
+      { "id": "csg", "libelle": "CSG, CRDS et autres prélèvements sociaux", "mdEuros": 180 },
+      { "id": "locaux", "libelle": "Impôts locaux", "mdEuros": 190, "detail": "Taxes foncières, cotisation foncière des entreprises, droits de mutation…" },
+      { "id": "autres-impots", "libelle": "Impôt sur le revenu, impôt sur les sociétés et autres impôts", "mdEuros": 283.2, "detail": "Solde des prélèvements obligatoires (1 305 Md€)" },
+      { "id": "hors-po", "libelle": "Autres recettes", "mdEuros": 256.6, "detail": "Ventes de biens et services, revenus de la propriété, transferts (hors prélèvements obligatoires)" }
+    ]
+  }
+}
