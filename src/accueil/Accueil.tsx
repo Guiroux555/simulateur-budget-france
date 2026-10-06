@@ -48,7 +48,7 @@ export function Accueil({ allerA }: { allerA: (page: string) => void }) {
       {manquants.length > 0 && (
         <div className="encadre avertissement" role="note">
           <strong>Chiffres à vérifier.</strong> Pas encore relus sur les publications officielles : {manquants.join(' ; ')}. Ils
-          ont été recoupés à partir d’extraits des publications de l’Insee et de FIPECO.
+          ont été recoupés à partir d’extraits de publications.
         </div>
       )}
       <section className="expert-resultats" aria-label="Où vont 100 € de dépense publique">

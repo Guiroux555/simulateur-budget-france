@@ -57,10 +57,15 @@ describe('« Où vont 100 € » : cohérence des données', () => {
     expect(aVerifier({ ...tout, recettes: { ...tout.recettes, statut: 'à vérifier' } })).toHaveLength(1);
   });
 
-  it('dépenses 2024 : les montants de l’Insee (figure 2a de l’Insee Première n° 2093)', () => {
+  it('dépenses 2024 : les montants COFOG de l’Insee (Eurostat gov_10a_exp, figure 2a de l’Insee Première n° 2093)', () => {
     const md = Object.fromEntries(D.depenses.postes.map((p) => [p.id, p.mdEuros]));
-    expect(md['services-generaux'] + md.interets).toBe(181);
-    expect(md['protection-sociale']).toBe(693);
-    expect(D.depenses.totalMdEuros).toBe(1672);
+    expect(md['services-generaux'] + md.interets).toBeCloseTo(181.1, 6);
+    expect(md.retraites + md['protection-sociale']).toBeCloseTo(693.1, 6);
+    expect(Math.round(D.depenses.totalMdEuros)).toBe(1672);
+  });
+
+  it('recettes 2025 : les impôts et cotisations retrouvent le total de l’Insee (1 374,1 Md€)', () => {
+    const md = Object.fromEntries(D.recettes.postes.map((p) => [p.id, p.mdEuros]));
+    expect(D.recettes.totalMdEuros - md['autres-recettes']).toBeCloseTo(1374.0, 6);
   });
 });
