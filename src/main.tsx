@@ -1,10 +1,10 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { App } from './modules/retraites/app/App';
+import { Racine } from './Racine';
 import './commun/styles.css';
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
-    <App />
+    <Racine />
   </StrictMode>,
 );

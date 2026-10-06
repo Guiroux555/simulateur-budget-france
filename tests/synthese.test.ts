@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projeterDette, REFERENCE_PROVISOIRE } from '../src/modules/dette/engine';
+import { projeterDette, REFERENCE_PROVISOIRE, SCENARIO_DETTE_REFERENCE } from '../src/modules/dette/engine';
 import { PARAMETRES_REFERENCE, versUrl } from '../src/modules/retraites/app/parametres';
 import { calculerSynthese, resumesDesModules } from '../src/synthese/synthese';
 import { MODULES } from '../src/modules';
@@ -13,6 +13,7 @@ describe('page de synthèse', () => {
       expect(a.dettePctPib).toBe(ref[i].dettePctPib);
       expect(a.detteReferencePctPib).toBe(ref[i].dettePctPib);
       expect(a.detteEffetBudgetaireSeulPctPib).toBe(ref[i].dettePctPib);
+      expect(a.detteModuleDetteSeulPctPib).toBe(ref[i].dettePctPib);
       expect(a.contributions.map((c) => c.module)).toEqual(MODULES.map((m) => m.id));
     });
   });
@@ -36,5 +37,16 @@ describe('page de synthèse', () => {
     const s = calculerSynthese([{ module: 'court', annees: [{ annee: 2026, depensesPctPib: 0, recettesPctPib: 0, soldePctPib: 0, ecartSoldeReferencePctPib: 0.01, ecartPibVolumePct: 0 }] }]);
     expect(s.annees[0].contributions[0].ecartSoldePctPib).toBe(0.01);
     expect(s.annees[1].contributions[0].ecartSoldePctPib).toBe(0);
+  });
+
+  it('le scénario du module dette déplace la dette sans changer la référence affichée', () => {
+    const effort = { ...SCENARIO_DETTE_REFERENCE, ajustementAnnuel: 0.003 };
+    const s = calculerSynthese(resumesDesModules(), REFERENCE_PROVISOIRE, effort);
+    const ref = projeterDette(REFERENCE_PROVISOIRE);
+    s.annees.forEach((a, i) => {
+      expect(a.detteReferencePctPib).toBe(ref[i].dettePctPib);
+      expect(a.detteModuleDetteSeulPctPib).toBeLessThan(ref[i].dettePctPib);
+      expect(a.dettePctPib).toBe(a.detteModuleDetteSeulPctPib);
+    });
   });
 });

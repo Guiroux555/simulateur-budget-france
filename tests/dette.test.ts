@@ -1,5 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { projeterDette, REFERENCE_PROVISOIRE, type ReferenceDette } from '../src/modules/dette/engine';
+import {
+  ajustementPourStabiliser,
+  appliquerScenario,
+  depuisLienDette,
+  MATURITE_MOYENNE,
+  projeterDette,
+  REFERENCE_PROVISOIRE,
+  SCENARIO_DETTE_REFERENCE,
+  versLienDette,
+  type ReferenceDette,
+} from '../src/modules/dette/engine';
 
 const ref = REFERENCE_PROVISOIRE;
 const ecartsConstants = (soldePct: number, pibNiveau: number) =>
@@ -75,5 +85,41 @@ describe('module dette : moteur', () => {
       const a = p.find((x) => x.annee === +annee)!;
       expect(Math.abs(a.dettePctPib - cible)).toBeLessThanOrEqual(0.001);
     }
+  });
+});
+
+describe('module dette : scénario et leviers', () => {
+  it('le scénario de référence ne change rien', () => {
+    expect(projeterDette(appliquerScenario(ref, SCENARIO_DETTE_REFERENCE))).toEqual(projeterDette(ref));
+    expect(versLienDette(SCENARIO_DETTE_REFERENCE)).toBe('');
+  });
+
+  it('le lien permanent restitue le scénario, et ignore un lien illisible', () => {
+    const s = { ajustementAnnuel: 0.003, dureeAjustement: 4, ecartTaux: 0.01, ecartCroissance: -0.005 };
+    expect(depuisLienDette(versLienDette(s))).toEqual(s);
+    expect(depuisLienDette('%7Bpas-du-json')).toEqual(SCENARIO_DETTE_REFERENCE);
+  });
+
+  it('l’effort budgétaire s’accumule pendant sa durée puis reste acquis', () => {
+    const s = { ...SCENARIO_DETTE_REFERENCE, ajustementAnnuel: 0.005, dureeAjustement: 3 };
+    const a = appliquerScenario(ref, s);
+    a.soldePrimairePctPib.forEach((v, k) => expect(v - ref.soldePrimairePctPib[k]).toBeCloseTo(0.005 * Math.min(k + 1, 3), 12));
+  });
+
+  it('un choc de taux se transmet progressivement au taux apparent', () => {
+    const a = appliquerScenario(ref, { ...SCENARIO_DETTE_REFERENCE, ecartTaux: 0.01 });
+    const ecarts = a.tauxInteretApparent.map((v, k) => v - ref.tauxInteretApparent[k]);
+    expect(ecarts[0]).toBeCloseTo(0.01 / MATURITE_MOYENNE, 12);
+    ecarts.forEach((e, k) => k > 0 && expect(e).toBeGreaterThanOrEqual(ecarts[k - 1] - 1e-12));
+    expect(ecarts.at(-1)).toBeCloseTo(0.01, 12);
+  });
+
+  it('l’ajustement de stabilisation arrête la hausse de la dette l’année cible', () => {
+    const cible = ref.annees[5];
+    const aj = ajustementPourStabiliser(ref, SCENARIO_DETTE_REFERENCE, cible)!;
+    expect(aj).toBeGreaterThan(0);
+    const p = projeterDette(appliquerScenario(ref, { ...SCENARIO_DETTE_REFERENCE, ajustementAnnuel: aj, dureeAjustement: 6 }));
+    expect(p[5].dettePctPib - p[4].dettePctPib).toBeCloseTo(0, 6);
+    expect(ajustementPourStabiliser(ref, SCENARIO_DETTE_REFERENCE, 1990)).toBeNull();
   });
 });

@@ -367,3 +367,9 @@ select { padding: 6px 8px; border-radius: 6px; border: 1px solid var(--bordure);
 .fiche-aide dt { font-weight: 600; color: var(--text-secondary); }
 .fiche-aide dd { margin: 0; }
 @media (max-width: 600px) { .fiche-aide dl { grid-template-columns: 1fr; } .fiche-aide dd { margin-bottom: 6px; } .fiche-aide { scroll-margin-top: 190px; } .retour-aide { position: static; } }
+
+/* Navigation entre les pages du simulateur du budget */
+.navigation { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; justify-content: space-between; padding: 12px 0 0; border-bottom: 1px solid var(--bordure); padding-bottom: 10px; }
+.navigation-titre { font-weight: 700; color: var(--text-secondary); }
+.avertissement { border-left: 4px solid var(--series-4); margin: 0 0 16px; }
+.app-navigation { padding-bottom: 0; }

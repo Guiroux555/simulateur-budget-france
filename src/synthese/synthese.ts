@@ -9,8 +9,8 @@
  */
 import type { ModuleBudgetaire, ResumeModule } from '../socle/module';
 import { MODULES } from '../modules';
-import { projeterDette, REFERENCE_PROVISOIRE } from '../modules/dette/engine';
-import type { EcartAnnee, ReferenceDette } from '../modules/dette/engine';
+import { appliquerScenario, projeterDette, REFERENCE_PROVISOIRE, SCENARIO_DETTE_REFERENCE } from '../modules/dette/engine';
+import type { EcartAnnee, ReferenceDette, ScenarioDette } from '../modules/dette/engine';
 
 export interface ContributionModule {
   module: string;
@@ -24,7 +24,9 @@ export interface AnneeSynthese {
   annee: number;
   dettePctPib: number;
   detteReferencePctPib: number;
-  /** Dette avec les seuls effets budgétaires des modules (sans leur effet sur la croissance). */
+  /** Dette avec le seul scénario du module dette (hypothèses de taux et de croissance, effort budgétaire). */
+  detteModuleDetteSeulPctPib: number;
+  /** Dette avec le scénario du module dette et les effets budgétaires des autres modules (sans leur effet sur la croissance). */
   detteEffetBudgetaireSeulPctPib: number;
   soldePrimairePctPib: number;
   soldePctPib: number;
@@ -61,15 +63,25 @@ function ecartTotal(contributions: readonly ContributionModule[], avecCroissance
   };
 }
 
-export function calculerSynthese(resumes: readonly ResumeModule[], reference: ReferenceDette = REFERENCE_PROVISOIRE): Synthese {
+/**
+ * @param scenarioDette scénario du module dette, appliqué à la référence avant les écarts des autres
+ *   modules ; la dette de référence reste celle de la trajectoire de référence.
+ */
+export function calculerSynthese(
+  resumes: readonly ResumeModule[],
+  reference: ReferenceDette = REFERENCE_PROVISOIRE,
+  scenarioDette: ScenarioDette = SCENARIO_DETTE_REFERENCE,
+): Synthese {
   const toutesAnnees = [reference.anneeDepart, ...reference.annees];
   const contributions = new Map(toutesAnnees.map((a) => [a, contributionsA(resumes, a)]));
   const ecarts = (avecCroissance: boolean) =>
     new Map(toutesAnnees.map((a) => [a, ecartTotal(contributions.get(a)!, avecCroissance)]));
 
+  const base = appliquerScenario(reference, scenarioDette);
   const detteRef = projeterDette(reference);
-  const dette = projeterDette(reference, ecarts(true));
-  const detteBudget = projeterDette(reference, ecarts(false));
+  const detteModuleDette = projeterDette(base);
+  const dette = projeterDette(base, ecarts(true));
+  const detteBudget = projeterDette(base, ecarts(false));
 
   return {
     source: reference.source,
@@ -78,6 +90,7 @@ export function calculerSynthese(resumes: readonly ResumeModule[], reference: Re
       annee: d.annee,
       dettePctPib: d.dettePctPib,
       detteReferencePctPib: detteRef[i].dettePctPib,
+      detteModuleDetteSeulPctPib: detteModuleDette[i].dettePctPib,
       detteEffetBudgetaireSeulPctPib: detteBudget[i].dettePctPib,
       soldePrimairePctPib: d.soldePrimairePctPib,
       soldePctPib: d.soldePctPib,
