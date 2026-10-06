@@ -15,10 +15,14 @@ export interface Poste {
 }
 
 /** Une répartition (dépenses ou recettes), avec son année et sa source propres. */
+export type Statut = 'vérifié' | 'à vérifier';
+
 export interface Ventilation {
   annee: number;
   source: string;
   url: string;
+  /** « vérifié » quand les chiffres ont été relus sur la publication elle-même. */
+  statut: Statut;
   /** Total publié pour cette année et cette ventilation (Md€). */
   totalMdEuros: number;
   postes: Poste[];
@@ -29,9 +33,8 @@ export interface DonneesRepartition {
   annee: number;
   source: string;
   url: string;
-  /** « vérifié » quand les chiffres ont été relus sur les publications elles-mêmes. */
-  statut: 'vérifié' | 'à vérifier';
-  note?: string;
+  /** Statut des grandeurs d'ensemble ; chaque ventilation a le sien. */
+  statut: Statut;
   pibMdEuros: number;
   depensesMdEuros: number;
   recettesMdEuros: number;
@@ -80,3 +83,12 @@ export function pour100(postes: readonly Poste[]): LignePour100[] {
 /** Sur 100 € dépensés, combien sont financés par l'emprunt (déficit). */
 export const empruntPour100 = (d: Pick<DonneesRepartition, 'depensesMdEuros' | 'recettesMdEuros'>) =>
   ((d.depensesMdEuros - d.recettesMdEuros) / d.depensesMdEuros) * 100;
+
+/** Ce qui reste à relire sur les publications officielles (vide si tout est vérifié). */
+export function aVerifier(d: DonneesRepartition): string[] {
+  return [
+    ...(d.statut === 'vérifié' ? [] : [`les grandeurs d’ensemble ${d.annee} (dépenses, recettes, dette, PIB)`]),
+    ...(d.depenses.statut === 'vérifié' ? [] : [`la répartition des dépenses ${d.depenses.annee}`]),
+    ...(d.recettes.statut === 'vérifié' ? [] : [`la répartition des recettes ${d.recettes.annee}`]),
+  ];
+}

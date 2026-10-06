@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import donnees from '../data/repartition/apu-france.json';
-import { arrondirEnConservantTotal, empruntPour100, pour100, type DonneesRepartition } from '../src/accueil/repartition';
+import { arrondirEnConservantTotal, aVerifier, empruntPour100, pour100, type DonneesRepartition } from '../src/accueil/repartition';
 
 const D = donnees as DonneesRepartition;
 const somme = (v: readonly number[]) => v.reduce((s, x) => s + x, 0);
@@ -49,5 +49,18 @@ describe('« Où vont 100 € » : cohérence des données', () => {
   it('la part financée par l’emprunt correspond au déficit', () => {
     expect(empruntPour100(D)).toBeCloseTo(((D.depensesMdEuros - D.recettesMdEuros) / D.depensesMdEuros) * 100, 12);
     expect(empruntPour100({ depensesMdEuros: 100, recettesMdEuros: 95 })).toBeCloseTo(5, 12);
+  });
+
+  it('liste ce qui reste à vérifier, bloc par bloc', () => {
+    const tout = { ...D, statut: 'vérifié' as const, depenses: { ...D.depenses, statut: 'vérifié' as const }, recettes: { ...D.recettes, statut: 'vérifié' as const } };
+    expect(aVerifier(tout)).toEqual([]);
+    expect(aVerifier({ ...tout, recettes: { ...tout.recettes, statut: 'à vérifier' } })).toHaveLength(1);
+  });
+
+  it('dépenses 2024 : les montants de l’Insee (figure 2a de l’Insee Première n° 2093)', () => {
+    const md = Object.fromEntries(D.depenses.postes.map((p) => [p.id, p.mdEuros]));
+    expect(md['services-generaux'] + md.interets).toBe(181);
+    expect(md['protection-sociale']).toBe(693);
+    expect(D.depenses.totalMdEuros).toBe(1672);
   });
 });

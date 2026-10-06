@@ -2,7 +2,7 @@ import { Barres } from '../commun/charts/Barres';
 import { Tuile } from '../commun/composants';
 import { pct } from '../commun/format';
 import donnees from '../../data/repartition/apu-france.json';
-import { empruntPour100, pour100, type DonneesRepartition, type LignePour100 } from './repartition';
+import { aVerifier, empruntPour100, pour100, type DonneesRepartition, type LignePour100 } from './repartition';
 
 const D = donnees as DonneesRepartition;
 const euros = (v: number) => `${v} €`;
@@ -42,11 +42,13 @@ export function Accueil({ allerA }: { allerA: (page: string) => void }) {
   const depenses = pour100(D.depenses.postes);
   const recettes = pour100(D.recettes.postes);
   const emprunt = empruntPour100(D);
+  const manquants = aVerifier(D);
   return (
     <>
-      {D.statut !== 'vérifié' && (
+      {manquants.length > 0 && (
         <div className="encadre avertissement" role="note">
-          <strong>Chiffres à vérifier.</strong> {D.note ?? 'Ces montants n’ont pas encore été relus sur la publication officielle.'}
+          <strong>Chiffres à vérifier.</strong> Pas encore relus sur les publications officielles : {manquants.join(' ; ')}. Ils
+          ont été recoupés à partir d’extraits des publications de l’Insee et de FIPECO.
         </div>
       )}
       <section className="expert-resultats" aria-label="Où vont 100 € de dépense publique">

@@ -12,11 +12,14 @@ Tant qu'ils ne sont pas relus, la page affiche « Chiffres à vérifier » (`sta
 
 - Insee, comptes de la Nation 2025 (https://www.insee.fr/fr/statistiques/8997691) : dépenses
   1 714,1 Md€, recettes 1 561,6 Md€, dette 3 460,5 Md€, PIB 2 991,1 Md€, prélèvements obligatoires 1 305 Md€.
-- Insee, dépenses par fonction 2024 (https://www.insee.fr/fr/statistiques/8735252) : les 10 fonctions,
-  total 1 672 Md€, intérêts 60 Md€. Vérifier si la répartition 2025 est parue
-  (https://www.insee.fr/fr/statistiques/8988847) et, si oui, passer à 2025.
-- Part « vieillesse-survie » de la protection sociale (433 Md€ = 259 € pour 1 000 €, FIPECO seul) :
-  à remplacer par la sous-fonction COFOG publiée par l'Insee.
+- ~~Insee, dépenses par fonction 2024~~ **Fait (2026-10-06)** : vérifié sur le fichier de données de
+  l'Insee Première n° 2093 (figure 2a, fourni par l'utilisateur) : 10 fonctions, total 1 672 Md€,
+  intérêts 60 Md€ (dans les services généraux, 181 Md€). Le fichier ne détaille pas les sous-fonctions.
+- Passer à la répartition 2025, et obtenir la sous-fonction « vieillesse » (10.2) et « survivants »
+  (10.3) : jeu de données Insee « dépenses des administrations publiques ventilées par fonction
+  (COFOG) », disponible sur le catalogue open data (https://catalogue-donnees.insee.fr/fr/catalogue/recherche),
+  inaccessible depuis l'environnement de développement. En attendant, la part des retraites
+  (≈ 26 € sur 100, FIPECO) n'est donnée qu'en précision, pas dans le graphique.
 - Détail des recettes 2025 (FIPECO seul, sauf TVA et total) : cotisations sociales 443, CSG/CRDS et
   autres prélèvements sociaux 180, impôts locaux 190 Md€. Source de référence possible : tableaux
   Insee des impôts et cotisations (https://www.insee.fr/fr/statistiques/2381408) ou annexe « Voies
