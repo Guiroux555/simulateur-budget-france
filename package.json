@@ -14,7 +14,8 @@
     "typecheck": "tsc --noEmit",
     "calibration": "tsx scripts/calibration.ts",
     "calibration:dette": "tsx scripts/calibration-dette.ts",
-    "verification": "tsx scripts/verification-indicateurs.ts"
+    "verification": "tsx scripts/verification-indicateurs.ts",
+    "verification:repartition": "tsx scripts/verification-repartition.ts"
   },
   "devDependencies": {
     "@types/node": "^26.6.3",

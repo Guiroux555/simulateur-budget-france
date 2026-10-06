@@ -1,97 +1,103 @@
 {
   "annee": 2025,
-  "source": "Insee, comptes de la Nation 2025 (Insee Première n° 2106, mai 2026 ; Informations rapides n° 78, mars 2026)",
+  "source": "Insee, comptes de la Nation 2025 (compte provisoire), tels que transmis à Eurostat : gov_10a_main (dépenses, recettes), gov_10dd_edpt1 (dette au sens de Maastricht), nama_10_gdp (PIB) — relus le 2026-10-06",
   "url": "https://www.insee.fr/fr/statistiques/8997691",
-  "statut": "à vérifier",
+  "statut": "vérifié",
   "pibMdEuros": 2991.1,
   "depensesMdEuros": 1714.1,
   "recettesMdEuros": 1561.6,
   "detteMdEuros": 3460.5,
   "depenses": {
     "annee": 2024,
-    "source": "Insee, dépenses des administrations publiques par fonction en 2024 (Insee Première n° 2093, février 2026, provisoire) — fichier de données de la publication, figure 2a",
-    "url": "https://www.insee.fr/fr/statistiques/8735252",
+    "source": "Insee, dépenses des administrations publiques par fonction (COFOG) en 2024, compte semi-définitif, tel que transmis à Eurostat (gov_10a_exp) — relu le 2026-10-06 ; la ventilation 2025 paraîtra début 2027",
+    "url": "https://ec.europa.eu/eurostat/databrowser/view/gov_10a_exp/default/table",
     "statut": "vérifié",
-    "totalMdEuros": 1672,
+    "totalMdEuros": 1671.8,
     "postes": [
       {
-        "id": "protection-sociale",
-        "libelle": "Protection sociale",
-        "mdEuros": 693,
-        "detail": "Retraites, maladie-invalidité, famille, chômage, logement, exclusion ; dont environ 26 € pour les retraites (vieillesse et survie), d’après FIPECO",
+        "id": "retraites",
+        "libelle": "Retraites",
+        "mdEuros": 432.6,
+        "detail": "Vieillesse (392,0 Md€ : pensions, minimum vieillesse, dépendance) et survivants (40,6 Md€ : pensions de réversion)",
         "page": "retraites"
+      },
+      {
+        "id": "protection-sociale",
+        "libelle": "Autre protection sociale",
+        "mdEuros": 260.5,
+        "detail": "Maladie-invalidité (indemnités, pensions d’invalidité), famille, chômage, logement, exclusion"
       },
       {
         "id": "sante",
         "libelle": "Santé",
-        "mdEuros": 261,
+        "mdEuros": 261.2,
         "detail": "Soins de ville, hôpital, médicaments"
       },
       {
         "id": "economie",
         "libelle": "Affaires économiques",
-        "mdEuros": 166,
+        "mdEuros": 166.1,
         "detail": "Transports, aides aux entreprises, agriculture, énergie"
       },
       {
         "id": "enseignement",
         "libelle": "Enseignement",
-        "mdEuros": 149
+        "mdEuros": 148.6
       },
       {
         "id": "services-generaux",
         "libelle": "Services publics généraux",
-        "mdEuros": 121,
-        "detail": "Fonctionnement des institutions, relations extérieures, recherche fondamentale (hors intérêts)"
+        "mdEuros": 122.2,
+        "detail": "Fonctionnement des institutions, relations extérieures, recherche fondamentale (hors dette)"
       },
       {
         "id": "interets",
         "libelle": "Intérêts de la dette",
-        "mdEuros": 60,
-        "detail": "Charge d’intérêts, comprise dans les services publics généraux dans la nomenclature",
+        "mdEuros": 58.9,
+        "detail": "Opérations concernant la dette publique, comprises dans les services publics généraux dans la nomenclature",
         "page": "dette"
       },
       {
         "id": "defense",
         "libelle": "Défense",
-        "mdEuros": 54
+        "mdEuros": 54.2
       },
       {
         "id": "securite",
         "libelle": "Ordre et sécurité publics",
-        "mdEuros": 52,
+        "mdEuros": 52.1,
         "detail": "Police, justice, pompiers, prisons"
       },
       {
         "id": "culture",
         "libelle": "Loisirs, culture et culte",
-        "mdEuros": 43
+        "mdEuros": 43.1
       },
       {
         "id": "logement",
         "libelle": "Logement et équipements collectifs",
-        "mdEuros": 42
+        "mdEuros": 42.1
       },
       {
         "id": "environnement",
         "libelle": "Protection de l’environnement",
-        "mdEuros": 30,
+        "mdEuros": 30.3,
         "detail": "Déchets, eaux usées, biodiversité"
       }
     ]
   },
   "recettes": {
     "annee": 2025,
-    "source": "Insee (total, prélèvements obligatoires, TVA) et FIPECO, « Les finances publiques en 2025 » (détail des prélèvements)",
-    "url": "https://www.fipeco.fr/commentaire/Les%20finances%20publiques%20en%202025",
-    "statut": "à vérifier",
+    "source": "Insee, comptes des administrations publiques 2025 (compte provisoire), API Melodi, jeu DD_CNA_APU (impôts et cotisations) ; total : Eurostat gov_10a_main — relus le 2026-10-06",
+    "url": "https://catalogue-donnees.insee.fr/fr/catalogue/recherche/DD_CNA_APU",
+    "statut": "vérifié",
     "totalMdEuros": 1561.6,
     "postes": [
       {
         "id": "cotisations",
         "libelle": "Cotisations sociales",
-        "mdEuros": 443,
-        "detail": "Nettes des allègements"
+        "mdEuros": 498.7,
+        "detail": "Y compris les cotisations imputées (52 Md€, surtout les retraites des fonctionnaires de l’État)"
       },
       {
         "id": "tva",
@@ -99,27 +105,27 @@
         "mdEuros": 208.8
       },
       {
-        "id": "csg",
-        "libelle": "CSG, CRDS et autres prélèvements sociaux",
-        "mdEuros": 180
+        "id": "ir-csg",
+        "libelle": "Impôt sur le revenu, CSG et CRDS",
+        "mdEuros": 286.8,
+        "detail": "Impôts sur le revenu des ménages : la CSG et la CRDS en font partie en comptabilité nationale"
       },
       {
-        "id": "locaux",
-        "libelle": "Impôts locaux",
-        "mdEuros": 190,
-        "detail": "Taxes foncières, cotisation foncière des entreprises, droits de mutation…"
+        "id": "is",
+        "libelle": "Impôt sur les sociétés",
+        "mdEuros": 96.5
       },
       {
         "id": "autres-impots",
-        "libelle": "Impôt sur le revenu, impôt sur les sociétés et autres impôts",
+        "libelle": "Autres impôts",
         "mdEuros": 283.2,
-        "detail": "Solde des prélèvements obligatoires (1 305 Md€)"
+        "detail": "Taxes sur les carburants et autres accises (63 Md€), taxes foncières (63 Md€), impôts sur les salaires, droits de mutation et de succession…"
       },
       {
-        "id": "hors-po",
+        "id": "autres-recettes",
         "libelle": "Autres recettes",
-        "mdEuros": 256.6,
-        "detail": "Ventes de biens et services, revenus de la propriété, transferts (hors prélèvements obligatoires)"
+        "mdEuros": 187.6,
+        "detail": "Ventes de biens et services, revenus de la propriété, transferts reçus (hors impôts et cotisations)"
       }
     ]
   }

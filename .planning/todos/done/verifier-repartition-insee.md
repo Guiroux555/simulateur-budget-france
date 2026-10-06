@@ -26,3 +26,22 @@ Tant qu'ils ne sont pas relus, la page affiche « Chiffres à vérifier » (`sta
   et moyens » / rapport sur les prélèvements obligatoires du PLF.
 
 Une fois relu : passer `statut` à « vérifié » et mettre à jour les sources.
+
+## Résolu (2026-10-06, session locale)
+
+Relu sur les données ouvertes, accessibles depuis le poste local (script reproductible :
+`npm run verification:repartition`, 24 contrôles, tous à 0,1 Md€ près) :
+
+- Grandeurs d'ensemble 2025 : Eurostat gov_10a_main, gov_10dd_edpt1, nama_10_gdp (données Insee) —
+  identiques aux chiffres déjà présents ; `statut` passé à « vérifié ».
+- Dépenses 2024 : Eurostat gov_10a_exp (COFOG, données Insee), au dixième de milliard. Les retraites
+  ont maintenant leur propre poste : vieillesse 10.2 (392,0) + survivants 10.3 (40,6) = 432,6 Md€,
+  soit 25,9 € sur 100 (le « ≈ 26 € » de FIPECO est confirmé). La COFOG 2025 n'est pas encore
+  publiée (attendue début 2027).
+- Recettes 2025 : refondues sur les catégories de la comptabilité nationale (Insee, API Melodi,
+  DD_CNA_APU) au lieu du détail FIPECO : cotisations D61 498,7 ; TVA D211 208,8 ; IR + CSG/CRDS
+  D51A 286,8 ; IS D51O 96,5 ; autres impôts 283,2 (solde des impôts et cotisations, 1 374,1) ;
+  autres recettes 187,6. Le poste « impôts locaux » disparaît (pas une catégorie des comptes).
+
+Limite constatée : dans Melodi, les cellules COFOG de DD_CNA_APU sont vides et `OTE`/`OTR` y sont
+non consolidés (2 256,9 / 2 104,4 Md€ en 2025) ; d'où le recours à Eurostat pour la COFOG et les totaux.

@@ -6,7 +6,7 @@ import { pct, points } from '../commun/format';
 import { MODULES } from '../modules';
 import { depuisLienDette, REFERENCE_DETTE } from '../modules/dette/engine';
 import { AvertissementProvisoire } from '../modules/dette/app/App';
-import { calculerSynthese, resumesDesModules, type AnneeSynthese } from './synthese';
+import { calculerSynthese, resumesDesModules, type AnneeSynthese } from './calcul';
 
 const REF = REFERENCE_DETTE;
 const FENETRE = { debut: REF.anneeDepart, fin: REF.annees.at(-1)! };
