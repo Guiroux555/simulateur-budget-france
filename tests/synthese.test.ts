@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { projeterDette, REFERENCE_PROVISOIRE, SCENARIO_DETTE_REFERENCE } from '../src/modules/dette/engine';
+import { projeterDette, REFERENCE_DETTE, SCENARIO_DETTE_REFERENCE } from '../src/modules/dette/engine';
 import { PARAMETRES_REFERENCE, versUrl } from '../src/modules/retraites/app/parametres';
 import { calculerSynthese, resumesDesModules } from '../src/synthese/synthese';
 import { MODULES } from '../src/modules';
@@ -7,8 +7,8 @@ import { MODULES } from '../src/modules';
 describe('page de synthèse', () => {
   it('au repos, elle redonne exactement la trajectoire de référence', () => {
     const s = calculerSynthese(resumesDesModules());
-    const ref = projeterDette(REFERENCE_PROVISOIRE);
-    expect(s.annees.map((a) => a.annee)).toEqual(REFERENCE_PROVISOIRE.annees);
+    const ref = projeterDette(REFERENCE_DETTE);
+    expect(s.annees.map((a) => a.annee)).toEqual(REFERENCE_DETTE.annees);
     s.annees.forEach((a, i) => {
       expect(a.dettePctPib).toBe(ref[i].dettePctPib);
       expect(a.detteReferencePctPib).toBe(ref[i].dettePctPib);
@@ -19,7 +19,7 @@ describe('page de synthèse', () => {
   });
 
   it('signale une référence provisoire', () => {
-    expect(calculerSynthese(resumesDesModules()).provisoire).toBe(REFERENCE_PROVISOIRE.provisoire);
+    expect(calculerSynthese(resumesDesModules()).provisoire).toBe(REFERENCE_DETTE.provisoire);
   });
 
   it('un report de l’âge légal réduit la dette, et l’effet via la croissance s’ajoute à l’effet budgétaire', () => {
@@ -41,8 +41,8 @@ describe('page de synthèse', () => {
 
   it('le scénario du module dette déplace la dette sans changer la référence affichée', () => {
     const effort = { ...SCENARIO_DETTE_REFERENCE, ajustementAnnuel: 0.003 };
-    const s = calculerSynthese(resumesDesModules(), REFERENCE_PROVISOIRE, effort);
-    const ref = projeterDette(REFERENCE_PROVISOIRE);
+    const s = calculerSynthese(resumesDesModules(), REFERENCE_DETTE, effort);
+    const ref = projeterDette(REFERENCE_DETTE);
     s.annees.forEach((a, i) => {
       expect(a.detteReferencePctPib).toBe(ref[i].dettePctPib);
       expect(a.detteModuleDetteSeulPctPib).toBeLessThan(ref[i].dettePctPib);

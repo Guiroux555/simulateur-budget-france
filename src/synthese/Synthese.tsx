@@ -4,11 +4,11 @@ import { Tuile } from '../commun/composants';
 import { FenetreContext } from '../commun/fenetre';
 import { pct, points } from '../commun/format';
 import { MODULES } from '../modules';
-import { depuisLienDette, REFERENCE_PROVISOIRE } from '../modules/dette/engine';
+import { depuisLienDette, REFERENCE_DETTE } from '../modules/dette/engine';
 import { AvertissementProvisoire } from '../modules/dette/app/App';
 import { calculerSynthese, resumesDesModules, type AnneeSynthese } from './synthese';
 
-const REF = REFERENCE_PROVISOIRE;
+const REF = REFERENCE_DETTE;
 const FENETRE = { debut: REF.anneeDepart, fin: REF.annees.at(-1)! };
 
 interface Props {

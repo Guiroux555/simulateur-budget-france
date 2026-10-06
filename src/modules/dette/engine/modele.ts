@@ -2,8 +2,8 @@
  * Projection de la dette publique en part du PIB.
  *
  * Identité, pour chaque année t :
- *   dette(t) = dette(t−1) × (1 + r) / (1 + g) − solde primaire(t)
- * avec r le taux d'intérêt apparent et g la croissance nominale.
+ *   dette(t) = dette(t−1) × (1 + r) / (1 + g) − solde primaire(t) + ajustement stock-flux(t)
+ * avec r le taux d'intérêt apparent et g la croissance nominale (convention de la Commission).
  *
  * Écarts apportés par la page de synthèse (voir `.planning/notes/branchement-modules-synthese.md`) :
  *  - un écart de niveau du PIB E(t) modifie la croissance : (1 + g') = (1 + g) × (1 + E(t)) / (1 + E(t−1)) ;
@@ -32,7 +32,7 @@ export function projeterDette(reference: ReferenceDette, ecarts: ReadonlyMap<num
     const chargeInterets = (dette * r) / (1 + g);
     const effetBouleDeNeige = dette * (facteur - 1);
     const soldePrimaireStabilisant = effetBouleDeNeige;
-    dette = dette * facteur - soldePrimaire;
+    dette = dette * facteur - soldePrimaire + reference.ajustementStockFluxPctPib[i];
     niveauPrec = e.ecartPibNiveau;
     return {
       annee,

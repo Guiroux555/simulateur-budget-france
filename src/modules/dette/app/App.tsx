@@ -8,14 +8,14 @@ import {
   appliquerScenario,
   depuisLienDette,
   projeterDette,
-  REFERENCE_PROVISOIRE,
+  REFERENCE_DETTE,
   SCENARIO_DETTE_REFERENCE,
   versLienDette,
   type AnneeDette,
   type ScenarioDette,
 } from '../engine';
 
-const REF = REFERENCE_PROVISOIRE;
+const REF = REFERENCE_DETTE;
 const FENETRE = { debut: REF.anneeDepart, fin: REF.annees.at(-1)! };
 /** 0.0003 → « 0,03 point ». */
 const enPoints = (x: number) => `${pct(x, 2).replace(' %', '')} point${Math.abs(x) >= 0.02 ? 's' : ''}`;

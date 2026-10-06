@@ -42,7 +42,8 @@ Non résolus (ne pas traiter comme des faits) :
 - [désaccord source / connaissance préalable] Le règlement 2024/1263 permettrait un plan révisé après un changement de gouvernement : vient de la mémoire du sous-agent, non sourcé.
 DATA_Lp4wZ9cT_END
 
-## Risque ouvert
+## Risque levé (2026-10-06)
 
-Le critère « ± 0,1 pt par année » suppose des séries annuelles pour la France dans l'Excel des
-fiches pays. Voir la tâche `verifier-fiches-pays-dsm-2025` et la question « Calibrage de repli ».
+Le critère « ± 0,1 pt par année » supposait des séries annuelles pour la France dans l'Excel des
+fiches pays. Elles y sont (2024-2036) ; le moteur reproduit la dette de la Commission à 0,0004 point
+près (`npm run calibration:dette`). Voir `todos/done/verifier-fiches-pays-dsm-2025.md`.

@@ -1,32 +1,31 @@
 /**
- * Trajectoire de référence de la dette publique.
- *
- * PROVISOIRE : ordres de grandeur seulement. La référence retenue est le scénario de référence
- * du Debt Sustainability Monitor de la Commission européenne (projection sur 10 ans, publiée
- * chaque année au premier trimestre). Ses séries par pays (fiches pays du DSM 2025) n'ont pas
- * encore pu être récupérées : ces chiffres servent à construire et tester le moteur, pas à
- * publier un résultat. Voir `.planning/todos/pending/verifier-fiches-pays-dsm-2025.md`.
+ * Trajectoire de référence de la dette publique : scénario de référence (baseline) du Debt
+ * Sustainability Monitor 2025 de la Commission européenne, fiche pays France
+ * (`data/commission/dsm-2025-fr.json`). Projection sur 10 ans, mise à jour à chaque édition annuelle.
  */
+import dsm from '../../../../data/commission/dsm-2025-fr.json';
 import type { ReferenceDette } from './types';
 
-const annees = Array.from({ length: 11 }, (_, i) => 2026 + i);
+type Serie = Record<string, number>;
+const s = dsm.series as Record<string, Serie>;
+const ANNEE_DEPART = 2025;
+const annees = Object.keys(s.dettePctPib)
+  .map(Number)
+  .filter((a) => a > ANNEE_DEPART)
+  .sort((a, b) => a - b);
+/** Valeurs de la Commission, en points de pourcentage, converties en fractions. */
+const fractions = (serie: Serie) => annees.map((a) => serie[a] / 100);
 
-/** Interpolation linéaire entre deux valeurs sur la fenêtre, constante après `anneeFin`. */
-function rampe(debut: number, fin: number, anneeFin: number): number[] {
-  return annees.map((a) => (a >= anneeFin ? fin : debut + ((fin - debut) * (a - annees[0])) / (anneeFin - annees[0])));
-}
-
-export const REFERENCE_PROVISOIRE: ReferenceDette = {
-  source:
-    'PROVISOIRE — ordres de grandeur inspirés du rapport d’avancement annuel 2026 du PSMT (déficit ≈ 5 % du PIB en 2026, dette ≈ 118 % en 2027), en attendant les séries du Debt Sustainability Monitor 2025 de la Commission européenne',
-  provisoire: true,
-  anneeDepart: 2025,
-  detteDepartPctPib: 1.16,
+export const REFERENCE_DETTE: ReferenceDette = {
+  source: dsm.source,
+  provisoire: false,
+  anneeDepart: ANNEE_DEPART,
+  detteDepartPctPib: s.dettePctPib[ANNEE_DEPART] / 100,
   annees,
-  // Déficit primaire ≈ 2,9 % du PIB en 2026, réduit jusqu'en 2031 (fin de l'ajustement du PSMT), puis stable.
-  soldePrimairePctPib: rampe(-0.029, -0.008, 2031),
-  // Le taux apparent monte lentement à mesure que la dette ancienne est refinancée à des taux plus élevés.
-  tauxInteretApparent: rampe(0.02, 0.029, 2036),
-  croissanceNominale: rampe(0.028, 0.03, 2028),
-  cibleDettePctPib: {},
+  soldePrimairePctPib: fractions(s.soldePrimairePctPib),
+  tauxInteretApparent: fractions(s.tauxInteretImplicitePct),
+  // Croissance nominale = (1 + croissance réelle) × (1 + inflation) − 1.
+  croissanceNominale: annees.map((a) => (1 + s.croissanceReellePct[a] / 100) * (1 + s.inflationPct[a] / 100) - 1),
+  ajustementStockFluxPctPib: fractions(s.ajustementStockFluxPctPib),
+  cibleDettePctPib: Object.fromEntries(annees.map((a) => [a, s.dettePctPib[a] / 100])),
 };

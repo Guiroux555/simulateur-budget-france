@@ -1,17 +1,18 @@
 import { describe, expect, it } from 'vitest';
+import dsm from '../data/commission/dsm-2025-fr.json';
 import {
   ajustementPourStabiliser,
   appliquerScenario,
   depuisLienDette,
   MATURITE_MOYENNE,
   projeterDette,
-  REFERENCE_PROVISOIRE,
+  REFERENCE_DETTE,
   SCENARIO_DETTE_REFERENCE,
   versLienDette,
   type ReferenceDette,
 } from '../src/modules/dette/engine';
 
-const ref = REFERENCE_PROVISOIRE;
+const ref = REFERENCE_DETTE;
 const ecartsConstants = (soldePct: number, pibNiveau: number) =>
   new Map([ref.anneeDepart, ...ref.annees].map((a) => [a, { ecartSoldePctPibReference: soldePct, ecartPibNiveau: a === ref.anneeDepart ? 0 : pibNiveau }]));
 
@@ -24,11 +25,12 @@ describe('module dette : moteur', () => {
       expect(serie.length).toBe(ref.annees.length);
   });
 
-  it('applique l’identité dette(t) = dette(t−1) × (1 + r) / (1 + g) − solde primaire', () => {
+  it('applique l’identité dette(t) = dette(t−1) × (1 + r) / (1 + g) − solde primaire + ajustement stock-flux', () => {
     const p = projeterDette(ref);
     let prec = ref.detteDepartPctPib;
     p.forEach((a, i) => {
-      const attendu = (prec * (1 + ref.tauxInteretApparent[i])) / (1 + ref.croissanceNominale[i]) - ref.soldePrimairePctPib[i];
+      const attendu =
+        (prec * (1 + ref.tauxInteretApparent[i])) / (1 + ref.croissanceNominale[i]) - ref.soldePrimairePctPib[i] + ref.ajustementStockFluxPctPib[i];
       expect(a.dettePctPib).toBeCloseTo(attendu, 12);
       expect(a.soldePctPib).toBeCloseTo(a.soldePrimairePctPib - a.chargeInteretsPctPib, 12);
       prec = a.dettePctPib;
@@ -45,6 +47,7 @@ describe('module dette : moteur', () => {
       tauxInteretApparent: ref.annees.map(() => r),
       croissanceNominale: ref.annees.map(() => g),
       soldePrimairePctPib: ref.annees.map(() => (d0 * (r - g)) / (1 + g)),
+      ajustementStockFluxPctPib: ref.annees.map(() => 0),
     };
     const p = projeterDette(stable);
     for (const a of p) {
@@ -85,6 +88,18 @@ describe('module dette : moteur', () => {
       const a = p.find((x) => x.annee === +annee)!;
       expect(Math.abs(a.dettePctPib - cible)).toBeLessThanOrEqual(0.001);
     }
+  });
+});
+
+describe('module dette : référence de la Commission (DSM 2025)', () => {
+  it('reproduit la charge d’intérêts publiée, à ± 0,01 pt de PIB', () => {
+    const interets = dsm.series.chargeInteretsPctPib as Record<string, number>;
+    for (const a of projeterDette(ref)) expect(Math.abs(a.chargeInteretsPctPib - interets[a.annee] / 100)).toBeLessThanOrEqual(0.0001);
+  });
+
+  it('couvre toutes les années de la fenêtre par une cible de dette', () => {
+    expect(ref.provisoire).toBe(false);
+    expect(Object.keys(ref.cibleDettePctPib).map(Number)).toEqual(ref.annees);
   });
 });
 

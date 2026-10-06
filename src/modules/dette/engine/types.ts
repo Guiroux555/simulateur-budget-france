@@ -16,6 +16,8 @@ export interface ReferenceDette {
   tauxInteretApparent: number[];
   /** Croissance nominale du PIB. */
   croissanceNominale: number[];
+  /** Ajustements stock-flux (variations de dette hors solde, ex. trésorerie, privatisations), en part du PIB. */
+  ajustementStockFluxPctPib: number[];
   /** Dette publiée par la référence, pour le calibrage (vide tant que la référence est provisoire). */
   cibleDettePctPib: Record<number, number>;
 }

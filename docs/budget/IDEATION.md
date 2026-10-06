@@ -100,8 +100,9 @@ projection officielle sur laquelle calibrer.
   d'avancement, avis du Haut Conseil des finances publiques, Cour des comptes (« Situation et
   perspectives des finances publiques »).
 - **Critère de calibrage** : à partir des séries de la Commission (*r*, *g*, solde primaire), le
-  moteur retrouve sa trajectoire de dette. Reste à vérifier que la Commission publie ces séries
-  année par année pour la France (fiches pays du DSM, voir `.planning/todos/`).
+  moteur retrouve sa trajectoire de dette, à ± 0,1 point de PIB chaque année. **Atteint** avec les
+  séries annuelles de la fiche France du DSM 2025 (`data/commission/dsm-2025-fr.json`, ajustements
+  stock-flux compris) : écart maximal de 0,0004 point sur 2026-2036 (`npm run calibration:dette`).
 - **Intérêt** : c'est le module qui **additionne tous les autres**, par écarts au scénario de la
   Commission (§4). Les modules démographiques y pèsent par leurs effets sur les dix prochaines
   années (indexation, montée en charge d'un report d'âge, ONDAM), pas par leur solde de 2070.

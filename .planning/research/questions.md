@@ -1,15 +1,20 @@
 # Questions de recherche
 
-## Calibrage de repli du module dette (2026-10-01)
+## Calibrage de repli du module dette (2026-10-01) — en grande partie sans objet
 
 Si l'Excel des fiches pays du DSM 2025 ne donne que quelques points pour la France (et pas de
 séries annuelles), quel critère d'acceptation retenir ?
 
-- Critère sur quelques années clés (par exemple N+1, N+5, N+10) plutôt que sur chaque année ?
-- Compléter les années manquantes par des sources nationales (rapport d'avancement annuel du PSMT,
-  avis HCFP, Cour des comptes), au risque de mélanger des jeux d'hypothèses ?
-- Que faire entre janvier et la sortie du nouveau DSM (premier trimestre), quand la fenêtre glissante
-  dépasse d'un an la référence ?
+**Réponse (2026-10-06)** : l'Excel donne bien des séries annuelles 2024-2036 pour la France
+(dette, solde primaire, charge d'intérêts, effet boule de neige, ajustements stock-flux, croissance
+réelle, inflation, taux implicite). Le critère reste « ± 0,1 point chaque année » ; il est atteint
+(écart maximal 0,0004 point). Les deux premières pistes ci-dessous sont donc sans objet.
+
+- ~~Critère sur quelques années clés (par exemple N+1, N+5, N+10) plutôt que sur chaque année ?~~
+- ~~Compléter les années manquantes par des sources nationales (rapport d'avancement annuel du PSMT,
+  avis HCFP, Cour des comptes), au risque de mélanger des jeux d'hypothèses ?~~
+- **Reste ouvert** : que faire entre janvier et la sortie du nouveau DSM (premier trimestre), quand
+  la fenêtre glissante dépasse d'un an la référence ?
 
 Contexte : `.planning/notes/module-dette-horizon-reference.md`.
 

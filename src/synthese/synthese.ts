@@ -9,7 +9,7 @@
  */
 import type { ModuleBudgetaire, ResumeModule } from '../socle/module';
 import { MODULES } from '../modules';
-import { appliquerScenario, projeterDette, REFERENCE_PROVISOIRE, SCENARIO_DETTE_REFERENCE } from '../modules/dette/engine';
+import { appliquerScenario, projeterDette, REFERENCE_DETTE, SCENARIO_DETTE_REFERENCE } from '../modules/dette/engine';
 import type { EcartAnnee, ReferenceDette, ScenarioDette } from '../modules/dette/engine';
 
 export interface ContributionModule {
@@ -69,7 +69,7 @@ function ecartTotal(contributions: readonly ContributionModule[], avecCroissance
  */
 export function calculerSynthese(
   resumes: readonly ResumeModule[],
-  reference: ReferenceDette = REFERENCE_PROVISOIRE,
+  reference: ReferenceDette = REFERENCE_DETTE,
   scenarioDette: ScenarioDette = SCENARIO_DETTE_REFERENCE,
 ): Synthese {
   const toutesAnnees = [reference.anneeDepart, ...reference.annees];
